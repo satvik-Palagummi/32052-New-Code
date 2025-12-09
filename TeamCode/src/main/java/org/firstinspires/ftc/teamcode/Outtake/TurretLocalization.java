@@ -20,14 +20,14 @@ public class TurretLocalization {
     }
     public void setPos(int num){
         position = num;
-        if(position == 2){
-            setTurretPos(posTwo);
+        if(position == 0){
+            setTurretPos(posOne);
         }
         if(position == 1){
             setTurretPos(posOne);
         }
-        if(position == 0){
-            setTurretPos(posZero);
+        if(position == 22){
+            setTurretPos(posTwo);
         }
     }
 
