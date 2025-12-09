@@ -60,6 +60,7 @@ public class FirstAuton extends AutonTemplate {
                 //add logic to turret
                 //check if follower is down with it's path.
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>5){
+                    autonShoot();
                     follower.followPath(shootToFirstBallAiming,true);
                     setPathState(PathState.SHOOTPOS_FIRSTBALLROW);
                     telemetry.addLine("Done Path 1");
@@ -71,13 +72,16 @@ public class FirstAuton extends AutonTemplate {
                     setPathState(PathState.FIRSTBALLROW_GRABBING);
                     telemetry.addLine("Done Aiming towards Grab");
                 }
+                runAutonIntake();
                 break;
             case FIRSTBALLROW_GRABBING:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
+
                     follower.followPath(GrabbingtoShoot, true);
                     setPathState(PathState.GRABBING_SHOOTPOS);
                     telemetry.addLine("Done Grabbing");
                 }
+                stopAutonIntake();
                 break;
             default:
                 telemetry.addLine("No State Commanded");
