@@ -17,7 +17,7 @@ public class PushServo {
     }
     public void propel(int servoNum){
         if(servoNum == 0){
-            push0.setPosition(0.4);
+            push0.setPosition(0.05);
         }else if(servoNum == 1){
             push1.setPosition(0.9);
         }else if(servoNum == 2){
