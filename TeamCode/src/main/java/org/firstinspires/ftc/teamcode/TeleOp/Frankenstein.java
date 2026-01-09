@@ -115,15 +115,15 @@ public class Frankenstein extends LinearOpMode {
             turretLocalization.setPos(shootingPos);
             telemetry.update();
         }*/
-        if(gamepad1.dpad_left){
+        if(gamepad2.dpad_left){
             shootingPos = 0;
             turretLocalization.setPos(shootingPos);
         }
-        if(gamepad1.dpad_up){
+        if(gamepad2.dpad_up){
             shootingPos = 1;
             turretLocalization.setPos(shootingPos);
         }
-        if(gamepad1.dpad_right){
+        if(gamepad2.dpad_right){
             shootingPos = 2;
             turretLocalization.setPos(shootingPos);
         }

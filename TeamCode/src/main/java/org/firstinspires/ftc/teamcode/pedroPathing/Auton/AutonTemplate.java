@@ -52,7 +52,17 @@ public abstract class AutonTemplate extends OpMode {
     /**
      * Execute autonomous shooting sequence (3 balls)
      */
-    protected void autonShoot() {
+    protected void autonShoot(int i) {
+        turret.startOuttake();
+        wait(.3);
+        turretLocalization.setPos(i);
+        wait(.5);
+        pushServo.propel(i);
+        wait(1.0);
+        pushServo.retract(i);
+    }
+
+    protected void autonShoot2() {
         turret.startOuttake();
         for (int i = 0; i < 3; i++) {
             wait(.3);
