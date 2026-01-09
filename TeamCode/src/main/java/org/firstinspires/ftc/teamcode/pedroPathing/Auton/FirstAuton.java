@@ -20,15 +20,15 @@ public class FirstAuton extends AutonTemplate {
         SHOOT_PRELOAD,
         SHOOTPOS_FIRSTBALLROW,
         FIRSTBALLROW_GRABBING,
-        GRABBING_SHOOTPOS
+        GRABBING_REVERSAL,
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(21,123, Math.toRadians(137));
-    private final Pose shootPose = new Pose(50,93, Math.toRadians(137));
-    private final Pose firstRowBallsAiming = new Pose(50,84, Math.toRadians(180));
-    private final Pose grabFirstBalls = new Pose(19,84, Math.toRadians(180));
-    private PathChain StartToShoot, shootToFirstBallAiming, FirstBallAimingtoGrabbing, GrabbingtoShoot;
+    private final Pose startPose = new Pose(21,123, Math.toRadians(220));
+    private final Pose shootPose = new Pose(50,93.5, Math.toRadians(220));
+    private final Pose BallsRowAiming1 = new Pose(50,83.5, Math.toRadians(180));
+    private final Pose grabFirstBalls = new Pose(20,83.5, Math.toRadians(180));
+    private PathChain StartToShoot, shootToBallAiming1, AimingtoGrabbing1, GrabbingReversal1, ReversaltoAiming1;
 
 
     public void buildPaths(){
@@ -36,21 +36,28 @@ public class FirstAuton extends AutonTemplate {
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
-        shootToFirstBallAiming = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, firstRowBallsAiming))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), firstRowBallsAiming.getHeading())
+        shootToBallAiming1 = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, BallsRowAiming1))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), BallsRowAiming1.getHeading())
                 .build();
-        FirstBallAimingtoGrabbing = follower.pathBuilder()
-                .addPath(new BezierLine(firstRowBallsAiming, grabFirstBalls))
-                .setLinearHeadingInterpolation(firstRowBallsAiming.getHeading(), grabFirstBalls.getHeading())
+        AimingtoGrabbing1 = follower.pathBuilder()
+                .addPath(new BezierLine(BallsRowAiming1, grabFirstBalls))
+                .setLinearHeadingInterpolation(BallsRowAiming1.getHeading(), grabFirstBalls.getHeading())
                 .build();
-        GrabbingtoShoot = follower.pathBuilder()
-                .addPath(new BezierLine(grabFirstBalls, shootPose))
-                .setLinearHeadingInterpolation(grabFirstBalls.getHeading(), shootPose.getHeading())
+        GrabbingReversal1 = follower.pathBuilder()
+                .addPath(new BezierLine(grabFirstBalls, BallsRowAiming1))
+                .setLinearHeadingInterpolation(grabFirstBalls.getHeading(), BallsRowAiming1.getHeading())
+                .build();
+        ReversaltoAiming1 = follower.pathBuilder()
+                .addPath(new BezierLine(BallsRowAiming1, shootPose))
+                .setLinearHeadingInterpolation(BallsRowAiming1.getHeading(), shootPose.getHeading())
                 .build();
     }
 
     public void statePathUpdate(){
+        boolean firstGrab = false;
+        boolean secondGrab = false;
+        boolean thirdGrab = false;
         switch(pathState){
             case STARTPOS_SHOOTPOS:
                 follower.followPath(StartToShoot, true);
@@ -61,28 +68,38 @@ public class FirstAuton extends AutonTemplate {
                 //check if follower is down with it's path.
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>5){
                     autonShoot();
-                    follower.followPath(shootToFirstBallAiming,true);
-                    setPathState(PathState.SHOOTPOS_FIRSTBALLROW);
-                    telemetry.addLine("Done Path 1");
+                    if(!firstGrab) {
+                        follower.followPath(shootToBallAiming1, true);
+                        setPathState(PathState.SHOOTPOS_FIRSTBALLROW);
+                        telemetry.addLine("Done Path 1");
+                    }else{
+                        telemetry.addLine("DONE");
+                    }
                 }
                 break;
             case SHOOTPOS_FIRSTBALLROW:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
-                    follower.followPath(FirstBallAimingtoGrabbing, true);
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
+                    follower.followPath(AimingtoGrabbing1, true);
                     setPathState(PathState.FIRSTBALLROW_GRABBING);
                     telemetry.addLine("Done Aiming towards Grab");
+                    runAutonIntake();
                 }
-                runAutonIntake();
                 break;
             case FIRSTBALLROW_GRABBING:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
-
-                    follower.followPath(GrabbingtoShoot, true);
-                    setPathState(PathState.GRABBING_SHOOTPOS);
+                    stopAutonIntake();
+                    follower.followPath(GrabbingReversal1, true);
+                    setPathState(PathState.GRABBING_REVERSAL);
                     telemetry.addLine("Done Grabbing");
                 }
-                stopAutonIntake();
                 break;
+            case GRABBING_REVERSAL:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
+                    follower.followPath(ReversaltoAiming1, true);
+                    setPathState(PathState.SHOOT_PRELOAD);
+                    telemetry.addLine("Going to Shoot Position");
+                    firstGrab = true;
+                }
             default:
                 telemetry.addLine("No State Commanded");
                 break;
