@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class TurretLocalization {
     private Servo turret = null;
     private final double posTwo = 0;
-    private final double posOne = 0.4;
+    private final double posOne = 0.475;
     private final double posZero = 0.95;
     private int position;
     public void initTurretLocalization(HardwareMap hwM){

@@ -17,10 +17,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
  * Contains common functionality for path following, timing, and subsystem control.
  */
 public abstract class AutonTemplate extends OpMode {
-    protected HardwareMap hardwareMap;
     protected Follower follower;
     protected Timer pathTimer, actionTimer, opModeTimer;
-    protected int pathState;
+
     protected Turret turret;
     protected PushServo pushServo;
     protected Spinner spinner;
@@ -30,10 +29,6 @@ public abstract class AutonTemplate extends OpMode {
     /**
      * Set the current path state and reset the path timer
      */
-    protected void setPathState(int state) {
-        pathState = state;
-        pathTimer.resetTimer();
-    }
 
     /**
      * Wait for a specified amount of time while keeping subsystems updated
@@ -107,12 +102,9 @@ public abstract class AutonTemplate extends OpMode {
         opModeTimer.resetTimer();
         actionTimer = new Timer();
 
+
         follower = Constants.createFollower(hardwareMap);
 
-        nightcall.initialize(hardwareMap);
-        spinner.initSpinner(hardwareMap);
-        turretLocalization.initTurretLocalization(hardwareMap);
-        turret.initTurret(hardwareMap);
 
 
         turret = new Turret();
@@ -120,6 +112,10 @@ public abstract class AutonTemplate extends OpMode {
         turretLocalization = new TurretLocalization();
         nightcall = new Nightcall();
         pushServo = new PushServo();
+        nightcall.initialize(hardwareMap);
+        spinner.initSpinner(hardwareMap);
+        turretLocalization.initTurretLocalization(hardwareMap);
+        turret.initTurret(hardwareMap);
         buildPaths();
     }
 
@@ -129,7 +125,7 @@ public abstract class AutonTemplate extends OpMode {
     @Override
     public void start() {
         opModeTimer.resetTimer();
-        setPathState(0);
+        follower.activateAllPIDFs();
     }
 
     @Override

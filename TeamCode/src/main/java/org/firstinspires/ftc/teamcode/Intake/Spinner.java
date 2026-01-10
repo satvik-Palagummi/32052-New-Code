@@ -12,11 +12,12 @@ public class Spinner {
     public void initSpinner(HardwareMap hMap) {
         spinnerLeft = hMap.get(DcMotorEx.class, "spinnerLeft");
         spinnerRight = hMap.get(DcMotorEx.class, "spinnerRight");
-        spinnerLeft.setDirection(DcMotor.Direction.FORWARD);
+        spinnerLeft.setDirection(DcMotor.Direction.REVERSE);
         spinnerRight.setDirection(DcMotor.Direction.FORWARD);
     }
     public void startIntake(){
         spinnerRight.setPower(speed);
+        spinnerLeft.setPower(speed);
     }
     public double getSpinnerLeft(){
         return spinnerLeft.getPower();
@@ -27,6 +28,7 @@ public class Spinner {
     }
     public void stopIntake(){
         spinnerRight.setPower(0);
+        spinnerLeft.setPower(0);
     }
 
 }

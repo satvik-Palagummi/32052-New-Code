@@ -36,6 +36,9 @@ public class FirstAuton extends AutonTemplate {
     private final Pose shootPosePos3 = new Pose(50,93.5, Math.toRadians(227));
     private final Pose BallsRowAiming1 = new Pose(50,83.5, Math.toRadians(180));
     private final Pose grabFirstBalls = new Pose(20,83.5, Math.toRadians(180));
+    private boolean firstGrab = false;
+    private boolean secondGrab = false;
+    private boolean thirdGrab = false;
     private PathChain StartToShoot, ShootPose, ShootPos1To2,ShootPos2To3, shootToBallAiming1, AimingtoGrabbing1, GrabbingReversal1, ReversaltoAiming1;
 
 
@@ -46,9 +49,11 @@ public class FirstAuton extends AutonTemplate {
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPosePos1.getHeading())
                 .build();
         ShootPos1To2 = follower.pathBuilder()
+                .addPath(new BezierLine(shootPosePos1, shootPosePos2))
                 .setLinearHeadingInterpolation(shootPosePos1.getHeading(), shootPosePos2.getHeading())
                 .build();
         ShootPos2To3 = follower.pathBuilder()
+                .addPath(new BezierLine(shootPosePos2, shootPosePos3))
                 .setLinearHeadingInterpolation(shootPosePos2.getHeading(), shootPosePos3.getHeading())
                 .build();
         shootToBallAiming1 = follower.pathBuilder()
@@ -70,9 +75,7 @@ public class FirstAuton extends AutonTemplate {
     }
 
     public void statePathUpdate(){
-        boolean firstGrab = false;
-        boolean secondGrab = false;
-        boolean thirdGrab = false;
+
         switch(pathState){
             case STARTPOS:
                 follower.followPath(StartToShoot, true);
@@ -85,6 +88,7 @@ public class FirstAuton extends AutonTemplate {
                     follower.followPath(ShootPos1To2, true);
                     setPathState(PathState.SHOOT2_SHOOT3);
                 }
+                break;
             case SHOOT1_SHOOT2:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
                 {
@@ -92,12 +96,14 @@ public class FirstAuton extends AutonTemplate {
                     follower.followPath(ShootPos2To3, true);
                     setPathState(PathState.SHOOT2_SHOOT3);
                 }
+                break;
             case SHOOT2_SHOOT3:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
                     autonShoot(2);
                     follower.followPath(ShootPos2To3,true);
                     setPathState(PathState.SHOOT_PRELOAD);
                 }
+                break;
             case SHOOT_PRELOAD:
                 //add logic to turret
                 //check if follower is down with it's path.
@@ -135,30 +141,30 @@ public class FirstAuton extends AutonTemplate {
                     telemetry.addLine("Going to Shoot Position");
                     firstGrab = true;
                 }
+                break;
             default:
                 telemetry.addLine("No State Commanded");
                 break;
         }
     }
-    public void setPathState(PathState newState){
+    public void setPathState(PathState newState) {
         pathState = newState;
         pathTimer.resetTimer();
     }
 
 
+
     @Override
     public void init() {
+        super.init();
         pathState = PathState.STARTPOS;;
-        pathTimer = new Timer();
-        opModeTimer = new Timer();
-        follower = Constants.createFollower(hardwareMap);
         //Add other init mechanisms
-        buildPaths();
         follower.setPose(startPose);
     }
+    @Override
     public void start(){
-        opModeTimer.resetTimer();
-        setPathState(pathState);
+        super.start();
+        setPathState(PathState.STARTPOS);
     }
 
     @Override

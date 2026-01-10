@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Turret {
-    final double speed = 0.7;
+    double speed = 0.5;
     private DcMotor spinner;
     public void initTurret(HardwareMap hw) {
         spinner = hw.get(DcMotor.class, "Turret");
@@ -14,6 +14,9 @@ public class Turret {
     }
     public void startOuttake(){
         spinner.setPower(speed);
+    }
+    public void setPower(double sped){
+        speed = sped;
     }
     public double getTurret(){
         return spinner.getPower();

@@ -24,6 +24,7 @@ public class Frankenstein extends LinearOpMode {
     private int shootingPos = 0;
     private double endGameStart;
     private boolean isEndGame;
+    private boolean shooting;
 
 
     @Override
@@ -58,6 +59,7 @@ public class Frankenstein extends LinearOpMode {
         addTelemetry("Y-value", y);
         addTelemetry("Rotation", rx);
         boolean slow = false;
+        boolean shooting = false;
         if(gamepad1.left_trigger > 0.1){
             slow = true;
         }
@@ -79,14 +81,32 @@ public class Frankenstein extends LinearOpMode {
 
     public void handleShooter(){
         if(gamepad1.right_trigger>0.1){
+            pushServo.propel(shootingPos);
+        }else{
+            pushServo.retract(shootingPos);
+        }
+        if(gamepad2.rightBumperWasReleased()&&!gamepad2.a){
+            shooting = !shooting;
+        }
+        if(shooting){
             turret.startOuttake();
         }else{
             turret.stopOuttake();
         }
-        if(gamepad1.right_bumper){
-            pushServo.propel(shootingPos);
-        }else{
-            pushServo.retract(shootingPos);
+        if(gamepad2.x){
+            turret.setPower(0.3);
+        }
+        if(gamepad2.y){
+            turret.setPower(0.4);
+        }
+        if(gamepad2.b){
+            turret.setPower(0.7);
+        }
+        if(gamepad2.a&&gamepad2.leftBumperWasReleased()){
+            turret.setPower(turret.getTurret()-0.05);
+        }
+        if(gamepad2.a&&gamepad2.rightBumperWasPressed()){
+            turret.setPower(turret.getTurret()+0.05);
         }
     }
     public void handleLocalization(){
@@ -118,14 +138,20 @@ public class Frankenstein extends LinearOpMode {
         if(gamepad2.dpad_left){
             shootingPos = 0;
             turretLocalization.setPos(shootingPos);
+            pushServo.retract(1);
+            pushServo.retract(2);
         }
         if(gamepad2.dpad_up){
             shootingPos = 1;
             turretLocalization.setPos(shootingPos);
+            pushServo.retract(0);
+            pushServo.retract(2);
         }
         if(gamepad2.dpad_right){
             shootingPos = 2;
             turretLocalization.setPos(shootingPos);
+            pushServo.retract(0);
+            pushServo.retract(1);
         }
     }
     public void handleIntake(){
