@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class FirstAuton extends AutonTemplate {
+public class FirstAutonRed extends AutonTemplate {
     public enum PathState {
         //START POSITION-END POSITION
         //DRIVE > MOVEMENT STATE
@@ -27,15 +27,15 @@ public class FirstAuton extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(21,123, Math.toRadians(51));
+    private final Pose startPose = new Pose(122.5,123.5, Math.toRadians(-51));
 
-    private final Pose shootPose = new Pose(60,83.5, Math.toRadians(40));
-    private final Pose BallsRowAiming1 = new Pose(50,83.5, Math.toRadians(0));
-    private final Pose grabBalls1 = new Pose(16,83.5, Math.toRadians(0));
-    private final Pose BallsRowAiming2 = new Pose(60, 60,Math.toRadians(0));
-    private final Pose grabBalls2 = new Pose(8, 60, Math.toRadians(0));
-    private final Pose BallsRowAiming3 = new Pose(60, 35.5, Math.toRadians(0));
-    private final Pose grabBalls3 = new Pose(8, 35.5, Math.toRadians(0));
+    private final Pose shootPose = new Pose(83,83.5, Math.toRadians(-40));
+    private final Pose BallsRowAiming1 = new Pose(100,83.5, Math.toRadians(0));
+    private final Pose grabBalls1 = new Pose(130,83.5, Math.toRadians(0));
+    private final Pose BallsRowAiming2 = new Pose(83, 60,Math.toRadians(0));
+    private final Pose grabBalls2 = new Pose(135, 60, Math.toRadians(0));
+    private final Pose BallsRowAiming3 = new Pose(83, 35.5, Math.toRadians(0));
+    private final Pose grabBalls3 = new Pose(135, 35.5, Math.toRadians(0));
     private boolean firstGrab = false;
     private boolean secondGrab = false;
     private boolean thirdGrab = false;
@@ -137,9 +137,12 @@ public class FirstAuton extends AutonTemplate {
                     }else if(!secondGrab){
                         follower.followPath(shootToBallAiming2, true);
                         setPathState(PathState.SHOOT_PRELOAD2);
-                    } else if (!secondGrab) {
+                    } else if (!thirdGrab) {
                         follower.followPath(shootToBallAiming3, true);
                         setPathState(PathState.SHOOT_PRELOAD3);
+                    }
+                    else{
+                        telemetry.addLine("DONE");
                     }
                 }
                 break;

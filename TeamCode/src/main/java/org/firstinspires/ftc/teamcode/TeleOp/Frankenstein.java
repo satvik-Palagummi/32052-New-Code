@@ -85,10 +85,7 @@ public class Frankenstein extends LinearOpMode {
         }else{
             pushServo.retract(shootingPos);
         }
-        if(gamepad2.rightBumperWasReleased()&&!gamepad2.a){
-            shooting = !shooting;
-        }
-        if(shooting){
+        if(gamepad2.right_trigger>0.1){
             turret.startOuttake();
         }else{
             turret.stopOuttake();
@@ -102,10 +99,10 @@ public class Frankenstein extends LinearOpMode {
         if(gamepad2.b){
             turret.setPower(0.7);
         }
-        if(gamepad2.a&&gamepad2.leftBumperWasReleased()){
+        if(gamepad2.leftStickButtonWasPressed()){
             turret.setPower(turret.getTurret()-0.05);
         }
-        if(gamepad2.a&&gamepad2.rightBumperWasPressed()){
+        if(gamepad2.rightStickButtonWasPressed()){
             turret.setPower(turret.getTurret()+0.05);
         }
     }

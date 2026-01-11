@@ -51,7 +51,7 @@ public abstract class AutonTemplate extends OpMode {
         turret.startOuttake();
         wait(.3);
         turretLocalization.setPos(i);
-        wait(.5);
+        wait(2.0);
         pushServo.propel(i);
         wait(1.0);
         pushServo.retract(i);
@@ -62,12 +62,9 @@ public abstract class AutonTemplate extends OpMode {
         for (int i = 0; i < 3; i++) {
             wait(.3);
             turretLocalization.setPos(i);
-            wait(.5);
-
-            wait(1.0);
-
+            wait(1.5);
             pushServo.propel(i);
-            wait(.5);
+            wait(1.0);
             pushServo.retract(i);
         }
         turret.stopOuttake();
@@ -114,6 +111,7 @@ public abstract class AutonTemplate extends OpMode {
         pushServo = new PushServo();
         nightcall.initialize(hardwareMap);
         spinner.initSpinner(hardwareMap);
+        pushServo.initPushServos(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
         turret.initTurret(hardwareMap);
         buildPaths();
