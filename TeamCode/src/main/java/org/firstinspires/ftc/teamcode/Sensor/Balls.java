@@ -11,9 +11,20 @@ public class Balls {
     private final ArrayList<Integer> twentyThree = new ArrayList<>(List.of(1,1,0));
     private int pos;
     public void setMotif(){
-        if(scanMotif == 21) {
+        if(Limelight.detectedTagId == 21) {
             motif = twentyOne;
+        }else if(Limelight.detectedTagId == 22){
+            motif = twentyTwo;
+        }else if(Limelight.detectedTagId == 23){
+            motif = twentyThree;
         }
     }
+    public ArrayList<Integer> getFullMotif(){
+        return motif;
+    }
+    public int getMotif(int pos){
+        return motif.get(pos);
+    }
+
 
 }

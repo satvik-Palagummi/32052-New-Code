@@ -10,7 +10,12 @@ import org.firstinspires.ftc.teamcode.MecanumDrive.Nightcall;
 import org.firstinspires.ftc.teamcode.Outtake.PushServo;
 import org.firstinspires.ftc.teamcode.Outtake.Turret;
 import org.firstinspires.ftc.teamcode.Outtake.TurretLocalization;
+import org.firstinspires.ftc.teamcode.Sensor.Balls;
+import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
+import org.firstinspires.ftc.teamcode.Sensor.Limelight;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
+import java.util.ArrayList;
 
 /**
  * Base template for all autonomous OpModes.
@@ -25,6 +30,10 @@ public abstract class AutonTemplate extends OpMode {
     protected Spinner spinner;
     protected Nightcall nightcall;
     protected TurretLocalization turretLocalization;
+    protected Balls balls;
+    protected Colorsensor colorsensor;
+    protected Limelight limelight;
+    protected ArrayList<Integer> motif;
 
     /**
      * Set the current path state and reset the path timer
@@ -61,11 +70,31 @@ public abstract class AutonTemplate extends OpMode {
     }
 
     protected void autonShoot2() {
+        boolean giveUp = false;
         turret.startOuttake();
         for (int i = 0; i < 3; i++) {
-            turretLocalization.setPos(i);
+            int currentPos = 0;
+            if(!giveUp) {
+                for (int j = 0; j < 3; j++) {
+                    turretLocalization.setPos(j);
+                    wait(0.2);
+                    if(balls.getMotif(i)==colorsensor.getColorVal()){
+                        currentPos = j;
+                        break;
+                    }else{
+                        if(j == 2) {
+                            giveUp = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(giveUp){
+                turretLocalization.setPos(i);
+            }
             wait(1.0);
-            if(turret.getTurretVelocity() == 0.6) {pushServo.propel(i);}
+            if(turret.getTurretVelocity() == 0.6 && !giveUp) {pushServo.propel(currentPos);}
+            if(turret.getTurretVelocity() == 0.6 && giveUp){pushServo.propel(i);}
             wait(0.5);
             pushServo.retract(i);
         }
@@ -111,11 +140,16 @@ public abstract class AutonTemplate extends OpMode {
         turretLocalization = new TurretLocalization();
         nightcall = new Nightcall();
         pushServo = new PushServo();
+        balls = new Balls();
+        limelight = new Limelight();
+        colorsensor = new Colorsensor();
         nightcall.initialize(hardwareMap);
         spinner.initSpinner(hardwareMap);
         pushServo.initPushServos(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
         turret.initTurret(hardwareMap);
+        limelight.initLimelight(hardwareMap);
+        colorsensor.initColorSensor(hardwareMap);
         buildPaths();
     }
 

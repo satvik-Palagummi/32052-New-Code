@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Outtake.PushServo;
 import org.firstinspires.ftc.teamcode.Outtake.Turret;
 import org.firstinspires.ftc.teamcode.Outtake.TurretLocalization;
 import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
+import org.firstinspires.ftc.teamcode.Sensor.Limelight;
 
 @TeleOp
 public class Frankenstein extends LinearOpMode {
@@ -20,6 +21,7 @@ public class Frankenstein extends LinearOpMode {
     private final TurretLocalization turretLocalization = new TurretLocalization();
     private final Spinner spinner = new Spinner();
     private final PushServo pushServo = new PushServo();
+    private final Limelight limelight = new Limelight();
     private final Colorsensor colorsensor = new Colorsensor();
     private final Balls balls = new Balls();
     private ElapsedTime time = new ElapsedTime();
@@ -107,6 +109,10 @@ public class Frankenstein extends LinearOpMode {
         if(gamepad2.rightStickButtonWasPressed()){
             turret.setPower(turret.getTurretPower()+0.05);
         }
+        if(gamepad1.cross){
+            limelight.scanMotif();
+            balls.setMotif();
+        }
     }
     public void handleLocalization(){
         /*if(gamepad1.right_bumper){
@@ -169,6 +175,7 @@ public class Frankenstein extends LinearOpMode {
         addTelemetry("Turret Velocity", turret.getTurretVelocity());
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
+        addTelemetry("April Tag ID: ", Limelight.detectedTagId);
         telemetry.update();
     }
     public void addTelemetry(String value, int position){

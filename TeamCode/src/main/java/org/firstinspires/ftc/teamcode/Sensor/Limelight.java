@@ -17,7 +17,7 @@ public class Limelight{
     private LLResult result;
     private boolean limelightIsOff;
     private boolean motifDetected;
-    private static int detectedTagId;
+    public static int detectedTagId;
     public void initLimelight(HardwareMap hweM){
         limelight = hweM.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(0);
@@ -28,8 +28,8 @@ public class Limelight{
             result = limelight.getLatestResult();
         }
     }
-    public int scanMotif(){
-        if(result != null || result.isValid()) {
+    public void scanMotif(){
+        if(result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
             for (int ID = 21; ID <= 23; ID++) {
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
@@ -39,12 +39,10 @@ public class Limelight{
                         motifDetected = true;
                         limelightIsOff = true;
                         setLimelightMode(LimelightMode.GOAL_TAG);
-                        return ID;
                     }
                 }
             }
         }
-        return -1;
     }
     public void setLimelightMode(LimelightMode newMode){
         currentMode = newMode;

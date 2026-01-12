@@ -14,6 +14,9 @@ public class Colorsensor {
     public void initColorSensor(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(ColorSensor.class, "color_sensor");
     }
+    public int getColorVal(){
+        return 0;
+    }
     public String getColorDataString(){
 
         return "red = [" + colorSensor.red() + "] green = [ "+ colorSensor.green() + "] blue = [ "+ colorSensor.blue() + "]";

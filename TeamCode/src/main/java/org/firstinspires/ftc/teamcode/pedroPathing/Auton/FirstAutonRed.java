@@ -18,6 +18,7 @@ public class FirstAutonRed extends AutonTemplate {
         //DRIVE > MOVEMENT STATE
         //SHOOT > ATTEMPT TO SCORE THE ARTIFACT
         STARTPOS,
+        SCANPOSE,
         SHOOTING,
         SHOOT1_SHOOT2,
         SHOOT2_SHOOT3,
@@ -28,7 +29,7 @@ public class FirstAutonRed extends AutonTemplate {
     PathState pathState;
 
     private final Pose startPose = new Pose(122.5,123.5, Math.toRadians(-51));
-
+    private final Pose scanPose = new Pose(90, 121, Math.toRadians(35));
     private final Pose shootPose = new Pose(83,83.5, Math.toRadians(-40));
     private final Pose BallsRowAiming1 = new Pose(100,83.5, Math.toRadians(0));
     private final Pose grabBalls1 = new Pose(130,83.5, Math.toRadians(0));
@@ -39,7 +40,7 @@ public class FirstAutonRed extends AutonTemplate {
     private boolean firstGrab = false;
     private boolean secondGrab = false;
     private boolean thirdGrab = false;
-    private PathChain StartToShoot,
+    private PathChain StartToScan,
             ShootPose,
             ShootPos1To2,
             ShootPos2To3,
@@ -50,9 +51,13 @@ public class FirstAutonRed extends AutonTemplate {
 
     public void buildPaths(){
 
-        StartToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+        StartToScan = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, scanPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
+                .build();
+        ShootPose = follower.pathBuilder()
+                .addPath(new BezierLine(scanPose, shootPose))
+                .setLinearHeadingInterpolation(scanPose.getHeading(), shootPose.getHeading())
                 .build();
         /*ShootPos1To2 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPosePos1, shootPosePos2))
@@ -124,8 +129,16 @@ public class FirstAutonRed extends AutonTemplate {
 
         switch(pathState){
             case STARTPOS:
-                follower.followPath(StartToShoot, true);
-                setPathState(PathState.SHOOTING);//Resets timer & makes new state
+                follower.followPath(StartToScan, true);
+                setPathState(PathState.SCANPOSE);//Resets timer & makes new state
+                break;
+            case SCANPOSE:
+                if(!follower.isBusy()) {
+                    limelight.scanMotif();
+                    balls.setMotif();
+                    follower.followPath(ShootPose, true);
+                    setPathState(PathState.SHOOTING);
+                }
                 break;
             case SHOOTING:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2)
