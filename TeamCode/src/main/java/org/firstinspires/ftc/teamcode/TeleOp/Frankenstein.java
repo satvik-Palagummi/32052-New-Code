@@ -4,13 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Intake.Ball;
+import org.firstinspires.ftc.teamcode.Sensor.Balls;
 import org.firstinspires.ftc.teamcode.Intake.Spinner;
 import org.firstinspires.ftc.teamcode.MecanumDrive.Nightcall;
 import org.firstinspires.ftc.teamcode.Outtake.PushServo;
 import org.firstinspires.ftc.teamcode.Outtake.Turret;
 import org.firstinspires.ftc.teamcode.Outtake.TurretLocalization;
-import org.firstinspires.ftc.teamcode.Sensor.ColorSensor;
+import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
 
 @TeleOp
 public class Frankenstein extends LinearOpMode {
@@ -20,6 +20,8 @@ public class Frankenstein extends LinearOpMode {
     private final TurretLocalization turretLocalization = new TurretLocalization();
     private final Spinner spinner = new Spinner();
     private final PushServo pushServo = new PushServo();
+    private final Colorsensor colorsensor = new Colorsensor();
+    private final Balls balls = new Balls();
     private ElapsedTime time = new ElapsedTime();
     private int shootingPos = 0;
     private double endGameStart;
@@ -100,10 +102,10 @@ public class Frankenstein extends LinearOpMode {
             turret.setPower(0.7);
         }
         if(gamepad2.leftStickButtonWasPressed()){
-            turret.setPower(turret.getTurret()-0.05);
+            turret.setPower(turret.getTurretPower()-0.05);
         }
         if(gamepad2.rightStickButtonWasPressed()){
-            turret.setPower(turret.getTurret()+0.05);
+            turret.setPower(turret.getTurretPower()+0.05);
         }
     }
     public void handleLocalization(){
@@ -151,6 +153,9 @@ public class Frankenstein extends LinearOpMode {
             pushServo.retract(1);
         }
     }
+    public void handleColorSensor(){
+
+    }
     public void handleIntake(){
         if(gamepad1.square) {
             spinner.startIntake();
@@ -160,7 +165,8 @@ public class Frankenstein extends LinearOpMode {
     }
     private void displayTelemetry() {
         addTelemetry("Turret Position", turretLocalization.getTurretPos());
-        addTelemetry("Is Shooting", turret.getTurret());
+        addTelemetry("Is Shooting", turret.getTurretPower());
+        addTelemetry("Turret Velocity", turret.getTurretVelocity());
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
         telemetry.update();

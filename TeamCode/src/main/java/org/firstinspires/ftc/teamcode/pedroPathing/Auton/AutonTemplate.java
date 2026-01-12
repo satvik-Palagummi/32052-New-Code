@@ -49,22 +49,24 @@ public abstract class AutonTemplate extends OpMode {
      */
     protected void autonShoot(int i) {
         turret.startOuttake();
-        wait(.3);
+        wait(0.1);
         turretLocalization.setPos(i);
-        wait(2.0);
-        pushServo.propel(i);
         wait(1.0);
+        if(turret.getTurretVelocity() == 0.6) {pushServo.propel(i);}
+        wait(0.5);
         pushServo.retract(i);
+        if(i==2){
+            turret.stopOuttake();
+        }
     }
 
     protected void autonShoot2() {
         turret.startOuttake();
         for (int i = 0; i < 3; i++) {
-            wait(.3);
             turretLocalization.setPos(i);
-            wait(1.5);
-            pushServo.propel(i);
             wait(1.0);
+            if(turret.getTurretVelocity() == 0.6) {pushServo.propel(i);}
+            wait(0.5);
             pushServo.retract(i);
         }
         turret.stopOuttake();
@@ -132,7 +134,7 @@ public abstract class AutonTemplate extends OpMode {
         statePathUpdate();
 
         // Common telemetry
-        telemetry.addData("Shooter Power", turret.getTurret());
+        telemetry.addData("Shooter Power", turret.getTurretPower());
         telemetry.update();
         /*
         shooter.periodic();

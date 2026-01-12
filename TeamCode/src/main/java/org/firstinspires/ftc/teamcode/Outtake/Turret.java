@@ -7,22 +7,22 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Turret {
     double speed = 0.64;
-    private DcMotor spinner;
+    private DcMotorEx turret;
     public void initTurret(HardwareMap hw) {
-        spinner = hw.get(DcMotor.class, "Turret");
-        spinner.setDirection(DcMotor.Direction.FORWARD);
+        turret = hw.get(DcMotorEx.class, "Turret");
+        turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turret.setDirection(DcMotorEx.Direction.FORWARD);
     }
     public void startOuttake(){
-        spinner.setPower(speed);
+        turret.setPower(speed);
     }
     public void setPower(double sped){
         speed = sped;
     }
-    public double getTurret(){
-        return spinner.getPower();
-    }
+    public double getTurretPower(){return turret.getPower();}
+    public double getTurretVelocity(){return turret.getVelocity();}
     public void stopOuttake(){
-        spinner.setPower(0);
+        turret.setPower(0);
     }
 
 }

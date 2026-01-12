@@ -161,8 +161,7 @@ public class FirstAuton extends AutonTemplate {
                 break;
                 */
             case SHOOT_PRELOAD1:
-                //add logic to turret
-                //check if follower is down with it's path.
+                //Aiming at First Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>9){
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing1, true);
@@ -171,6 +170,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case SHOOT_PRELOAD2:
+                //Aiming at Second Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>9){
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing2, true);
@@ -179,6 +179,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case SHOOT_PRELOAD3:
+                //Aiming at Third Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>9){
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing3,true);
@@ -187,6 +188,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case BALLROW_GRABBING1:
+                //Grabbing First Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     stopAutonIntake();
                     follower.followPath(GrabbingReversal1, true);
@@ -195,6 +197,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case BALLROW_GRABBING2:
+                //Grabbing Second Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     stopAutonIntake();
                     follower.followPath(GrabbingReversal2, true);
@@ -203,6 +206,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case BALLROW_GRABBING3:
+                //Grabbing Third Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     stopAutonIntake();
                     follower.followPath(GrabbingReversal3, true);
@@ -211,6 +215,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case GRABBING_REVERSAL1:
+                //Return To The Pose Where It was Aiming Towards the Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
                     follower.followPath(ReversaltoAiming1, true);
                     setPathState(PathState.SHOOTING);
@@ -219,6 +224,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case GRABBING_REVERSAL2:
+                //Return To The Pose Where It was Aiming Towards the Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
                     follower.followPath(ReversaltoAiming2, true);
                     setPathState(PathState.SHOOTING);
@@ -227,6 +233,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case GRABBING_REVERSAL3:
+                //Return To The Pose Where It was Aiming Towards the Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
                     follower.followPath(ReversaltoAiming3, true);
                     setPathState(PathState.SHOOTING);
