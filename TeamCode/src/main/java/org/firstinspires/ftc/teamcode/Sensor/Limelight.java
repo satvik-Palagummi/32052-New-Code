@@ -26,6 +26,10 @@ public class Limelight{
 
     public void updateLimelight(){
         if(limelight != null){
+            if(limelightIsOff){
+                limelight.start();
+                limelightIsOff = !limelightIsOff;
+            }
             result = limelight.getLatestResult();
         }
     }
@@ -48,6 +52,8 @@ public class Limelight{
     public void scanGoal(){
         if(result != null && result.isValid()){
             setTa(result.getTa());
+            limelight.stop();
+            limelightIsOff = true;
         }
     }
     public void setTa(double ta){
@@ -58,7 +64,7 @@ public class Limelight{
     }
     public double getDistance(double ta){
         double scale = 30665.95;
-        return (scale*(ta*ta));
+        return (Math.pow((scale/ta),0.5));
     }
     public void setLimelightMode(LimelightMode newMode){
         currentMode = newMode;
