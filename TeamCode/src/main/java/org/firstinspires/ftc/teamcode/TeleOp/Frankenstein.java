@@ -53,6 +53,7 @@ public class Frankenstein extends LinearOpMode {
         turret.initTurret(hardwareMap);
         pushServo.initPushServos(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
+        colorsensor.initColorSensor(hardwareMap);
     }
 
     public void handleDriving(){
@@ -90,26 +91,20 @@ public class Frankenstein extends LinearOpMode {
             pushServo.retract(shootingPos);
         }
         if(gamepad2.right_trigger>0.1){
-            turret.startOuttake();
+            //limelight.updateLimelight();
+            //limelight.scanGoal();
+            if(limelight.getDistance(limelight.getTa()) < 365 && limelight.getDistance(limelight.getTa())>300) {
+                turret.setPower(1640);
+                turret.startOuttake();
+            }else{
+                turret.setPower(1420);
+                turret.startOuttake();
+            }
         }else{
             turret.stopOuttake();
         }
-        if(gamepad2.x){
-            turret.setPower(0.3);
-        }
-        if(gamepad2.y){
-            turret.setPower(0.4);
-        }
-        if(gamepad2.b){
-            turret.setPower(0.7);
-        }
-        if(gamepad2.leftStickButtonWasPressed()){
-            turret.setPower(turret.getTurretPower()-0.05);
-        }
-        if(gamepad2.rightStickButtonWasPressed()){
-            turret.setPower(turret.getTurretPower()+0.05);
-        }
         if(gamepad1.cross){
+            limelight.updateLimelight();
             limelight.scanMotif();
             balls.setMotif();
         }
@@ -176,6 +171,9 @@ public class Frankenstein extends LinearOpMode {
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
         addTelemetry("April Tag ID: ", Limelight.detectedTagId);
+        addTelemetry("red = ", colorsensor.getRed());
+        addTelemetry("blue = ",  colorsensor.getBlue());
+        addTelemetry("green = ", colorsensor.getGreen());
         telemetry.update();
     }
     public void addTelemetry(String value, int position){

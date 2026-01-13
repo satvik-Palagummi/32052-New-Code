@@ -28,9 +28,9 @@ public class FirstAutonRed extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(122.5,123.5, Math.toRadians(-51));
-    private final Pose scanPose = new Pose(90, 121, Math.toRadians(35));
-    private final Pose shootPose = new Pose(83,83.5, Math.toRadians(-40));
+    private final Pose startPose = new Pose(124,125, Math.toRadians(-54));
+    private final Pose scanPose = new Pose(90, 121, Math.toRadians(30));
+    private final Pose shootPose = new Pose(83,83.5, Math.toRadians(-43));
     private final Pose BallsRowAiming1 = new Pose(100,83.5, Math.toRadians(0));
     private final Pose grabBalls1 = new Pose(130,83.5, Math.toRadians(0));
     private final Pose BallsRowAiming2 = new Pose(83, 60,Math.toRadians(0));
@@ -50,7 +50,6 @@ public class FirstAutonRed extends AutonTemplate {
 
 
     public void buildPaths(){
-
         StartToScan = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scanPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
@@ -126,22 +125,23 @@ public class FirstAutonRed extends AutonTemplate {
     }
 
     public void statePathUpdate(){
-
         switch(pathState){
             case STARTPOS:
+                follower.setStartingPose(startPose);
                 follower.followPath(StartToScan, true);
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
             case SCANPOSE:
-                if(!follower.isBusy()) {
-                    limelight.scanMotif();
-                    balls.setMotif();
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>4) {
+                    //limelight.updateLimelight();
+                    //limelight.scanMotif();
+                    //balls.setMotif();
                     follower.followPath(ShootPose, true);
                     setPathState(PathState.SHOOTING);
                 }
                 break;
             case SHOOTING:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>13)
                 {
                     autonShoot2();
                     if(!firstGrab) {
@@ -179,7 +179,7 @@ public class FirstAutonRed extends AutonTemplate {
             case SHOOT_PRELOAD1:
                 //add logic to turret
                 //check if follower is down with it's path.
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>9){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing1, true);
                     setPathState(PathState.BALLROW_GRABBING1);
@@ -187,7 +187,7 @@ public class FirstAutonRed extends AutonTemplate {
                 }
                 break;
             case SHOOT_PRELOAD2:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>9){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>4){
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing2, true);
                     setPathState(PathState.BALLROW_GRABBING2);
@@ -195,7 +195,7 @@ public class FirstAutonRed extends AutonTemplate {
                 }
                 break;
             case SHOOT_PRELOAD3:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>9){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>4){
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing3,true);
                     setPathState(PathState.BALLROW_GRABBING3);
@@ -286,6 +286,8 @@ public class FirstAutonRed extends AutonTemplate {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("Blue: ", colorsensor.getBlue());
+        telemetry.addData("Green: ", colorsensor.getGreen());
         telemetry.update();
 
     }

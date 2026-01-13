@@ -18,9 +18,10 @@ public class Limelight{
     private boolean limelightIsOff;
     private boolean motifDetected;
     public static int detectedTagId;
+    private double ta;
     public void initLimelight(HardwareMap hweM){
-        limelight = hweM.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
+        limelight = hweM.get(Limelight3A.class, "Lemon Lamp");
+        limelight.pipelineSwitch(8);
     }
 
     public void updateLimelight(){
@@ -43,6 +44,21 @@ public class Limelight{
                 }
             }
         }
+    }
+    public void scanGoal(){
+        if(result != null && result.isValid()){
+            setTa(result.getTa());
+        }
+    }
+    public void setTa(double ta){
+        this.ta = ta;
+    }
+    public double getTa(){
+        return ta;
+    }
+    public double getDistance(double ta){
+        double scale = 30665.95;
+        return (scale*(ta*ta));
     }
     public void setLimelightMode(LimelightMode newMode){
         currentMode = newMode;

@@ -21,9 +21,9 @@ public class AutonFarBlue extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(84,8, Math.toRadians(90));
+    private final Pose startPose = new Pose(84,8, Math.toRadians(0));
 
-    private final Pose shootPose = new Pose(84,28, Math.toRadians(-31.5));
+    private final Pose shootPose = new Pose(84,10, Math.toRadians(19));
     private final Pose BallsRowAiming1 = new Pose(50,83.5, Math.toRadians(0));
     private final Pose grabFirstBalls = new Pose(16,83.5, Math.toRadians(0));
     private boolean firstGrab = false;
@@ -93,7 +93,7 @@ public class AutonFarBlue extends AutonTemplate {
             case STARTPOS_SHOOTPOS:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
                 {
-                    autonShoot2();
+                    autonShoot2_5();
                     if(!firstGrab) {
                         follower.followPath(shootToBallAiming1, true);
                         setPathState(PathState.SHOOT_PRELOAD);

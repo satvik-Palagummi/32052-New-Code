@@ -60,16 +60,45 @@ public abstract class AutonTemplate extends OpMode {
         turret.startOuttake();
         wait(0.1);
         turretLocalization.setPos(i);
-        wait(1.0);
-        if(turret.getTurretVelocity() == 0.6) {pushServo.propel(i);}
+        wait(0.1);
+        if(turret.getTurretVelocity() == 1420) {pushServo.propel(i);}
         wait(0.5);
         pushServo.retract(i);
         if(i==2){
             turret.stopOuttake();
         }
     }
-
     protected void autonShoot2() {
+        for(int i = 0; i<3; i++){
+            turret.startOuttake();
+            wait(0.5);
+            turretLocalization.setPos(i);
+            wait(1.0);
+            if(turret.getTurretVelocity() == 1420) {pushServo.propel(i);}
+            wait(2.0);
+            pushServo.retract(i);
+            if(i==2){
+                turret.stopOuttake();
+            }
+        }
+    }
+    protected void autonShoot2_5() {
+        for(int i = 0; i<3; i++){
+            turret.startOuttake();
+            wait(0.5);
+            turretLocalization.setPos(i);
+            wait(1.0);
+            if(turret.getTurretVelocity() == 1640) {pushServo.propel(i);}
+            wait(2.0);
+            pushServo.retract(i);
+            if(i==2){
+                turret.stopOuttake();
+            }
+        }
+    }
+
+
+    protected void autonShoot3() {
         boolean giveUp = false;
         turret.startOuttake();
         for (int i = 0; i < 3; i++) {
@@ -77,13 +106,14 @@ public abstract class AutonTemplate extends OpMode {
             if(!giveUp) {
                 for (int j = 0; j < 3; j++) {
                     turretLocalization.setPos(j);
-                    wait(0.2);
+                    wait(2.0);
                     if(balls.getMotif(i)==colorsensor.getColorVal()){
                         currentPos = j;
                         break;
                     }else{
                         if(j == 2) {
-                            giveUp = true;
+                            giveUp = true
+                            ;
                             break;
                         }
                     }
@@ -93,8 +123,41 @@ public abstract class AutonTemplate extends OpMode {
                 turretLocalization.setPos(i);
             }
             wait(1.0);
-            if(turret.getTurretVelocity() == 0.6 && !giveUp) {pushServo.propel(currentPos);}
-            if(turret.getTurretVelocity() == 0.6 && giveUp){pushServo.propel(i);}
+            if(turret.getTurretVelocity() == 1420&& !giveUp) {pushServo.propel(currentPos);}
+            if(turret.getTurretVelocity() == 1420 && giveUp){pushServo.propel(i);}
+            wait(0.5);
+            pushServo.retract(i);
+        }
+        turret.stopOuttake();
+    }
+    protected void autonShoot3_5() {
+        boolean giveUp = false;
+        turret.setPower(1640);
+        turret.startOuttake();
+        for (int i = 0; i < 3; i++) {
+            int currentPos = 0;
+            if(!giveUp) {
+                for (int j = 0; j < 3; j++) {
+                    turretLocalization.setPos(j);
+                    wait(2.0);
+                    if(balls.getMotif(i)==colorsensor.getColorVal()){
+                        currentPos = j;
+                        break;
+                    }else{
+                        if(j == 2) {
+                            giveUp = true
+                            ;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(giveUp){
+                turretLocalization.setPos(i);
+            }
+            wait(1.0);
+            if(turret.getTurretVelocity() == 1640&& !giveUp) {pushServo.propel(currentPos);}
+            if(turret.getTurretVelocity() == 1640 && giveUp){pushServo.propel(i);}
             wait(0.5);
             pushServo.retract(i);
         }
@@ -129,12 +192,7 @@ public abstract class AutonTemplate extends OpMode {
         opModeTimer = new Timer();
         opModeTimer.resetTimer();
         actionTimer = new Timer();
-
-
         follower = Constants.createFollower(hardwareMap);
-
-
-
         turret = new Turret();
         spinner = new Spinner();
         turretLocalization = new TurretLocalization();
@@ -168,7 +226,7 @@ public abstract class AutonTemplate extends OpMode {
         statePathUpdate();
 
         // Common telemetry
-        telemetry.addData("Shooter Power", turret.getTurretPower());
+        telemetry.addData("Shooter Velocity", turret.getTurretVelocity());
         telemetry.update();
         /*
         shooter.periodic();
