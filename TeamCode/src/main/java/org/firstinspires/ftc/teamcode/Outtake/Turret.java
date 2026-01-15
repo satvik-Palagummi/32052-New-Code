@@ -16,6 +16,7 @@ public class Turret {
     public void startOuttake(){
         turret.setVelocity(speed);
     }
+
     public void setPower(double sped){
         speed = sped;
     }

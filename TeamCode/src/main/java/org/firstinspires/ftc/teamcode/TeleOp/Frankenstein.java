@@ -21,9 +21,9 @@ public class Frankenstein extends LinearOpMode {
     private final TurretLocalization turretLocalization = new TurretLocalization();
     private final Spinner spinner = new Spinner();
     private final PushServo pushServo = new PushServo();
-    private final Limelight limelight = new Limelight();
-    private final Colorsensor colorsensor = new Colorsensor();
-    private final Balls balls = new Balls();
+    //private final Limelight limelight = new Limelight();
+    //private final Colorsensor colorsensor = new Colorsensor();
+    //private final Balls balls = new Balls();
     private ElapsedTime time = new ElapsedTime();
     private int shootingPos = 0;
     private double endGameStart;
@@ -53,7 +53,7 @@ public class Frankenstein extends LinearOpMode {
         turret.initTurret(hardwareMap);
         pushServo.initPushServos(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
-        colorsensor.initColorSensor(hardwareMap);
+        //colorsensor.initColorSensor(hardwareMap);
     }
 
     public void handleDriving(){
@@ -93,20 +93,29 @@ public class Frankenstein extends LinearOpMode {
         if(gamepad2.right_trigger>0.1){
             //limelight.updateLimelight();
             //limelight.scanGoal();
-            if(limelight.getDistance(limelight.getTa()) < 365 && limelight.getDistance(limelight.getTa())>300) {
+            /*if(limelight.getDistance(limelight.getTa()) < 365 && limelight.getDistance(limelight.getTa())>300) {
                 turret.setPower(1640);
                 turret.startOuttake();
             }else{
                 turret.setPower(1420);
                 turret.startOuttake();
             }
+             */
+            turret.startOuttake();
         }else{
             turret.stopOuttake();
         }
         if(gamepad1.cross){
-            limelight.updateLimelight();
+            /*limelight.updateLimelight();
             limelight.scanMotif();
             balls.setMotif();
+             */
+        }
+        if(gamepad2.y){
+            turret.setPower(1420);
+        }
+        if(gamepad2.a){
+            turret.setPower(1640);
         }
     }
     public void handleLocalization(){
@@ -170,10 +179,13 @@ public class Frankenstein extends LinearOpMode {
         addTelemetry("Turret Velocity", turret.getTurretVelocity());
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
-        addTelemetry("April Tag ID: ", Limelight.detectedTagId);
-        addTelemetry("red = ", colorsensor.getRed());
+        //addTelemetry("April Tag ID: ", Limelight.detectedTagId);
+        /*addTelemetry("red = ", colorsensor.getRed());
         addTelemetry("blue = ",  colorsensor.getBlue());
         addTelemetry("green = ", colorsensor.getGreen());
+
+         */
+        //telemetry.addData("Motif: ", balls.getFullMotif());
         telemetry.update();
     }
     public void addTelemetry(String value, int position){

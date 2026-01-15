@@ -127,7 +127,6 @@ public class FirstAutonRed extends AutonTemplate {
     public void statePathUpdate(){
         switch(pathState){
             case STARTPOS:
-                follower.setStartingPose(startPose);
                 follower.followPath(StartToScan, true);
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
@@ -288,6 +287,7 @@ public class FirstAutonRed extends AutonTemplate {
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("Blue: ", colorsensor.getBlue());
         telemetry.addData("Green: ", colorsensor.getGreen());
+        telemetry.addData("Motif: ", balls.getFullMotif());
         telemetry.update();
 
     }
