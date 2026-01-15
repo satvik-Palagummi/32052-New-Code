@@ -293,6 +293,7 @@ public class FirstAuton extends AutonTemplate {
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("Blue: ", colorsensor.getBlue());
         telemetry.addData("Green: ", colorsensor.getGreen());
+        telemetry.addData("Motif: ", balls.getFullMotif());
         telemetry.update();
 
     }
