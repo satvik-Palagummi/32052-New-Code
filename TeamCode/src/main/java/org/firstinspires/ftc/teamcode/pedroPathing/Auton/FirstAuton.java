@@ -129,22 +129,21 @@ public class FirstAuton extends AutonTemplate {
 
         switch(pathState){
             case STARTPOS:
+                scanBalls();
                 follower.followPath(StartToScan, true);
                 setPathState(PathState.SCANPOS);//Resets timer & makes new state
                 break;
             case SCANPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>4) {
-                    //limelight.updateLimelight();
-                    //limelight.scanMotif();
-                    //balls.setMotif();
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>10) {
+                    scan();
                     follower.followPath(ShootPose, true);
                     setPathState(PathState.SHOOTING);
                 }
                 break;
             case SHOOTING:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>13)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
                 {
-                    autonShoot2();
+                    autonShoot3();
                     if(!firstGrab) {
                         follower.followPath(shootToBallAiming1, true);
                         setPathState(PathState.SHOOT_PRELOAD1);
@@ -205,6 +204,7 @@ public class FirstAuton extends AutonTemplate {
                 //Grabbing First Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     stopAutonIntake();
+                    scanBalls();
                     follower.followPath(GrabbingReversal1, true);
                     setPathState(PathState.GRABBING_REVERSAL1);
                     telemetry.addLine("Done Grabbing");
@@ -214,6 +214,7 @@ public class FirstAuton extends AutonTemplate {
                 //Grabbing Second Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     stopAutonIntake();
+                    scanBalls();
                     follower.followPath(GrabbingReversal2, true);
                     setPathState(PathState.GRABBING_REVERSAL2);
                     telemetry.addLine("Done Grabbing");
@@ -223,6 +224,7 @@ public class FirstAuton extends AutonTemplate {
                 //Grabbing Third Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     stopAutonIntake();
+                    scanBalls();
                     follower.followPath(GrabbingReversal3, true);
                     setPathState(PathState.GRABBING_REVERSAL3);
                     telemetry.addLine("Done Grabbing");
@@ -294,6 +296,8 @@ public class FirstAuton extends AutonTemplate {
         telemetry.addData("Blue: ", colorsensor.getBlue());
         telemetry.addData("Green: ", colorsensor.getGreen());
         telemetry.addData("Motif: ", balls.getFullMotif());
+        telemetry.addData("Current Balls ", balls.getCurrentBalls());
+        telemetry.addData("Sorted balls ", balls.sortBalls());
         telemetry.update();
 
     }

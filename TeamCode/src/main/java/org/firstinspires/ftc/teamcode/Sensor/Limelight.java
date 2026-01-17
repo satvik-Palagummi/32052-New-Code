@@ -37,13 +37,16 @@ public class Limelight{
         if(result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
             for (int ID = 21; ID <= 23; ID++) {
-                for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    if (fr.getFiducialId() == ID) {
-                        limelight.stop();
-                        detectedTagId = ID;
-                        motifDetected = true;
-                        limelightIsOff = true;
-                        setLimelightMode(LimelightMode.GOAL_TAG);
+                if (!motifDetected) {
+                    for (LLResultTypes.FiducialResult fr : fiducialResults) {
+                        if (fr.getFiducialId() == ID) {
+                            limelight.stop();
+                            detectedTagId = ID;
+                            motifDetected = true;
+                            limelightIsOff = true;
+                            setLimelightMode(LimelightMode.GOAL_TAG);
+                            break;
+                        }
                     }
                 }
             }

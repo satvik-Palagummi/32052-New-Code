@@ -33,7 +33,7 @@ public abstract class AutonTemplate extends OpMode {
     protected Balls balls;
     protected Colorsensor colorsensor;
     protected Limelight limelight;
-    protected ArrayList<Integer> motif;
+    protected int[] sorted;
 
     /**
      * Set the current path state and reset the path timer
@@ -52,6 +52,21 @@ public abstract class AutonTemplate extends OpMode {
             telemetry.update();
         }
     }
+    protected void scanBalls(){
+        int[] current = new int[3];
+        for(int i = 0; i<3; i++){
+            wait(0.3);
+            turretLocalization.setPos(i);
+            wait(2.0);
+            current[i] = colorsensor.getColorVal();
+        }
+        balls.setCurrent(current);
+    }
+    protected void scan(){
+        limelight.updateLimelight();
+        limelight.scanMotif();
+        balls.setMotif();
+    }
 
     /**
      * Execute autonomous shooting sequence (3 balls)
@@ -60,7 +75,7 @@ public abstract class AutonTemplate extends OpMode {
         turret.startOuttake();
         wait(0.1);
         turretLocalization.setPos(i);
-        wait(0.1);
+        wait(2.0);
         if(turret.getTurretVelocity() == 1420) {pushServo.propel(i);}
         wait(0.5);
         pushServo.retract(i);
@@ -99,69 +114,39 @@ public abstract class AutonTemplate extends OpMode {
 
 
     protected void autonShoot3() {
-        boolean giveUp = false;
         turret.startOuttake();
-        for (int i = 0; i < 3; i++) {
-            int currentPos = 0;
-            if(!giveUp) {
-                for (int j = 0; j < 3; j++) {
-                    turretLocalization.setPos(j);
-                    wait(2.0);
-                    if(balls.getMotif(i)==colorsensor.getColorVal()){
-                        currentPos = j;
-                        break;
-                    }else{
-                        if(j == 2) {
-                            giveUp = true
-                            ;
-                            break;
-                        }
-                    }
-                }
-            }
-            if(giveUp){
-                turretLocalization.setPos(i);
-            }
-            wait(1.0);
-            if(turret.getTurretVelocity() == 1420&& !giveUp) {pushServo.propel(currentPos);}
-            if(turret.getTurretVelocity() == 1420 && giveUp){pushServo.propel(i);}
-            wait(0.5);
-            pushServo.retract(i);
+        if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
+            sorted = balls.sortBalls();
         }
-        turret.stopOuttake();
+        for (int i = 0; i < 3; i++) {
+            wait(1.0);
+            turretLocalization.setPos(sorted[i]);
+            wait(2.0);
+            if(turret.getTurretVelocity() == 1420){pushServo.propel(i);}
+            wait(1.5);
+            pushServo.retract(i);
+            if(i==2){
+                turret.stopOuttake();
+            }
+        }
     }
     protected void autonShoot3_5() {
-        boolean giveUp = false;
-        turret.setPower(1640);
         turret.startOuttake();
-        for (int i = 0; i < 3; i++) {
-            int currentPos = 0;
-            if(!giveUp) {
-                for (int j = 0; j < 3; j++) {
-                    turretLocalization.setPos(j);
-                    wait(2.0);
-                    if(balls.getMotif(i)==colorsensor.getColorVal()){
-                        currentPos = j;
-                        break;
-                    }else{
-                        if(j == 2) {
-                            giveUp = true
-                            ;
-                            break;
-                        }
-                    }
-                }
-            }
-            if(giveUp){
-                turretLocalization.setPos(i);
-            }
-            wait(1.0);
-            if(turret.getTurretVelocity() == 1640&& !giveUp) {pushServo.propel(currentPos);}
-            if(turret.getTurretVelocity() == 1640 && giveUp){pushServo.propel(i);}
-            wait(0.5);
-            pushServo.retract(i);
+        turret.setPower(1640);
+        if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
+            sorted = balls.sortBalls();
         }
-        turret.stopOuttake();
+        for (int i = 0; i < 3; i++) {
+            wait(1.0);
+            turretLocalization.setPos(sorted[i]);
+            wait(2.0);
+            if(turret.getTurretVelocity() == 1640){pushServo.propel(i);}
+            wait(1.5);
+            pushServo.retract(i);
+            if(i==2){
+                turret.stopOuttake();
+            }
+        }
     }
 
 
