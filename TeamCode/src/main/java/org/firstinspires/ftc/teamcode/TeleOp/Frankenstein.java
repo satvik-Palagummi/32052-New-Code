@@ -21,9 +21,9 @@ public class Frankenstein extends LinearOpMode {
     private final TurretLocalization turretLocalization = new TurretLocalization();
     private final Spinner spinner = new Spinner();
     private final PushServo pushServo = new PushServo();
-    //private final Limelight limelight = new Limelight();
-    //private final Colorsensor colorsensor = new Colorsensor();
-    //private final Balls balls = new Balls();
+    private final Limelight limelight = new Limelight();
+    private final Colorsensor colorsensor = new Colorsensor();
+    private final Balls balls = new Balls();
     private ElapsedTime time = new ElapsedTime();
     private int shootingPos = 0;
     private double endGameStart;
@@ -53,7 +53,8 @@ public class Frankenstein extends LinearOpMode {
         turret.initTurret(hardwareMap);
         pushServo.initPushServos(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
-        //colorsensor.initColorSensor(hardwareMap);
+        colorsensor.initColorSensor(hardwareMap);
+        limelight.initLimelight(hardwareMap);
     }
 
     public void handleDriving(){
@@ -119,46 +120,19 @@ public class Frankenstein extends LinearOpMode {
         }
     }
     public void handleLocalization(){
-        /*if(gamepad1.right_bumper){
-            if(shootingPos == 0){
-                shootingPos = 1;
-                addTelemetry("Turret Position RNFOR1", shootingPos);
-            }else if(shootingPos == 1){
-                shootingPos = 2;
-                addTelemetry("Turret Position RNFOR2", shootingPos);
-            }
-            turretLocalization.setPos(shootingPos);
-            telemetry.update();
-            while(time.seconds()<5){
-                turret.startOuttake();
-            }
-        }
-        if(gamepad1.left_bumper){
-            if(shootingPos == 2){
-                shootingPos = 1;
-                addTelemetry("Turret Position RNFOR1", shootingPos);
-            }else if(shootingPos == 1){
-                shootingPos = 0;
-                addTelemetry("Turret Position RNFOR0", shootingPos);
-            }
-            turretLocalization.setPos(shootingPos);
-            telemetry.update();
-        }*/
-        if(gamepad2.dpad_left){
-            shootingPos = 0;
-            turretLocalization.setPos(shootingPos);
+        turretLocalization.moveToLeft(gamepad2.dpad_left);
+        turretLocalization.moveToMiddle(gamepad2.dpad_up);
+        turretLocalization.moveToRight(gamepad2.dpad_right);
+        shootingPos = turretLocalization.getTurretPos();
+        if(shootingPos == 0){
             pushServo.retract(1);
             pushServo.retract(2);
         }
-        if(gamepad2.dpad_up){
-            shootingPos = 1;
-            turretLocalization.setPos(shootingPos);
+        if(shootingPos == 1){
             pushServo.retract(0);
             pushServo.retract(2);
         }
-        if(gamepad2.dpad_right){
-            shootingPos = 2;
-            turretLocalization.setPos(shootingPos);
+        if(shootingPos == 2){
             pushServo.retract(0);
             pushServo.retract(1);
         }
@@ -175,16 +149,16 @@ public class Frankenstein extends LinearOpMode {
     }
     private void displayTelemetry() {
         addTelemetry("Turret Position", turretLocalization.getTurretPos());
-        addTelemetry("Is Shooting", turret.getTurretPower());
-        addTelemetry("Turret Velocity", turret.getTurretVelocity());
+        addTelemetry("Is Left Flywheel Motor Shooting", turret.getTurretLPower());
+        addTelemetry("Is Right Flywheel Motor Shooting", turret.getTurretRPower());
+        addTelemetry("TurretL Velocity", turret.getTurretLVelocity());
+        addTelemetry("TurretR Velocity", turret.getTurretRVelocity());
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
-        //addTelemetry("April Tag ID: ", Limelight.detectedTagId);
-        /*addTelemetry("red = ", colorsensor.getRed());
+        addTelemetry("April Tag ID: ", Limelight.detectedTagId);
+        addTelemetry("red = ", colorsensor.getRed());
         addTelemetry("blue = ",  colorsensor.getBlue());
         addTelemetry("green = ", colorsensor.getGreen());
-
-         */
         //telemetry.addData("Motif: ", balls.getFullMotif());
         telemetry.update();
     }

@@ -132,7 +132,8 @@ public class FirstAutonRed extends AutonTemplate {
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
             case SCANPOSE:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>10) {
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>200.
+                ) {
                     scan();
                     follower.followPath(ShootPose, true);
                     setPathState(PathState.SHOOTING);

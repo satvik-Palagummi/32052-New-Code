@@ -8,14 +8,17 @@ public class TurretLocalization {
     private final double posTwo = 0;
     private final double posOne = 0.475;
     private final double posZero = 0.95;
-    private int position;
+    private static int position;
     public void initTurretLocalization(HardwareMap hwM){
         turret = hwM.get(Servo.class, "turretLocalization");
     }
     public void setTurretPos(double pos){
         turret.setPosition(pos);
     }
-    public double getTurretPos(){
+    public void moveToLeft(boolean leftDPad){if(leftDPad){setPos(0);}}
+    public void moveToMiddle(boolean upDPad){if(upDPad){setPos(1);}}
+    public void moveToRight(boolean rightDPad){if(rightDPad){setPos(2);}}
+    public int getTurretPos(){
         return position;
     }
     public void setPos(int num){

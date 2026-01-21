@@ -7,23 +7,32 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Turret {
     double speed = 1420;
-    private DcMotorEx turret;
+    private DcMotorEx turretL;
+    private DcMotorEx turretR;
+
     public void initTurret(HardwareMap hw) {
-        turret = hw.get(DcMotorEx.class, "Turret");
-        turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        turret.setDirection(DcMotorEx.Direction.FORWARD);
+        turretL = hw.get(DcMotorEx.class, "TurretL");
+        turretR = hw.get(DcMotorEx.class, "TurretR");
+        turretL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretL.setDirection(DcMotorEx.Direction.FORWARD);
+        turretR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretR.setDirection(DcMotorEx.Direction.REVERSE);
     }
     public void startOuttake(){
-        turret.setVelocity(speed);
+        turretL.setVelocity(speed);
+        turretR.setVelocity(speed);
     }
 
     public void setPower(double sped){
         speed = sped;
     }
-    public double getTurretPower(){return turret.getPower();}
-    public double getTurretVelocity(){return turret.getVelocity();}
+    public double getTurretLPower(){return turretL.getPower();}
+    public double getTurretRPower(){return turretR.getPower();}
+    public double getTurretLVelocity(){return turretL.getVelocity();}
+    public double getTurretRVelocity(){return turretR.getVelocity();}
     public void stopOuttake(){
-        turret.setPower(0);
+        turretL.setPower(0);
+        turretR.setPower(0);
     }
 
 }
