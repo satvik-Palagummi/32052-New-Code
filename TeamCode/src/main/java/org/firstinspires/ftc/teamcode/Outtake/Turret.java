@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 public class Turret {
     double speed = 1420;
@@ -17,6 +18,9 @@ public class Turret {
         turretL.setDirection(DcMotorEx.Direction.FORWARD);
         turretR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretR.setDirection(DcMotorEx.Direction.REVERSE);
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(130, 0, 0, 11.727);
+        turretL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        turretR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
     }
     public void startOuttake(){
         turretL.setVelocity(speed);

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -15,7 +16,8 @@ import org.firstinspires.ftc.teamcode.Sensor.Limelight;
 
 @TeleOp
 public class Frankenstein extends LinearOpMode {
-
+    private int[] sorted;
+    private int Id;
     private final Nightcall nightcall = new Nightcall();
     private final Turret turret = new Turret();
     private final TurretLocalization turretLocalization = new TurretLocalization();
@@ -92,25 +94,29 @@ public class Frankenstein extends LinearOpMode {
             pushServo.retract(shootingPos);
         }
         if(gamepad2.right_trigger>0.1){
-            //limelight.updateLimelight();
-            //limelight.scanGoal();
-            /*if(limelight.getDistance(limelight.getTa()) < 365 && limelight.getDistance(limelight.getTa())>300) {
-                turret.setPower(1640);
-                turret.startOuttake();
-            }else{
-                turret.setPower(1420);
-                turret.startOuttake();
-            }
-             */
             turret.startOuttake();
         }else{
             turret.stopOuttake();
         }
         if(gamepad1.cross){
-            /*limelight.updateLimelight();
-            limelight.scanMotif();
-            balls.setMotif();
-             */
+            LLResult result = limelight.updateLimelight();
+            Id = limelight.scanMotif(result);
+            balls.setMotif(Id);
+            if(balls.getFullMotif() != null){
+                limelight.stop();
+            }
+        }
+        if(gamepad2.left_bumper){
+            limelight.updateLimelight();
+            limelight.scanGoal();
+            if(limelight.getTx()>0){
+                nightcall.leftOrient();
+            }else if(limelight.getTx()<0){
+                nightcall.rightOrient();
+            }else{
+                nightcall.cutPower();
+                limelight.stop();
+            }
         }
         if(gamepad2.y){
             turret.setPower(1420);
@@ -137,15 +143,8 @@ public class Frankenstein extends LinearOpMode {
             pushServo.retract(1);
         }
     }
-    public void handleColorSensor(){
-
-    }
     public void handleIntake(){
-        if(gamepad1.square) {
-            spinner.startIntake();
-        }else{
-            spinner.stopIntake();
-        }
+        spinner.Intake(gamepad1.square);
     }
     private void displayTelemetry() {
         addTelemetry("Turret Position", turretLocalization.getTurretPos());
@@ -159,6 +158,9 @@ public class Frankenstein extends LinearOpMode {
         addTelemetry("red = ", colorsensor.getRed());
         addTelemetry("blue = ",  colorsensor.getBlue());
         addTelemetry("green = ", colorsensor.getGreen());
+        addTelemetry("Current Balls", balls.getCurrentBalls());
+        addTelemetry("Motif", balls.getFullMotif());
+        addTelemetry("Sorted ", sorted);
         //telemetry.addData("Motif: ", balls.getFullMotif());
         telemetry.update();
     }
@@ -167,6 +169,9 @@ public class Frankenstein extends LinearOpMode {
 
     }
     public void addTelemetry(String value, double num){
+        telemetry.addData(value, num);
+    }
+    public void addTelemetry(String value, int[] num){
         telemetry.addData(value, num);
     }
 

@@ -7,16 +7,16 @@ import java.util.List;
 public class Balls {
     private int[] currentBalls;
     private int[] motif;
-    private final int[] twentyOne = new int[] {0,1,1};
-    private final int[] twentyTwo = new int[] {1,0,1};
-    private final int[] twentyThree = new int[] {1,1,0};
+    private final int[] twentyOne = {0,1,1};
+    private final int[] twentyTwo = {1,0,1};
+    private final int[] twentyThree = {1,1,0};
 
-    public void setMotif(){
-        if(Limelight.detectedTagId == 21) {
+    public void setMotif(int id){
+        if(id == 21) {
             motif = twentyOne;
-        }else if(Limelight.detectedTagId == 22){
+        }else if(id == 22){
             motif = twentyTwo;
-        }else if(Limelight.detectedTagId == 23){
+        }else if(id == 23){
             motif = twentyThree;
         }
     }

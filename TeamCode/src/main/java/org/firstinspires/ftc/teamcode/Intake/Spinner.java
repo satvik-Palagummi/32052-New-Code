@@ -19,6 +19,15 @@ public class Spinner {
         spinnerRight.setPower(speed);
         spinnerLeft.setPower(speed);
     }
+    public void Intake(boolean square){
+        if(square){
+            spinnerLeft.setPower(speed);
+            spinnerRight.setPower(speed);
+        }else{
+            spinnerLeft.setPower(0);
+            spinnerRight.setPower(0);
+        }
+    }
     public double getSpinnerLeft(){
         return spinnerLeft.getPower();
 

@@ -19,51 +19,66 @@ public class Limelight{
     private boolean motifDetected;
     public static int detectedTagId;
     private double ta;
+    private double tx;
     public void initLimelight(HardwareMap hweM){
-        limelight = hweM.get(Limelight3A.class, "Lemon Lamp");
+        limelight = hweM.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(8);
+        limelight.setPollRateHz(40);
+        limelight.start();
+        limelightIsOff = false;
+        result = null;
     }
 
-    public void updateLimelight(){
+    public LLResult updateLimelight(){
         if(limelight != null){
             if(limelightIsOff){
                 limelight.start();
                 limelightIsOff = !limelightIsOff;
             }
             result = limelight.getLatestResult();
+            return result;
         }
+        return null;
     }
-    public void scanMotif(){
+    public int scanMotif(LLResult result){
         if(result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
             for (int ID = 21; ID <= 23; ID++) {
                 if (!motifDetected) {
                     for (LLResultTypes.FiducialResult fr : fiducialResults) {
                         if (fr.getFiducialId() == ID) {
-                            limelight.stop();
                             detectedTagId = ID;
                             motifDetected = true;
-                            limelightIsOff = true;
-                            setLimelightMode(LimelightMode.GOAL_TAG);
-                            break;
+                            return ID;
                         }
                     }
                 }
             }
         }
+        return -1;
     }
     public void scanGoal(){
-        if(result != null && result.isValid()){
+        if(result != null && result.isValid()) {
             setTa(result.getTa());
-            limelight.stop();
-            limelightIsOff = true;
+            setTx(result.getTx());
         }
     }
+    public void stop(){
+        limelight.stop();
+        limelightIsOff = true;
+    }
+
     public void setTa(double ta){
         this.ta = ta;
     }
+    public void setTx(double tx){
+        this.tx = tx;
+    }
     public double getTa(){
         return ta;
+    }
+    public double getTx(){
+        return tx;
     }
     public double getDistance(double ta){
         double scale = 30665.95;
@@ -71,6 +86,9 @@ public class Limelight{
     }
     public void setLimelightMode(LimelightMode newMode){
         currentMode = newMode;
+    }
+    public static int getDetectedTagId(){
+        return detectedTagId;
     }
 
 

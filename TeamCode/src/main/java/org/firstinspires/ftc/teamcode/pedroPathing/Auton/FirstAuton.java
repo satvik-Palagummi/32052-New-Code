@@ -297,7 +297,6 @@ public class FirstAuton extends AutonTemplate {
         telemetry.addData("Green: ", colorsensor.getGreen());
         telemetry.addData("Motif: ", balls.getFullMotif());
         telemetry.addData("Current Balls ", balls.getCurrentBalls());
-        telemetry.addData("Sorted balls ", balls.sortBalls());
         telemetry.update();
 
     }
