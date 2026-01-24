@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Spinner {
-    final double speed = 0.8;
+    final double speed = 1.0;
     private DcMotor spinnerLeft;
     private DcMotor spinnerRight;
     public void initSpinner(HardwareMap hMap) {

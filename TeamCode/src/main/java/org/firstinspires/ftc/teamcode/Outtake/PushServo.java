@@ -19,7 +19,7 @@ public class PushServo {
         if(servoNum == 0){
             push0.setPosition(0.05);
         }else if(servoNum == 1){
-            push1.setPosition(0.6);
+            push1.setPosition(0.65);
         }else if(servoNum == 2){
             push2.setPosition(0.35);
         }

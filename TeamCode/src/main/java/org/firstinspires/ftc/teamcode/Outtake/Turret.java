@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+
 public class Turret {
     double speed = 1420;
     private DcMotorEx turretL;
@@ -18,7 +19,7 @@ public class Turret {
         turretL.setDirection(DcMotorEx.Direction.FORWARD);
         turretR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretR.setDirection(DcMotorEx.Direction.REVERSE);
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(130, 0, 0, 11.727);
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(170, 0, 0, 11.2935);
         turretL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         turretR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
     }

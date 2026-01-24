@@ -20,6 +20,7 @@ public class Limelight{
     public static int detectedTagId;
     private double ta;
     private double tx;
+    private boolean resultWorks;
     public void initLimelight(HardwareMap hweM){
         limelight = hweM.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(8);
@@ -61,11 +62,17 @@ public class Limelight{
         if(result != null && result.isValid()) {
             setTa(result.getTa());
             setTx(result.getTx());
+            resultWorks = true;
+        }else{
+            resultWorks = false;
         }
     }
     public void stop(){
         limelight.stop();
         limelightIsOff = true;
+    }
+    public boolean resultWorks(){
+        return resultWorks;
     }
 
     public void setTa(double ta){

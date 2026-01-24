@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
 import org.firstinspires.ftc.teamcode.Sensor.Limelight;
 
 @TeleOp
-public class Frankenstein extends LinearOpMode {
+public class FrankensteinRed extends LinearOpMode {
     private int[] sorted;
     private int Id;
     private final Nightcall nightcall = new Nightcall();
@@ -106,23 +106,39 @@ public class Frankenstein extends LinearOpMode {
                 limelight.stop();
             }
         }
-        if(gamepad2.left_bumper){
+        if(gamepad1.left_trigger>0.1){
             limelight.updateLimelight();
             limelight.scanGoal();
-            if(limelight.getTx()>0){
+            if(limelight.resultWorks()&& limelight.getTx()>-2.5){
                 nightcall.leftOrient();
-            }else if(limelight.getTx()<0){
+            }else if(limelight.resultWorks() && limelight.getTx()<-3.5){
                 nightcall.rightOrient();
             }else{
                 nightcall.cutPower();
-                limelight.stop();
             }
         }
         if(gamepad2.y){
             turret.setPower(1420);
         }
         if(gamepad2.a){
-            turret.setPower(1640);
+            turret.setPower(1680);
+        }
+        if(gamepad2.optionsWasPressed()){
+            time.reset();
+        }
+        if(gamepad1.rightBumperWasPressed()){
+            turret.startOuttake();
+            for(int i = 0; i<3; i++) {
+                time.reset();
+                turretLocalization.setPos(i);
+                while(time.seconds()<1.0){}
+                pushServo.propel(i);
+                while(time.seconds()<0.5){}
+                pushServo.retract(i);
+                if (i == 2) {
+                    turret.stopOuttake();
+                }
+            }
         }
     }
     public void handleLocalization(){
@@ -155,9 +171,13 @@ public class Frankenstein extends LinearOpMode {
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
         addTelemetry("April Tag ID: ", Limelight.detectedTagId);
+        /*
         addTelemetry("red = ", colorsensor.getRed());
         addTelemetry("blue = ",  colorsensor.getBlue());
         addTelemetry("green = ", colorsensor.getGreen());
+
+         */
+        addTelemetry("Limelight X", limelight.getTx());
         addTelemetry("Current Balls", balls.getCurrentBalls());
         addTelemetry("Motif", balls.getFullMotif());
         addTelemetry("Sorted ", sorted);
