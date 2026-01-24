@@ -50,16 +50,16 @@ public class Nightcall {
         backRightMotor.setPower(0);
     }
     public void leftOrient(){
-        frontLeftMotor.setPower(-0.25);
-        frontRightMotor.setPower(0.25);
-        backLeftMotor.setPower(-0.25);
-        backRightMotor.setPower(0.25);
+        frontLeftMotor.setPower(-0.23);
+        frontRightMotor.setPower(0.23);
+        backLeftMotor.setPower(-0.23);
+        backRightMotor.setPower(0.23);
     }
     public void rightOrient(){
-        frontLeftMotor.setPower(0.25);
-        frontRightMotor.setPower(-0.25);
-        backLeftMotor.setPower(0.25);
-        backRightMotor.setPower(-0.25);
+        frontLeftMotor.setPower(0.23);
+        frontRightMotor.setPower(-0.23);
+        backLeftMotor.setPower(0.23);
+        backRightMotor.setPower(-0.23);
     }
     public void drive (double x, double y, double rx, boolean slow){
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);

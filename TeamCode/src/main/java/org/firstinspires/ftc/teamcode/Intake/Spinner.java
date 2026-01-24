@@ -21,6 +21,8 @@ public class Spinner {
     }
     public void Intake(boolean square){
         if(square){
+            spinnerLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+            spinnerRight.setDirection(DcMotorSimple.Direction.FORWARD);
             spinnerLeft.setPower(speed);
             spinnerRight.setPower(speed);
         }else{
@@ -31,6 +33,12 @@ public class Spinner {
     public double getSpinnerLeft(){
         return spinnerLeft.getPower();
 
+    }
+    public void reverse(){
+        spinnerLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        spinnerRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        spinnerLeft.setPower(speed);
+        spinnerRight.setPower(speed);
     }
     public double getSpinnerRight(){
         return spinnerRight.getPower();

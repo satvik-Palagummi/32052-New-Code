@@ -16,6 +16,18 @@ import org.firstinspires.ftc.teamcode.Sensor.Limelight;
 
 @TeleOp
 public class FrankensteinRed extends LinearOpMode {
+    public enum Position {
+        //START POSITION-END POSITION
+        //DRIVE > MOVEMENT STATE
+        //SHOOT > ATTEMPT TO SCORE THE ARTIFACT
+        FIRSTPOS,
+        SECPOS,
+        THIRDPOS
+    }
+    private double toTheRight = 1.5;
+    private double toTheLeft = -1.5;
+    Position pos;
+    private boolean allThree;
     private int[] sorted;
     private int Id;
     private final Nightcall nightcall = new Nightcall();
@@ -109,9 +121,9 @@ public class FrankensteinRed extends LinearOpMode {
         if(gamepad1.left_trigger>0.1){
             limelight.updateLimelight();
             limelight.scanGoal();
-            if(limelight.resultWorks()&& limelight.getTx()>-2.5){
+            if(limelight.resultWorks()&& limelight.getTx()>toTheRight){
                 nightcall.leftOrient();
-            }else if(limelight.resultWorks() && limelight.getTx()<-3.5){
+            }else if(limelight.resultWorks() && limelight.getTx()<toTheLeft){
                 nightcall.rightOrient();
             }else{
                 nightcall.cutPower();
@@ -119,27 +131,61 @@ public class FrankensteinRed extends LinearOpMode {
         }
         if(gamepad2.y){
             turret.setPower(1420);
+            toTheLeft = -1.5;
+            toTheRight = 1.5;
         }
         if(gamepad2.a){
             turret.setPower(1680);
+            toTheLeft = -4.5;
+            toTheRight = -2.5;
         }
         if(gamepad2.optionsWasPressed()){
             time.reset();
         }
         if(gamepad1.rightBumperWasPressed()){
             turret.startOuttake();
-            for(int i = 0; i<3; i++) {
-                time.reset();
-                turretLocalization.setPos(i);
-                while(time.seconds()<1.0){}
-                pushServo.propel(i);
-                while(time.seconds()<0.5){}
-                pushServo.retract(i);
-                if (i == 2) {
-                    turret.stopOuttake();
-                }
+            allThree = false;
+            time.reset();
+            pos = Position.FIRSTPOS;
+        }
+        if(!allThree){
+            switch(pos) {
+                case FIRSTPOS:
+                    turretLocalization.setPos(0);
+                    if (time.seconds() > 1.0) {
+                        pushServo.propel(0);
+                    }
+                    if(time.seconds()>1.5){
+                        pushServo.retract(0);
+                        setPathState(Position.SECPOS);
+                    }
+                    break;
+                case SECPOS:
+                    turretLocalization.setPos(1);
+                    if (time.seconds() > 1.0) {
+                        pushServo.propel(1);
+                    }
+                    if(time.seconds()>1.5){
+                        pushServo.retract(1);
+                        setPathState(Position.THIRDPOS);
+                    }
+                    break;
+                case THIRDPOS:
+                    turretLocalization.setPos(2);
+                    if (time.seconds() > 1.0) {
+                        pushServo.propel(2);
+                    }
+                    if(time.seconds()>1.5){
+                        pushServo.retract(2);
+                        allThree = true;
+                    }
+                    break;
             }
         }
+    }
+    public void setPathState(FrankensteinRed.Position newState) {
+        pos = newState;
+        time.reset();
     }
     public void handleLocalization(){
         turretLocalization.moveToLeft(gamepad2.dpad_left);
@@ -161,6 +207,9 @@ public class FrankensteinRed extends LinearOpMode {
     }
     public void handleIntake(){
         spinner.Intake(gamepad1.square);
+        if(gamepad2.circle){
+            spinner.reverse();
+        }
     }
     private void displayTelemetry() {
         addTelemetry("Turret Position", turretLocalization.getTurretPos());
