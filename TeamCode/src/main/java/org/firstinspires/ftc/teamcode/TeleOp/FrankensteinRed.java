@@ -39,6 +39,7 @@ public class FrankensteinRed extends LinearOpMode {
     private final Colorsensor colorsensor = new Colorsensor();
     private final Balls balls = new Balls();
     private ElapsedTime time = new ElapsedTime();
+    private ElapsedTime gameTime = new ElapsedTime();
     private int shootingPos = 0;
     private double endGameStart;
     private boolean isEndGame;
@@ -49,6 +50,9 @@ public class FrankensteinRed extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initHardware();
         waitForStart();
+        gameTime.reset();
+        pos = Position.FIRSTPOS;
+        time.reset();
 
         if (isStopRequested()) return;
 
@@ -96,7 +100,9 @@ public class FrankensteinRed extends LinearOpMode {
         }
     }
     public void startGame(){
-        endGameStart = getRuntime() + 105;
+        if(gameTime.seconds() == 110){
+            gamepad1.rumble(1000);
+        }
     }
 
     public void handleShooter(){
@@ -230,6 +236,8 @@ public class FrankensteinRed extends LinearOpMode {
         addTelemetry("Current Balls", balls.getCurrentBalls());
         addTelemetry("Motif", balls.getFullMotif());
         addTelemetry("Sorted ", sorted);
+        addTelemetry("Time", time.seconds());
+        addTelemetry("Game Time", gameTime.seconds());
         //telemetry.addData("Motif: ", balls.getFullMotif());
         telemetry.update();
     }
