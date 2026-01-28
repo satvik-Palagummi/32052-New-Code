@@ -30,7 +30,7 @@ public class FrankensteinBlue extends LinearOpMode {
     private double toTheRight = 1.5;
     private int[] sorted;
     private int Id;
-    private boolean allThree;
+    private boolean allThree = true;
     private final Nightcall nightcall = new Nightcall();
     private final Turret turret = new Turret();
     private final TurretLocalization turretLocalization = new TurretLocalization();
@@ -45,6 +45,7 @@ public class FrankensteinBlue extends LinearOpMode {
     private double endGameStart;
     private boolean isEndGame;
     private boolean shooting;
+    private int thirdPos = 0;
 
 
     @Override
@@ -85,14 +86,13 @@ public class FrankensteinBlue extends LinearOpMode {
         addTelemetry("Rotation", rx);
         boolean slow = false;
         boolean shooting = false;
-        if(gamepad1.left_trigger > 0.1){
+        if(gamepad1.left_bumper){
             slow = true;
-        }
-        if(gamepad1.left_trigger < 0.1){
+        }else{
             slow = false;
         }
         nightcall.drive(x, y, rx, slow);
-        if(gamepad1.ps){
+        if(gamepad1.start){
             nightcall.resetYaw();
         }
     }
@@ -124,10 +124,10 @@ public class FrankensteinBlue extends LinearOpMode {
         if(gamepad1.left_trigger>0.1){
             limelight.updateLimelight();
             limelight.scanGoal();
-            if(limelight.resultWorks()&& limelight.getTx()>toTheRight){
-                nightcall.leftOrient();
-            }else if(limelight.resultWorks()&& limelight.getTx()<toTheLeft){
+            if(limelight.resultWorks()&&limelight.getTx()>toTheRight){
                 nightcall.rightOrient();
+            }else if(limelight.resultWorks()&&limelight.getTx()<toTheLeft){
+                nightcall.leftOrient();
             }else{
                 nightcall.cutPower();
             }
@@ -155,30 +155,41 @@ public class FrankensteinBlue extends LinearOpMode {
             switch(pos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(0);
-                    if (time.seconds() > 1.0) {
-                        pushServo.propel(0);
-                    }
-                    if(time.seconds()>1.5){
-                        pushServo.retract(0);
-                        setPathState(Position.SECPOS);
+                    if(turretLocalization.getTurretPos()>0) {
+                        if (time.seconds() > 0.9) {
+                            pushServo.propel(0);
+                        }
+                        if(time.seconds()>1.2){
+                            pushServo.retract(0);
+                            setPathState(Position.SECPOS);
+                        }
+                    }else{
+                        if(time.seconds()>0.1){
+                            pushServo.propel(0);
+                        }
+                        if(time.seconds()>0.45){
+                            pushServo.retract(0);
+                            setPathState(Position.SECPOS);
+                        }
                     }
                     break;
                 case SECPOS:
                     turretLocalization.setPos(1);
-                    if (time.seconds() > 1.0) {
+                    if (time.seconds() > 0.4) {
                         pushServo.propel(1);
                     }
-                    if(time.seconds()>1.5){
+                    if(time.seconds()>0.7){
                         pushServo.retract(1);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(2);
-                    if (time.seconds() > 1.0) {
+                    if (time.seconds() > 0.4) {
                         pushServo.propel(2);
                     }
-                    if(time.seconds()>1.5){
+                    if(time.seconds()>1.2){
+                        thirdPos++;
                         pushServo.retract(2);
                         allThree = true;
                     }
@@ -195,24 +206,28 @@ public class FrankensteinBlue extends LinearOpMode {
         turretLocalization.moveToMiddle(gamepad2.dpad_up);
         turretLocalization.moveToRight(gamepad2.dpad_right);
         shootingPos = turretLocalization.getTurretPos();
-        if(shootingPos == 0){
+        if(shootingPos == 0 && allThree){
             pushServo.retract(1);
             pushServo.retract(2);
         }
-        if(shootingPos == 1){
+        if(shootingPos == 1&& allThree){
             pushServo.retract(0);
             pushServo.retract(2);
         }
-        if(shootingPos == 2){
+        if(shootingPos == 2 &&allThree){
             pushServo.retract(0);
             pushServo.retract(1);
         }
+
+
     }
 
     public void handleIntake(){
         spinner.Intake(gamepad1.square);
         if(gamepad2.circle){
             spinner.reverse();
+        }else if(!gamepad1.square && !gamepad2.circle){
+            spinner.stopIntake();
         }
     }
     private void displayTelemetry() {
@@ -236,6 +251,7 @@ public class FrankensteinBlue extends LinearOpMode {
         addTelemetry("Time", time.seconds());
         addTelemetry("Game Time", gameTime.seconds());
         //telemetry.addData("Motif: ", balls.getFullMotif());
+        addTelemetry("thirdPos", thirdPos);
         telemetry.update();
     }
     public void addTelemetry(String value, int position){
@@ -246,6 +262,9 @@ public class FrankensteinBlue extends LinearOpMode {
         telemetry.addData(value, num);
     }
     public void addTelemetry(String value, int[] num){
+        telemetry.addData(value, num);
+    }
+    public void addTelemetry(String value, boolean num){
         telemetry.addData(value, num);
     }
 

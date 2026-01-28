@@ -27,7 +27,7 @@ public class FrankensteinRed extends LinearOpMode {
     private double toTheRight = 1.5;
     private double toTheLeft = -1.5;
     Position pos;
-    private boolean allThree;
+    private boolean allThree=true;
     private int[] sorted;
     private int Id;
     private final Nightcall nightcall = new Nightcall();
@@ -128,9 +128,9 @@ public class FrankensteinRed extends LinearOpMode {
             limelight.updateLimelight();
             limelight.scanGoal();
             if(limelight.resultWorks()&& limelight.getTx()>toTheRight){
-                nightcall.leftOrient();
-            }else if(limelight.resultWorks() && limelight.getTx()<toTheLeft){
                 nightcall.rightOrient();
+            }else if(limelight.resultWorks() && limelight.getTx()<toTheLeft){
+                nightcall.leftOrient();
             }else{
                 nightcall.cutPower();
             }
@@ -142,7 +142,7 @@ public class FrankensteinRed extends LinearOpMode {
         }
         if(gamepad2.a){
             turret.setPower(1680);
-            toTheLeft = -4.5;
+            toTheLeft = -4.0;
             toTheRight = -2.5;
         }
         if(gamepad2.optionsWasPressed()){
@@ -158,30 +158,40 @@ public class FrankensteinRed extends LinearOpMode {
             switch(pos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(0);
-                    if (time.seconds() > 1.0) {
-                        pushServo.propel(0);
-                    }
-                    if(time.seconds()>1.5){
-                        pushServo.retract(0);
-                        setPathState(Position.SECPOS);
+                    if(turretLocalization.getTurretPos()>0) {
+                        if (time.seconds() > 0.6) {
+                            pushServo.propel(0);
+                        }
+                        if(time.seconds()>1.0){
+                            pushServo.retract(0);
+                            setPathState(Position.SECPOS);
+                        }
+                    }else{
+                        if(time.seconds()>0.1){
+                            pushServo.propel(0);
+                        }
+                        if(time.seconds()>0.45){
+                            pushServo.retract(0);
+                            setPathState(Position.SECPOS);
+                        }
                     }
                     break;
                 case SECPOS:
                     turretLocalization.setPos(1);
-                    if (time.seconds() > 1.0) {
+                    if (time.seconds() > 0.4) {
                         pushServo.propel(1);
                     }
-                    if(time.seconds()>1.5){
+                    if(time.seconds()>0.7){
                         pushServo.retract(1);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(2);
-                    if (time.seconds() > 1.0) {
+                    if (time.seconds() > 0.4) {
                         pushServo.propel(2);
                     }
-                    if(time.seconds()>1.5){
+                    if(time.seconds()>0.7){
                         pushServo.retract(2);
                         allThree = true;
                     }
@@ -198,23 +208,27 @@ public class FrankensteinRed extends LinearOpMode {
         turretLocalization.moveToMiddle(gamepad2.dpad_up);
         turretLocalization.moveToRight(gamepad2.dpad_right);
         shootingPos = turretLocalization.getTurretPos();
-        if(shootingPos == 0){
+        if(shootingPos == 0&&allThree){
             pushServo.retract(1);
             pushServo.retract(2);
         }
-        if(shootingPos == 1){
+        if(shootingPos == 1&&allThree){
             pushServo.retract(0);
             pushServo.retract(2);
         }
-        if(shootingPos == 2){
+        if(shootingPos == 2&&allThree){
             pushServo.retract(0);
             pushServo.retract(1);
         }
+
+
     }
     public void handleIntake(){
         spinner.Intake(gamepad1.square);
         if(gamepad2.circle){
             spinner.reverse();
+        }else if(!gamepad1.square && !gamepad2.circle){
+            spinner.stopIntake();
         }
     }
     private void displayTelemetry() {
