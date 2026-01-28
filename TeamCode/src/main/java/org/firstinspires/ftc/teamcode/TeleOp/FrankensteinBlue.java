@@ -105,7 +105,7 @@ public class FrankensteinBlue extends LinearOpMode {
     public void handleShooter(){
         if(gamepad1.right_trigger>0.1){
             pushServo.propel(shootingPos);
-        }else{
+        }else if(gamepad1.right_trigger<0.3 &&allThree){
             pushServo.retract(shootingPos);
         }
         if(gamepad2.right_trigger>0.1){
@@ -175,26 +175,23 @@ public class FrankensteinBlue extends LinearOpMode {
                     break;
                 case SECPOS:
                     turretLocalization.setPos(1);
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
+                        pushServo.propel(1);
+                    }
                     if(time.seconds()>0.7){
                         pushServo.retract(1);
                         setPathState(Position.THIRDPOS);
-                        time.reset();
-                        break;
-                    }
-                    if (time.seconds() > 0.4) {
-                        pushServo.propel(1);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(2);
-                    if(time.seconds()>1.2){
+                    if (time.seconds() > 0.4&& time.seconds()<0.7) {
+                        pushServo.propel(2);
+                    }
+                    if(time.seconds()>0.8){
                         thirdPos++;
                         pushServo.retract(2);
                         allThree = true;
-                        break;
-                    }
-                    if (time.seconds() > 0.4) {
-                        pushServo.propel(2);
                     }
                     break;
             }
