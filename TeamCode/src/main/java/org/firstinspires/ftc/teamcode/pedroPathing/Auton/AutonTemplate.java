@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Outtake.TurretLocalization;
 import org.firstinspires.ftc.teamcode.Sensor.Balls;
 import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
 import org.firstinspires.ftc.teamcode.Sensor.Limelight;
+import org.firstinspires.ftc.teamcode.TeleOp.FrankensteinBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.ArrayList;
@@ -23,6 +24,12 @@ import java.util.ArrayList;
  * Contains common functionality for path following, timing, and subsystem control.
  */
 public abstract class AutonTemplate extends OpMode {
+    public enum Position {
+        FIRSTPOS,
+        SECPOS,
+        THIRDPOS
+    }
+    Position pos;
     protected Follower follower;
     protected Timer pathTimer, actionTimer, opModeTimer;
 
@@ -48,15 +55,13 @@ public abstract class AutonTemplate extends OpMode {
         actionTimer.resetTimer();
         while (actionTimer.getElapsedTimeSeconds() < time) {
             follower.update();
-            telemetry.addData("Turret Location", turretLocalization.getTurretPos());
-            telemetry.addData("Spinner Left:", spinner.getSpinnerLeft());
-            telemetry.addData("Spinner Right:", spinner.getSpinnerRight());
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", follower.getPose().getHeading());
             telemetry.update();
         }
     }
+    /*
     protected void scanBalls(){
         int[] current = new int[3];
         for(int i = 0; i<3; i++){
@@ -71,6 +76,28 @@ public abstract class AutonTemplate extends OpMode {
             current[i] = colorsensor.getColorVal();
         }
         balls.setCurrent(current);
+    }
+
+     */
+    protected boolean checkGreen(){
+        if(balls.getCurrentBalls() != null){
+            int[] current = balls.getCurrentBalls();
+            for(int i = 0; i<3; i++){
+                turretLocalization.setPos(i);
+                wait(0.35);
+                pushServo.propelScan(i);
+                wait(1.0);
+                if(colorsensor.getColorVal()== 0){
+                    pushServo.retract(i);
+                    return true;
+                }
+                pushServo.retract(i);
+                if(i==2){
+                    return false;
+                }
+            }
+        }
+        return false;
     }
     protected void scan(){
         LLResult result = limelight.updateLimelight();
@@ -176,16 +203,17 @@ public abstract class AutonTemplate extends OpMode {
 
 
     protected void autonShoot3() {
-        turret.startOuttake();
         turret.setPower(1420);
+        turret.startOuttake();
+        turretLocalization.setPos(0);
         if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
-                wait(1.0);
+                wait(0.2);
                 turretLocalization.setPos(sorted[i]);
-                wait(2.0);
-                if(turret.getTurretLVelocity() == 1420 && turret.getTurretRVelocity() == 1420){pushServo.propel(sorted[i]);}
-                wait(1.5);
+                wait(0.4);
+                pushServo.propel(sorted[i]);
+                wait(0.3);
                 pushServo.retract(sorted[i]);
                 if(i==2){
                     turret.stopOuttake();
@@ -193,9 +221,10 @@ public abstract class AutonTemplate extends OpMode {
             }
         }
     }
+
     protected void autonShoot3_5() {
         turret.startOuttake();
-        turret.setPower(1640);
+        turret.setPower(1680);
         if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
@@ -275,6 +304,7 @@ public abstract class AutonTemplate extends OpMode {
 
         // Common telemetry
         telemetry.addData("Shooter Velocity", turret.getTurretLVelocity());
+        telemetry.addData("Timer", actionTimer.getElapsedTimeSeconds());
         telemetry.update();
         /*
         shooter.periodic();

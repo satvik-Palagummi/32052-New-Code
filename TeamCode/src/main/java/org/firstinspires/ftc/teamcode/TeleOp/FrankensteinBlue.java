@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
 import org.firstinspires.ftc.teamcode.Sensor.Limelight;
 import org.firstinspires.ftc.teamcode.pedroPathing.Auton.FirstAuton;
 
+import java.util.Arrays;
+
 @TeleOp
 public class FrankensteinBlue extends LinearOpMode {
     public enum Position {
@@ -43,7 +45,7 @@ public class FrankensteinBlue extends LinearOpMode {
     private ElapsedTime gameTime = new ElapsedTime();
     private int shootingPos = 0;
     private double endGameStart;
-    private boolean isEndGame;
+    private boolean fromFar;
     private boolean shooting;
     private int thirdPos = 0;
 
@@ -114,6 +116,7 @@ public class FrankensteinBlue extends LinearOpMode {
             turret.stopOuttake();
         }
         if(gamepad1.cross){
+            limelight.setPipeline(0);
             LLResult result = limelight.updateLimelight();
             Id = limelight.scanMotif(result);
             balls.setMotif(Id);
@@ -121,7 +124,11 @@ public class FrankensteinBlue extends LinearOpMode {
                 limelight.stop();
             }
         }
+        if(gamepad1.circleWasPressed()){
+            sorted = balls.sortBalls();
+        }
         if(gamepad1.left_trigger>0.1){
+            limelight.setPipeline(8);
             limelight.updateLimelight();
             limelight.scanGoal();
             if(limelight.resultWorks()&&limelight.getTx()>toTheRight){
@@ -150,18 +157,22 @@ public class FrankensteinBlue extends LinearOpMode {
             allThree = false;
             time.reset();
             pos = Position.FIRSTPOS;
+            if(turretLocalization.getTurretPos()>0){
+                fromFar = true;
+            }
         }
         if(!allThree){
             switch(pos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(0);
-                    if(turretLocalization.getTurretPos()>0) {
-                        if (time.seconds() > 0.9) {
+                    if(fromFar) {
+                        if (time.seconds() > 0.6) {
                             pushServo.propel(0);
                         }
-                        if(time.seconds()>1.2){
+                        if(time.seconds()>0.8){
                             pushServo.retract(0);
                             setPathState(Position.SECPOS);
+                            fromFar = false;
                         }
                     }else{
                         if(time.seconds()>0.1){
@@ -245,9 +256,9 @@ public class FrankensteinBlue extends LinearOpMode {
         addTelemetry("green = ", colorsensor.getGreen());
          */
         addTelemetry("Limelight X", limelight.getTx());
-        addTelemetry("Current Balls", balls.getCurrentBalls());
-        addTelemetry("Motif", balls.getFullMotif());
-        addTelemetry("Sorted ", sorted);
+        addTelemetry("Current Balls", Arrays.toString(balls.getCurrentBalls()));
+        addTelemetry("Motif", Arrays.toString(balls.getFullMotif()));
+        addTelemetry("Sorted ", Arrays.toString(sorted));
         addTelemetry("Time", time.seconds());
         addTelemetry("Game Time", gameTime.seconds());
         //telemetry.addData("Motif: ", balls.getFullMotif());
@@ -258,13 +269,13 @@ public class FrankensteinBlue extends LinearOpMode {
         telemetry.addData(value, position);
 
     }
-    public void addTelemetry(String value, double num){
+    public void addTelemetry(String value, String val){
+        telemetry.addData(value, val);
+    }
+    public void addTelemetry(String value, Object num){
         telemetry.addData(value, num);
     }
     public void addTelemetry(String value, int[] num){
-        telemetry.addData(value, num);
-    }
-    public void addTelemetry(String value, boolean num){
         telemetry.addData(value, num);
     }
 

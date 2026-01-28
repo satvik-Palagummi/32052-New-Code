@@ -41,6 +41,13 @@ public class Limelight{
         }
         return null;
     }
+    public void setPipeline(int ppSwitch){
+        if(ppSwitch == 8){
+            limelight.pipelineSwitch(8);
+        }else if(ppSwitch == 0){
+            limelight.pipelineSwitch(0);
+        }
+    }
     public int scanMotif(LLResult result){
         if(result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
