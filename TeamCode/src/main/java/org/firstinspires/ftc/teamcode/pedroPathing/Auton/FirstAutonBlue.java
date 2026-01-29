@@ -30,9 +30,9 @@ public class FirstAutonBlue extends AutonTemplate {
     private final Pose BallsRowAiming1 = new Pose(50,83.5, Math.toRadians(0));
     private final Pose grabBalls1 = new Pose(17,83.5, Math.toRadians(0));
     private final Pose BallsRowAiming2 = new Pose(60, 59,Math.toRadians(0));
-    private final Pose grabBalls2 = new Pose(12, 59, Math.toRadians(0));
+    private final Pose grabBalls2 = new Pose(15, 59, Math.toRadians(0));
     private final Pose BallsRowAiming3 = new Pose(60, 35.5, Math.toRadians(0));
-    private final Pose grabBalls3 = new Pose(12, 35.5, Math.toRadians(0));
+    private final Pose grabBalls3 = new Pose(15, 35.5, Math.toRadians(0));
     private boolean firstGrab = false;
     private boolean secondGrab = false;
     private boolean thirdGrab = false;
