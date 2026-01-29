@@ -167,7 +167,7 @@ public class FirstAutonBlue extends AutonTemplate {
             case SHOOT_PRELOAD1:
                 //add logic to turret
                 //check if follower is down with it's path.
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing1, true);
@@ -176,7 +176,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 }
                 break;
             case SHOOT_PRELOAD2:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing2, true);
@@ -185,7 +185,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 }
                 break;
             case SHOOT_PRELOAD3:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing3,true);
