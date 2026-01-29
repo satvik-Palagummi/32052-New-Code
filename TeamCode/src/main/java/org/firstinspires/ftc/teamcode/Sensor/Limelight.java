@@ -23,7 +23,7 @@ public class Limelight{
     private boolean resultWorks;
     public void initLimelight(HardwareMap hweM){
         limelight = hweM.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(8);
+        limelight.pipelineSwitch(0);
         limelight.setPollRateHz(40);
         limelight.start();
         limelightIsOff = false;

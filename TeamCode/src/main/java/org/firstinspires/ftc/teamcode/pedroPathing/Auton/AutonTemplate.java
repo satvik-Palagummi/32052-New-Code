@@ -43,6 +43,8 @@ public abstract class AutonTemplate extends OpMode {
     protected Limelight limelight;
     protected int[] sorted;
     protected int id;
+    protected boolean greenCheck;
+    protected boolean pushed;
 
     /**
      * Set the current path state and reset the path timer
@@ -59,6 +61,22 @@ public abstract class AutonTemplate extends OpMode {
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", follower.getPose().getHeading());
             telemetry.update();
+        }
+    }
+    protected void waitOrient(double time) {
+        actionTimer.resetTimer();
+        while (actionTimer.getElapsedTimeSeconds() < time) {
+            follower.update();
+            limelight.setPipeline(8);
+            limelight.updateLimelight();
+            limelight.scanGoal();
+            if(limelight.resultWorks()&&limelight.getTx()>1.5){
+                nightcall.rightOrient();
+            }else if(limelight.resultWorks()&&limelight.getTx()<-1.5){
+                nightcall.leftOrient();
+            }else{
+                nightcall.cutPower();
+            }
         }
     }
     /*
@@ -82,24 +100,33 @@ public abstract class AutonTemplate extends OpMode {
     protected boolean checkGreen(){
         if(balls.getCurrentBalls() != null){
             int[] current = balls.getCurrentBalls();
+            int posToCheck = 0;
             for(int i = 0; i<3; i++){
-                turretLocalization.setPos(i);
-                wait(0.35);
-                pushServo.propelScan(i);
-                wait(1.0);
-                if(colorsensor.getColorVal()== 0){
-                    pushServo.retract(i);
-                    return true;
+                if(current[i] == 0){
+                    posToCheck = i;
+                    break;
                 }
-                pushServo.retract(i);
-                if(i==2){
-                    return false;
-                }
+            }
+            turretLocalization.setPos(posToCheck);
+            wait(0.4);
+            pushServo.propelScan(posToCheck);
+            pushed = true;
+            if(colorsensor.getColorVal() == 0){
+                pushServo.retract(posToCheck);
+                wait(0.2);
+                greenCheck = true;
+                return true;
+            }else{
+                pushServo.retract(posToCheck);
+                wait(0.2);
+                greenCheck = false;
+                return false;
             }
         }
         return false;
     }
     protected void scan(){
+        limelight.setPipeline(0);
         LLResult result = limelight.updateLimelight();
         id = limelight.scanMotif(result);
         balls.setMotif(id);
@@ -184,34 +211,32 @@ public abstract class AutonTemplate extends OpMode {
 
      */
     protected void autonShoot2_5() {
-        /*
+        turret.startOuttake();
         for(int i = 0; i<3; i++){
-            turret.startOuttake();
-            wait(0.5);
             turretLocalization.setPos(i);
-            wait(1.0);
-            if(turret.getTurretVelocity() == 1640) {pushServo.propel(i);}
-            wait(2.0);
+            wait(0.5);
+            pushServo.propel(i);
+            wait(0.35);
             pushServo.retract(i);
             if(i==2){
                 turret.stopOuttake();
             }
         }
-
-         */
     }
 
 
     protected void autonShoot3() {
-        turret.setPower(1420);
         turret.startOuttake();
-        turretLocalization.setPos(0);
         if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
-                wait(0.2);
-                turretLocalization.setPos(sorted[i]);
-                wait(0.4);
+                if(sorted[i] - turretLocalization.getTurretPos() ==2 || sorted[i] -turretLocalization.getTurretPos() == -2){
+                    turretLocalization.setPos(sorted[i]);
+                    waitOrient(0.5);
+                }else {
+                    turretLocalization.setPos(sorted[i]);
+                    waitOrient(0.3);
+                }
                 pushServo.propel(sorted[i]);
                 wait(0.3);
                 pushServo.retract(sorted[i]);
@@ -305,6 +330,7 @@ public abstract class AutonTemplate extends OpMode {
         // Common telemetry
         telemetry.addData("Shooter Velocity", turret.getTurretLVelocity());
         telemetry.addData("Timer", actionTimer.getElapsedTimeSeconds());
+
         telemetry.update();
         /*
         shooter.periodic();

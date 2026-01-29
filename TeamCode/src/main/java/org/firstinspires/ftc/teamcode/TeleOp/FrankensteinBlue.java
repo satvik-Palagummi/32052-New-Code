@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.Outtake.Turret;
 import org.firstinspires.ftc.teamcode.Outtake.TurretLocalization;
 import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
 import org.firstinspires.ftc.teamcode.Sensor.Limelight;
-import org.firstinspires.ftc.teamcode.pedroPathing.Auton.FirstAuton;
 
 import java.util.Arrays;
 
@@ -28,6 +27,7 @@ public class FrankensteinBlue extends LinearOpMode {
         THIRDPOS
     }
     Position pos;
+    Position sortedPos;
     private double toTheLeft = -1.5;
     private double toTheRight = 1.5;
     private int[] sorted;
@@ -157,7 +157,7 @@ public class FrankensteinBlue extends LinearOpMode {
             allThree = false;
             time.reset();
             pos = Position.FIRSTPOS;
-            if(turretLocalization.getTurretPos()>0){
+            if(turretLocalization.getTurretPos()>0&&sorted == null){
                 fromFar = true;
             }
         }
@@ -207,6 +207,42 @@ public class FrankensteinBlue extends LinearOpMode {
                     break;
             }
         }
+        if(!allThree&&sorted != null){
+            switch(sortedPos) {
+                case FIRSTPOS:
+                    turretLocalization.setPos(sorted[0]);
+                    if (time.seconds() > 0.6) {
+                        pushServo.propel(sorted[0]);
+                    }
+                    if(time.seconds()>0.8){
+                        pushServo.retract(sorted[0]);
+                        setPathState(Position.SECPOS);
+                    }
+                    break;
+                case SECPOS:
+                    turretLocalization.setPos(sorted[1]);
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
+                        pushServo.propel(sorted[1]);
+                    }
+                    if(time.seconds()>0.7){
+                        pushServo.retract(sorted[1]);
+                        setPathState(Position.THIRDPOS);
+                    }
+                    break;
+                case THIRDPOS:
+                    turretLocalization.setPos(sorted[2]);
+                    if (time.seconds() > 0.4&& time.seconds()<0.7) {
+                        pushServo.propel(sorted[2]);
+                    }
+                    if(time.seconds()>0.8){
+                        thirdPos++;
+                        pushServo.retract(sorted[2]);
+                        allThree = true;
+                        sorted = null;
+                    }
+                    break;
+            }
+        }
     }
     public void setPathState(Position newState) {
         pos = newState;
@@ -250,11 +286,10 @@ public class FrankensteinBlue extends LinearOpMode {
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
         addTelemetry("April Tag ID: ", Limelight.detectedTagId);
-        /*
-        addTelemetry("red = ", colorsensor.getRed());
+        addTelemetry("color", colorsensor.getColorVal());
         addTelemetry("blue = ",  colorsensor.getBlue());
         addTelemetry("green = ", colorsensor.getGreen());
-         */
+
         addTelemetry("Limelight X", limelight.getTx());
         addTelemetry("Current Balls", Arrays.toString(balls.getCurrentBalls()));
         addTelemetry("Motif", Arrays.toString(balls.getFullMotif()));

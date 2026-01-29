@@ -52,14 +52,17 @@ public class Balls {
             currentBalls = new int[]{-1, -1, -1};
         }
         if(num == 1){
-            currentBalls = twentyThree;
+            currentBalls = new int[]{1,1,0};
         }
         if(num == 2){
-            currentBalls = twentyTwo;
+            currentBalls = new int[]{1,0,1};
         }
         if(num == 3){
-            currentBalls = twentyOne;
+            currentBalls = new int[]{0,1,1};
         }
+    }
+    public void setCurrent(int[] num){
+        currentBalls = num;
     }
     public int[] getCurrentBalls(){
         return currentBalls;

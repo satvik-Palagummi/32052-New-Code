@@ -1,24 +1,20 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Auton;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
-import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import java.util.Arrays;
 
 @Autonomous
-public class FirstAuton extends AutonTemplate {
+public class FirstAutonBlue extends AutonTemplate {
     public enum PathState {
         //START POSITION-END POSITION
         //DRIVE > MOVEMENT STATE
         //SHOOT > ATTEMPT TO SCORE THE ARTIFACT
         STARTPOS,
-        SCANPOS,
+        SCANPOSE,
         SHOOTING,
         SHOOT1_SHOOT2,
         SHOOT2_SHOOT3,
@@ -28,15 +24,15 @@ public class FirstAuton extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(20,125, Math.toRadians(51));
-    private final Pose scanPose = new Pose(54, 121, Math.toRadians(-35));
-    private final Pose shootPose = new Pose(60,83.5, Math.toRadians(40));
+    private final Pose startPose = new Pose(20,125, Math.toRadians(54));
+    private final Pose scanPose = new Pose(54, 121, Math.toRadians(-32));
+    private final Pose shootPose = new Pose(59,87, Math.toRadians(45));
     private final Pose BallsRowAiming1 = new Pose(50,83.5, Math.toRadians(0));
-    private final Pose grabBalls1 = new Pose(16,83.5, Math.toRadians(0));
-    private final Pose BallsRowAiming2 = new Pose(60, 60,Math.toRadians(0));
-    private final Pose grabBalls2 = new Pose(8, 60, Math.toRadians(0));
+    private final Pose grabBalls1 = new Pose(17,83.5, Math.toRadians(0));
+    private final Pose BallsRowAiming2 = new Pose(60, 59,Math.toRadians(0));
+    private final Pose grabBalls2 = new Pose(12, 59, Math.toRadians(0));
     private final Pose BallsRowAiming3 = new Pose(60, 35.5, Math.toRadians(0));
-    private final Pose grabBalls3 = new Pose(8, 35.5, Math.toRadians(0));
+    private final Pose grabBalls3 = new Pose(12, 35.5, Math.toRadians(0));
     private boolean firstGrab = false;
     private boolean secondGrab = false;
     private boolean thirdGrab = false;
@@ -50,30 +46,17 @@ public class FirstAuton extends AutonTemplate {
 
 
     public void buildPaths(){
-
         StartToScan = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scanPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
                 .build();
         ShootPose = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .setLinearHeadingInterpolation(scanPose.getHeading(), shootPose.getHeading())
                 .build();
-        /*ShootPos1To2 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPosePos1, shootPosePos2))
-                .setLinearHeadingInterpolation(shootPosePos1.getHeading(), shootPosePos2.getHeading())
-                .build();
-        ShootPos2To3 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPosePos2, shootPosePos3))
-                .setLinearHeadingInterpolation(shootPosePos2.getHeading(), shootPosePos3.getHeading())
-                .build();
-
-         */
-        //FIRST ROW PATHS
-
         shootToBallAiming1 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, BallsRowAiming1))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), BallsRowAiming1.getHeading())
+                .setConstantHeadingInterpolation(BallsRowAiming1.getHeading())
                 .build();
         AimingtoGrabbing1 = follower.pathBuilder()
                 .addPath(new BezierLine(BallsRowAiming1, grabBalls1))
@@ -98,7 +81,7 @@ public class FirstAuton extends AutonTemplate {
                 .setLinearHeadingInterpolation(BallsRowAiming2.getHeading(), grabBalls2.getHeading())
                 .build();
         GrabbingReversal2 = follower.pathBuilder()
-                .addPath(new BezierLine(grabBalls2, BallsRowAiming1))
+                .addPath(new BezierLine(grabBalls2, BallsRowAiming2))
                 .setLinearHeadingInterpolation(grabBalls2.getHeading(), BallsRowAiming2.getHeading())
                 .build();
         ReversaltoAiming2 = follower.pathBuilder()
@@ -126,27 +109,29 @@ public class FirstAuton extends AutonTemplate {
     }
 
     public void statePathUpdate(){
-
         switch(pathState){
             case STARTPOS:
-                balls.setCurrent(1);
-                if(!checkGreen()){
-                    balls.setCurrent(0);
-                }
+                balls.setCurrent(new int[]{1,1,0});
+                turretLocalization.setPos(2);
                 follower.followPath(StartToScan, true);
-                setPathState(PathState.SCANPOS);//Resets timer & makes new state
+                setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
-            case SCANPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>10) {
-                    scan();
+            case SCANPOSE:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2) {
                     follower.followPath(ShootPose, true);
                     setPathState(PathState.SHOOTING);
+                }else{
+                    scan();
                 }
+
                 break;
             case SHOOTING:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1)
                 {
+                    turret.setPower(1400);
+                    turret.startOuttake();
                     autonShoot3();
+                    turret.stopOuttake();
                     if(!firstGrab) {
                         follower.followPath(shootToBallAiming1, true);
                         setPathState(PathState.SHOOT_PRELOAD1);
@@ -156,7 +141,8 @@ public class FirstAuton extends AutonTemplate {
                     } else if (!thirdGrab) {
                         follower.followPath(shootToBallAiming3, true);
                         setPathState(PathState.SHOOT_PRELOAD3);
-                    }else{
+                    }
+                    else{
                         telemetry.addLine("DONE");
                     }
                 }
@@ -179,8 +165,10 @@ public class FirstAuton extends AutonTemplate {
                 break;
                 */
             case SHOOT_PRELOAD1:
-                //Aiming at First Row
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
+                //add logic to turret
+                //check if follower is down with it's path.
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1){
+                    follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing1, true);
                     setPathState(PathState.BALLROW_GRABBING1);
@@ -188,8 +176,8 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case SHOOT_PRELOAD2:
-                //Aiming at Second Row
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>4){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1){
+                    follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing2, true);
                     setPathState(PathState.BALLROW_GRABBING2);
@@ -197,8 +185,8 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case SHOOT_PRELOAD3:
-                //Aiming at Third Row
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>4){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1){
+                    follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing3,true);
                     setPathState(PathState.BALLROW_GRABBING3);
@@ -206,47 +194,37 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case BALLROW_GRABBING1:
-                //Grabbing First Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
+                    balls.setCurrent(new int[]{0,1,1});
+                    follower.setMaxPower(1.0);
                     stopAutonIntake();
-                    balls.setCurrent(1);
-                    if(!checkGreen()){
-                        balls.setCurrent(0);
-                    }
                     follower.followPath(GrabbingReversal1, true);
                     setPathState(PathState.GRABBING_REVERSAL1);
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
             case BALLROW_GRABBING2:
-                //Grabbing Second Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
+                    balls.setCurrent(new int[]{1,0,1});
+                    follower.setMaxPower(1.0);
                     stopAutonIntake();
-                    balls.setCurrent(2);
-                    if(!checkGreen()){
-                        balls.setCurrent(0);
-                    }
                     follower.followPath(GrabbingReversal2, true);
                     setPathState(PathState.GRABBING_REVERSAL2);
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
             case BALLROW_GRABBING3:
-                //Grabbing Third Row
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
+                    balls.setCurrent(new int[]{1,1,0});
+                    follower.setMaxPower(1.0);
                     stopAutonIntake();
-                    balls.setCurrent(3);
-                    if(!checkGreen()){
-                        balls.setCurrent(0);
-                    }
                     follower.followPath(GrabbingReversal3, true);
                     setPathState(PathState.GRABBING_REVERSAL3);
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
             case GRABBING_REVERSAL1:
-                //Return To The Pose Where It was Aiming Towards the Row
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
                     follower.followPath(ReversaltoAiming1, true);
                     setPathState(PathState.SHOOTING);
                     telemetry.addLine("Going to Shoot Position");
@@ -254,8 +232,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case GRABBING_REVERSAL2:
-                //Return To The Pose Where It was Aiming Towards the Row
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
                     follower.followPath(ReversaltoAiming2, true);
                     setPathState(PathState.SHOOTING);
                     telemetry.addLine("Going to Shoot Position");
@@ -263,8 +240,7 @@ public class FirstAuton extends AutonTemplate {
                 }
                 break;
             case GRABBING_REVERSAL3:
-                //Return To The Pose Where It was Aiming Towards the Row
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
                     follower.followPath(ReversaltoAiming3, true);
                     setPathState(PathState.SHOOTING);
                     telemetry.addLine("Going to Shoot Position");
@@ -309,8 +285,10 @@ public class FirstAuton extends AutonTemplate {
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("Blue: ", colorsensor.getBlue());
         telemetry.addData("Green: ", colorsensor.getGreen());
-        telemetry.addData("Motif: ", balls.getFullMotif());
-        telemetry.addData("Current Balls ", balls.getCurrentBalls());
+        telemetry.addData("Motif: ", Arrays.toString(balls.getFullMotif()));
+        telemetry.addData("Current Balls ", Arrays.toString(balls.getCurrentBalls()));
+        telemetry.addData("Green in right spot", greenCheck);
+        telemetry.addData("Pushed", pushed);
         telemetry.update();
 
     }
