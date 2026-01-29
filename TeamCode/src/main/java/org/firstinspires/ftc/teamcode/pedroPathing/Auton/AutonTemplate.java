@@ -211,53 +211,49 @@ public abstract class AutonTemplate extends OpMode {
 
      */
     protected void autonShoot2_5() {
-        turret.startOuttake();
         for(int i = 0; i<3; i++){
             turretLocalization.setPos(i);
-            wait(0.5);
+            waitOrient(0.5);
             pushServo.propel(i);
-            wait(0.35);
+            wait(0.45);
             pushServo.retract(i);
-            if(i==2){
-                turret.stopOuttake();
-            }
         }
     }
 
 
     protected void autonShoot3() {
-        turret.startOuttake();
         if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
                 if(sorted[i] - turretLocalization.getTurretPos() ==2 || sorted[i] -turretLocalization.getTurretPos() == -2){
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.5);
+                    waitOrient(0.7);
                 }else {
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.3);
+                    waitOrient(0.5);
                 }
                 pushServo.propel(sorted[i]);
-                wait(0.3);
+                wait(0.4);
                 pushServo.retract(sorted[i]);
-                if(i==2){
-                    turret.stopOuttake();
-                }
             }
         }
     }
 
     protected void autonShoot3_5() {
         turret.startOuttake();
-        turret.setPower(1680);
+        turret.setPower(1380);
         if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
-                wait(1.0);
-                turretLocalization.setPos(sorted[i]);
-                wait(2.0);
-                if(turret.getTurretLVelocity() == 1640 && turret.getTurretRVelocity() == 1640){pushServo.propel(sorted[i]);}
-                wait(1.5);
+                if(sorted[i] - turretLocalization.getTurretPos() ==2 || sorted[i] -turretLocalization.getTurretPos() == -2){
+                    turretLocalization.setPos(sorted[i]);
+                    waitOrient(0.6);
+                }else {
+                    turretLocalization.setPos(sorted[i]);
+                    waitOrient(0.4);
+                }
+                pushServo.propel(sorted[i]);
+                wait(0.4);
                 pushServo.retract(sorted[i]);
                 if(i==2){
                     turret.stopOuttake();
@@ -276,6 +272,9 @@ public abstract class AutonTemplate extends OpMode {
      */
     protected void stopAutonIntake() {
         spinner.stopIntake();
+    }
+    protected void reverse(){
+        spinner.reverse();
     }
 
     /**

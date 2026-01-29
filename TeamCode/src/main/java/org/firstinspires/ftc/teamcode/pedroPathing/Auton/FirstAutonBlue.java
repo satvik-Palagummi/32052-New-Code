@@ -128,7 +128,7 @@ public class FirstAutonBlue extends AutonTemplate {
             case SHOOTING:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1)
                 {
-                    turret.setPower(1400);
+                    turret.setPower(1370);
                     turret.startOuttake();
                     autonShoot3();
                     turret.stopOuttake();
@@ -177,7 +177,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 break;
             case SHOOT_PRELOAD2:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
-                    follower.setMaxPower(0.4);
+                    follower.setMaxPower(0.5);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing2, true);
                     setPathState(PathState.BALLROW_GRABBING2);
@@ -186,7 +186,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 break;
             case SHOOT_PRELOAD3:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
-                    follower.setMaxPower(0.4);
+                    follower.setMaxPower(0.5);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing3,true);
                     setPathState(PathState.BALLROW_GRABBING3);

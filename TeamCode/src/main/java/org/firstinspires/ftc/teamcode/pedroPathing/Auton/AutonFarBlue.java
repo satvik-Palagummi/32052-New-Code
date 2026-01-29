@@ -12,7 +12,8 @@ public class AutonFarBlue extends AutonTemplate {
         //DRIVE > MOVEMENT STATE
         //SHOOT > ATTEMPT TO SCORE THE ARTIFACT
         STARTPOS,
-        STARTPOS_SHOOTPOS,
+        STARTPOS_SCANPOS,
+        SCANPOS_SHOOTPOS,
         SHOOT1_SHOOT2,
         SHOOT2_SHOOT3,
         SHOOT_PRELOAD,
@@ -21,16 +22,22 @@ public class AutonFarBlue extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(84,8, Math.toRadians(90));
+    private final Pose scanPose = new Pose(60,10, Math.toRadians(-19));
 
-    private final Pose shootPose = new Pose(84,10, Math.toRadians(20));
-    private PathChain StartToShoot;
+    private final Pose startPose = new Pose(60,8, Math.toRadians(90));
+
+    private final Pose shootPose = new Pose(60,10, Math.toRadians(20));
+    private PathChain StartToScan, ScantoShoot;
 
 
     public void buildPaths(){
-        StartToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+        StartToScan = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, scanPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
+                .build();
+        ScantoShoot = follower.pathBuilder()
+                .addPath(new BezierLine(scanPose, shootPose))
+                .setConstantHeadingInterpolation(shootPose.getHeading())
                 .build();
     }
 
@@ -39,14 +46,27 @@ public class AutonFarBlue extends AutonTemplate {
         switch(pathState){
             case STARTPOS:
                 turretLocalization.setPos(0);
-                follower.followPath(StartToShoot, true);
-                setPathState(PathState.STARTPOS_SHOOTPOS);//Resets timer & makes new state
+                follower.followPath(StartToScan, true);
+                setPathState(PathState.STARTPOS_SCANPOS);//Resets timer & makes new state
                 break;
-            case STARTPOS_SHOOTPOS:
+            case STARTPOS_SCANPOS:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
+                {
+                    follower.followPath(ScantoShoot, true);
+                    setPathState(PathState.SCANPOS_SHOOTPOS);
+                }else{
+                    scan();
+                }
+                break;
+            case SCANPOS_SHOOTPOS:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
                 {
                     turret.setPower(1680);
-                    autonShoot2_5();
+                    if(balls.getFullMotif() !=null) {
+                        autonShoot3();
+                    }else{
+                        autonShoot2_5();
+                    }
                 }
                 break;
             default:
