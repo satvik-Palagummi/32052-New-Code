@@ -62,7 +62,7 @@ public class AutonFarRed extends AutonTemplate {
                 }
                 break;
             case SCANPOS_SHOOTPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>23)
                 {
                     turret.setPower(1680);
                     turret.startOuttake();

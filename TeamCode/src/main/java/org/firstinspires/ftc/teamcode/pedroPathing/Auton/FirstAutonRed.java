@@ -31,7 +31,7 @@ public class FirstAutonRed extends AutonTemplate {
     PathState pathState;
 
     private final Pose startPose = new Pose(124,125, Math.toRadians(-54));
-    private final Pose scanPose = new Pose(91, 122, Math.toRadians(34));
+    private final Pose scanPose = new Pose(91, 90, Math.toRadians(15));
     private final Pose shootPose = new Pose(84,86, Math.toRadians(-50));
     private final Pose BallsRowAiming1 = new Pose(90,83.5, Math.toRadians(0));
     private final Pose grabBalls1 = new Pose(125,83.5, Math.toRadians(0));
@@ -136,7 +136,7 @@ public class FirstAutonRed extends AutonTemplate {
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
             case SCANPOSE:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3&& !scanned){
+                if(!follower.isBusy()&& !scanned){
                     scan();
                     if(limelight.getDetectedTagId() > 20) {
                         scanned = true;
@@ -149,7 +149,7 @@ public class FirstAutonRed extends AutonTemplate {
 
                 break;
             case SHOOTING:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2)
                 {
                     stopAutonIntake();
                     turret.setPower(1370);
@@ -202,7 +202,7 @@ public class FirstAutonRed extends AutonTemplate {
                 break;
             case SHOOT_PRELOAD2:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1){
-                    follower.setMaxPower(0.5);
+                    follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing2, true);
                     setPathState(PathState.BALLROW_GRABBING2);
@@ -211,7 +211,7 @@ public class FirstAutonRed extends AutonTemplate {
                 break;
             case SHOOT_PRELOAD3:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
-                    follower.setMaxPower(0.5);
+                    follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing3,true);
                     setPathState(PathState.BALLROW_GRABBING3);

@@ -16,6 +16,8 @@ public class Spinner {
         spinnerRight.setDirection(DcMotor.Direction.FORWARD);
     }
     public void startIntake(){
+        spinnerLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        spinnerRight.setDirection(DcMotorSimple.Direction.FORWARD);
         spinnerRight.setPower(speed);
         spinnerLeft.setPower(speed);
     }

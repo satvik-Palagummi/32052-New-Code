@@ -25,7 +25,7 @@ public class FirstAutonBlue extends AutonTemplate {
     PathState pathState;
 
     private final Pose startPose = new Pose(20,125, Math.toRadians(54));
-    private final Pose scanPose = new Pose(54, 121, Math.toRadians(-20));
+    private final Pose scanPose = new Pose(55, 90, Math.toRadians(-9));
     private final Pose shootPose = new Pose(59,87, Math.toRadians(45));
     private final Pose BallsRowAiming1 = new Pose(50,83.5, Math.toRadians(0));
     private final Pose grabBalls1 = new Pose(17,83.5, Math.toRadians(0));
@@ -118,7 +118,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
             case SCANPOSE:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3&& !scanned){
+                if(!follower.isBusy()&& !scanned){
                     scan();
                     if(limelight.getDetectedTagId() > 20) {
                         scanned = true;
@@ -131,8 +131,9 @@ public class FirstAutonBlue extends AutonTemplate {
                 }
                 break;
             case SHOOTING:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2)
                 {
+                    stopAutonIntake();
                     turret.setPower(1370);
                     turret.startOuttake();
                     autonShoot3();
@@ -182,7 +183,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 break;
             case SHOOT_PRELOAD2:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
-                    follower.setMaxPower(0.5);
+                    follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing2, true);
                     setPathState(PathState.BALLROW_GRABBING2);
@@ -191,7 +192,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 break;
             case SHOOT_PRELOAD3:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
-                    follower.setMaxPower(0.5);
+                    follower.setMaxPower(0.4);
                     runAutonIntake();
                     follower.followPath(AimingtoGrabbing3,true);
                     setPathState(PathState.BALLROW_GRABBING3);
@@ -246,6 +247,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 break;
             case GRABBING_REVERSAL3:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
+                    reverse();
                     follower.followPath(ReversaltoAiming3, true);
                     setPathState(PathState.SHOOTING);
                     telemetry.addLine("Going to Shoot Position");
