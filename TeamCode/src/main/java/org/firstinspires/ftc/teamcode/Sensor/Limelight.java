@@ -41,6 +41,7 @@ public class Limelight{
             result = limelight.getLatestResult();
             return result;
         }
+
         return null;
     }
     public void setPipeline(int ppSwitch){

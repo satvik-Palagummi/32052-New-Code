@@ -123,6 +123,7 @@ public class FirstAutonBlue extends AutonTemplate {
                     if(limelight.getDetectedTagId() > 20) {
                         scanned = true;
                     }
+
                 }
                 if(!follower.isBusy()&&scanned) {
                     follower.followPath(ShootPose, true);

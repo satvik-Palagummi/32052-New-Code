@@ -146,6 +146,7 @@ public class FirstAutonRed extends AutonTemplate {
                     follower.followPath(ShootPose, true);
                     setPathState(PathState.SHOOTING);
                 }
+
                 break;
             case SHOOTING:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1)

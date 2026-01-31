@@ -297,6 +297,7 @@ public abstract class AutonTemplate extends OpMode {
         actionTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
         turret = new Turret();
+
         spinner = new Spinner();
         turretLocalization = new TurretLocalization();
         nightcall = new Nightcall();
