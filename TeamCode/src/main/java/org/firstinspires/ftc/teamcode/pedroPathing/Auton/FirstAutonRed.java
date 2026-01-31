@@ -131,11 +131,12 @@ public class FirstAutonRed extends AutonTemplate {
             case STARTPOS:
                 balls.setCurrent(new int[]{1,1,0});
                 turretLocalization.setPos(2);
+                limelight.setPipeline(0);
                 follower.followPath(StartToScan, true);
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
             case SCANPOSE:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2) {
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3) {
                     follower.followPath(ShootPose, true);
                     setPathState(PathState.SHOOTING);
                 }else{

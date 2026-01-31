@@ -25,7 +25,7 @@ public class FirstAutonBlue extends AutonTemplate {
     PathState pathState;
 
     private final Pose startPose = new Pose(20,125, Math.toRadians(54));
-    private final Pose scanPose = new Pose(54, 121, Math.toRadians(-32));
+    private final Pose scanPose = new Pose(54, 121, Math.toRadians(-20));
     private final Pose shootPose = new Pose(59,87, Math.toRadians(45));
     private final Pose BallsRowAiming1 = new Pose(50,83.5, Math.toRadians(0));
     private final Pose grabBalls1 = new Pose(17,83.5, Math.toRadians(0));
@@ -113,11 +113,12 @@ public class FirstAutonBlue extends AutonTemplate {
             case STARTPOS:
                 balls.setCurrent(new int[]{1,1,0});
                 turretLocalization.setPos(2);
+                limelight.setPipeline(0);
                 follower.followPath(StartToScan, true);
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
             case SCANPOSE:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2) {
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3) {
                     follower.followPath(ShootPose, true);
                     setPathState(PathState.SHOOTING);
                 }else{

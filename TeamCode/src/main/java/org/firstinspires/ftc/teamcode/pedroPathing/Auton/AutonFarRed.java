@@ -49,7 +49,7 @@ public class AutonFarRed extends AutonTemplate {
                 setPathState(PathState.STARTPOS_SCANPOS);//Resets timer & makes new state
                 break;
             case STARTPOS_SCANPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>4)
                 {
                     follower.followPath(ScantoShoot, true);
                     setPathState(PathState.SCANPOS_SHOOTPOS);

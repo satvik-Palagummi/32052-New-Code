@@ -17,7 +17,7 @@ public class Limelight{
     private LLResult result;
     private boolean limelightIsOff;
     private boolean motifDetected;
-    public static int detectedTagId;
+    public int detectedTagId;
     private double ta;
     private double tx;
     private boolean resultWorks;
@@ -101,7 +101,7 @@ public class Limelight{
     public void setLimelightMode(LimelightMode newMode){
         currentMode = newMode;
     }
-    public static int getDetectedTagId(){
+    public int getDetectedTagId(){
         return detectedTagId;
     }
 

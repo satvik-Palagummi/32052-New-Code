@@ -126,7 +126,6 @@ public abstract class AutonTemplate extends OpMode {
         return false;
     }
     protected void scan(){
-        limelight.setPipeline(0);
         LLResult result = limelight.updateLimelight();
         id = limelight.scanMotif(result);
         balls.setMotif(id);
@@ -227,10 +226,10 @@ public abstract class AutonTemplate extends OpMode {
             for (int i = 0; i < 3; i++) {
                 if(sorted[i] - turretLocalization.getTurretPos() ==2 || sorted[i] -turretLocalization.getTurretPos() == -2){
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.7);
+                    waitOrient(0.5);
                 }else {
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.5);
+                    waitOrient(0.3);
                 }
                 pushServo.propel(sorted[i]);
                 wait(0.4);

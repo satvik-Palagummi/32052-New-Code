@@ -120,6 +120,7 @@ public class FrankensteinBlue extends LinearOpMode {
             balls.setMotif(Id);
             if(balls.getFullMotif() != null){
                 limelight.stop();
+                gamepad2.rumble(1000);
             }
         }
         if(gamepad2.circleWasPressed()){
@@ -175,10 +176,10 @@ public class FrankensteinBlue extends LinearOpMode {
                 case FIRSTPOS:
                     turretLocalization.setPos(0);
                     if(fromFar) {
-                        if (time.seconds() > 0.6) {
+                        if (time.seconds() > 0.4) {
                             pushServo.propel(0);
                         }
-                        if(time.seconds()>0.8){
+                        if(time.seconds()>0.75){
                             pushServo.retract(0);
                             setPathState(Position.SECPOS);
                             fromFar = false;
@@ -195,20 +196,20 @@ public class FrankensteinBlue extends LinearOpMode {
                     break;
                 case SECPOS:
                     turretLocalization.setPos(1);
-                    if (time.seconds() > 0.4 && time.seconds() < 0.75) {
+                    if (time.seconds() > 0.2 && time.seconds() < 0.55) {
                         pushServo.propel(1);
                     }
-                    if(time.seconds()>0.75){
+                    if(time.seconds()>0.55){
                         pushServo.retract(1);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(2);
-                    if (time.seconds() > 0.4&& time.seconds()<0.75) {
+                    if (time.seconds() > 0.2&& time.seconds()<0.55) {
                         pushServo.propel(2);
                     }
-                    if(time.seconds()>0.75){
+                    if(time.seconds()>0.55){
                         pushServo.retract(2);
                         allThree = true;
                     }
@@ -219,30 +220,30 @@ public class FrankensteinBlue extends LinearOpMode {
             switch(sortedPos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(sorted[0]);
-                    if (time.seconds() > 0.6) {
+                    if (time.seconds() > 0.4) {
                         pushServo.propel(sorted[0]);
                     }
-                    if(time.seconds()>0.95){
+                    if(time.seconds()>0.75){
                         pushServo.retract(sorted[0]);
                         setPathState(Position.SECPOS);
                     }
                     break;
                 case SECPOS:
                     turretLocalization.setPos(sorted[1]);
-                    if (time.seconds() > 0.6 && time.seconds() < 0.95) {
+                    if (time.seconds() > 0.4 && time.seconds() < 0.75) {
                         pushServo.propel(sorted[1]);
                     }
-                    if(time.seconds()>0.95){
+                    if(time.seconds()>0.75){
                         pushServo.retract(sorted[1]);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(sorted[2]);
-                    if (time.seconds() > 0.6&& time.seconds()<0.95) {
+                    if (time.seconds() > 0.4&& time.seconds()<0.75) {
                         pushServo.propel(sorted[2]);
                     }
-                    if(time.seconds()>0.95){
+                    if(time.seconds()>0.75){
                         pushServo.retract(sorted[2]);
                         allThree = true;
                         sorted = null;
@@ -253,6 +254,7 @@ public class FrankensteinBlue extends LinearOpMode {
     }
     public void setPathState(Position newState) {
         pos = newState;
+        sortedPos = newState;
         time.reset();
     }
     public void handleLocalization(){
@@ -295,7 +297,7 @@ public class FrankensteinBlue extends LinearOpMode {
         addTelemetry("TurretR Velocity", turret.getTurretRVelocity());
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
-        addTelemetry("April Tag ID: ", Limelight.detectedTagId);
+        addTelemetry("April Tag ID: ", limelight.getDetectedTagId());
         addTelemetry("Limelight X", limelight.getTx());
         addTelemetry("Time", time.seconds());
         addTelemetry("Game Time", gameTime.seconds());
