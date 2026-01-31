@@ -45,6 +45,7 @@ public abstract class AutonTemplate extends OpMode {
     protected int id;
     protected boolean greenCheck;
     protected boolean pushed;
+    protected boolean scanned;
 
     /**
      * Set the current path state and reset the path timer
@@ -288,6 +289,8 @@ public abstract class AutonTemplate extends OpMode {
 
     @Override
     public void init() {
+        id = 0;
+        scanned = false;
         pathTimer = new Timer();
         opModeTimer = new Timer();
         opModeTimer.resetTimer();

@@ -118,13 +118,16 @@ public class FirstAutonBlue extends AutonTemplate {
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
                 break;
             case SCANPOSE:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3) {
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3&& !scanned){
+                    scan();
+                    if(limelight.getDetectedTagId() > 20) {
+                        scanned = true;
+                    }
+                }
+                if(!follower.isBusy()&&scanned) {
                     follower.followPath(ShootPose, true);
                     setPathState(PathState.SHOOTING);
-                }else{
-                    scan();
                 }
-
                 break;
             case SHOOTING:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1)

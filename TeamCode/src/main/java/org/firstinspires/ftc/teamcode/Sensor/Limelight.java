@@ -28,6 +28,8 @@ public class Limelight{
         limelight.start();
         limelightIsOff = false;
         result = null;
+        detectedTagId = -1;
+        motifDetected = false;
     }
 
     public LLResult updateLimelight(){
@@ -49,6 +51,9 @@ public class Limelight{
         }
     }
     public int scanMotif(LLResult result){
+        if(detectedTagId > 20){
+            return detectedTagId;
+        }
         if(result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
             for (int ID = 21; ID <= 23; ID++) {

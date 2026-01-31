@@ -49,12 +49,15 @@ public class AutonFarRed extends AutonTemplate {
                 setPathState(PathState.STARTPOS_SCANPOS);//Resets timer & makes new state
                 break;
             case STARTPOS_SCANPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>4)
-                {
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3&& !scanned){
+                    scan();
+                    if(limelight.getDetectedTagId() > 20) {
+                        scanned = true;
+                    }
+                }
+                if(!follower.isBusy()&&scanned) {
                     follower.followPath(ScantoShoot, true);
                     setPathState(PathState.SCANPOS_SHOOTPOS);
-                }else{
-                    scan();
                 }
                 break;
             case SCANPOS_SHOOTPOS:
