@@ -230,10 +230,10 @@ public abstract class AutonTemplate extends OpMode {
                     waitOrient(0.5);
                 }else {
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.3);
+                    waitOrient(0.35);
                 }
                 pushServo.propel(sorted[i]);
-                wait(0.4);
+                wait(0.45);
                 pushServo.retract(sorted[i]);
             }
         }

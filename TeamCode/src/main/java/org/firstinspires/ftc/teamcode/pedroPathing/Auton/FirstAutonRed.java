@@ -31,7 +31,7 @@ public class FirstAutonRed extends AutonTemplate {
     PathState pathState;
 
     private final Pose startPose = new Pose(124,125, Math.toRadians(-54));
-    private final Pose scanPose = new Pose(91, 90, Math.toRadians(15));
+    private final Pose scanPose = new Pose(90, 121, Math.toRadians(35));
     private final Pose shootPose = new Pose(84,86, Math.toRadians(-50));
     private final Pose BallsRowAiming1 = new Pose(90,83.5, Math.toRadians(0));
     private final Pose grabBalls1 = new Pose(125,83.5, Math.toRadians(0));
@@ -250,7 +250,6 @@ public class FirstAutonRed extends AutonTemplate {
                 break;
             case GRABBING_REVERSAL1:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
-                    reverse();
                     follower.followPath(ReversaltoAiming1, true);
                     setPathState(PathState.SHOOTING);
                     telemetry.addLine("Going to Shoot Position");
@@ -259,7 +258,6 @@ public class FirstAutonRed extends AutonTemplate {
                 break;
             case GRABBING_REVERSAL2:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
-                    reverse();
                     follower.followPath(ReversaltoAiming2, true);
                     setPathState(PathState.SHOOTING);
                     telemetry.addLine("Going to Shoot Position");
@@ -268,7 +266,6 @@ public class FirstAutonRed extends AutonTemplate {
                 break;
             case GRABBING_REVERSAL3:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
-                    reverse();
                     follower.followPath(ReversaltoAiming3, true);
                     setPathState(PathState.SHOOTING);
                     telemetry.addLine("Going to Shoot Position");
