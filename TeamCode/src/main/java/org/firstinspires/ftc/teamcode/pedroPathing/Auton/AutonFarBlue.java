@@ -22,7 +22,7 @@ public class AutonFarBlue extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose scanPose = new Pose(60,10, Math.toRadians(-19));
+    private final Pose scanPose = new Pose(60,20, Math.toRadians(-6));
 
     private final Pose startPose = new Pose(60,8, Math.toRadians(90));
 
@@ -65,7 +65,7 @@ public class AutonFarBlue extends AutonTemplate {
             case SCANPOS_SHOOTPOS:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>23)
                 {
-                    turret.setPower(1680);
+                    turret.setPower(1690);
                     if(balls.getFullMotif() !=null) {
                         autonShoot3();
                     }else{

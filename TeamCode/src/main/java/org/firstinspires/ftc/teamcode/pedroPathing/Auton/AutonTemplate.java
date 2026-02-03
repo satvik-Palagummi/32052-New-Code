@@ -46,6 +46,7 @@ public abstract class AutonTemplate extends OpMode {
     protected boolean greenCheck;
     protected boolean pushed;
     protected boolean scanned;
+    protected boolean fromFar;
 
     /**
      * Set the current path state and reset the path timer
@@ -66,6 +67,11 @@ public abstract class AutonTemplate extends OpMode {
     }
     protected void waitOrient(double time) {
         actionTimer.resetTimer();
+        if(actionTimer.getElapsedTimeSeconds() == time){
+            if(fromFar){
+                fromFar = false;
+            }
+        }
         while (actionTimer.getElapsedTimeSeconds() < time) {
             follower.update();
             limelight.setPipeline(8);
@@ -213,7 +219,7 @@ public abstract class AutonTemplate extends OpMode {
     protected void autonShoot2_5() {
         for(int i = 0; i<3; i++){
             turretLocalization.setPos(i);
-            waitOrient(0.5);
+            waitOrient(0.35);
             pushServo.propel(i);
             wait(0.45);
             pushServo.retract(i);
@@ -226,11 +232,14 @@ public abstract class AutonTemplate extends OpMode {
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
                 if(sorted[i] - turretLocalization.getTurretPos() ==2 || sorted[i] -turretLocalization.getTurretPos() == -2){
+                    fromFar = true;
+                }
+                if(fromFar){
                     turretLocalization.setPos(sorted[i]);
                     waitOrient(0.5);
                 }else {
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.35);
+                    waitOrient(0.33);
                 }
                 pushServo.propel(sorted[i]);
                 wait(0.45);

@@ -6,7 +6,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous
-public class AutonFarRed extends AutonTemplate {
+public class AutonFarRed6 extends AutonTemplate {
     public enum PathState {
         //START POSITION-END POSITION
         //DRIVE > MOVEMENT STATE
@@ -14,11 +14,7 @@ public class AutonFarRed extends AutonTemplate {
         STARTPOS,
         STARTPOS_SCANPOS,
         SCANPOS_SHOOTPOS,
-        SHOOT1_SHOOT2,
-        SHOOT2_SHOOT3,
-        SHOOT_PRELOAD,
-        BALLROW_GRABBING1,
-        GRABBING_REVERSAL1,
+        SHOOT_PRELOAD3, BALLROW_GRABBING3, GRABBING_REVERSAL3
     }
     PathState pathState;
 
@@ -26,7 +22,9 @@ public class AutonFarRed extends AutonTemplate {
     private final Pose scanPose = new Pose(84,20, Math.toRadians(7));
 
     private final Pose shootPose = new Pose(84,10, Math.toRadians(-19));
-    private PathChain StartToScan, ScantoShoot;
+    private final Pose BallsRowAiming3 = new Pose(83, 35, Math.toRadians(0));
+    private final Pose grabBalls3 = new Pose(130, 35, Math.toRadians(0));
+    private PathChain StartToScan, ScantoShoot, shootToBallAiming3, AimingtoGrabbing3, GrabbingReversal3, ReversaltoAiming3;
 
 
     public void buildPaths(){
@@ -37,6 +35,22 @@ public class AutonFarRed extends AutonTemplate {
         ScantoShoot = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, shootPose))
                 .setConstantHeadingInterpolation(shootPose.getHeading())
+                .build();
+        shootToBallAiming3 = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, BallsRowAiming3))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), BallsRowAiming3.getHeading())
+                .build();
+        AimingtoGrabbing3 = follower.pathBuilder()
+                .addPath(new BezierLine(BallsRowAiming3, grabBalls3))
+                .setLinearHeadingInterpolation(BallsRowAiming3.getHeading(), grabBalls3.getHeading())
+                .build();
+        GrabbingReversal3 = follower.pathBuilder()
+                .addPath(new BezierLine(grabBalls3, BallsRowAiming3))
+                .setLinearHeadingInterpolation(grabBalls3.getHeading(), BallsRowAiming3.getHeading())
+                .build();
+        ReversaltoAiming3 = follower.pathBuilder()
+                .addPath(new BezierLine(BallsRowAiming3, shootPose))
+                .setLinearHeadingInterpolation(BallsRowAiming3.getHeading(), shootPose.getHeading())
                 .build();
     }
 
@@ -72,6 +86,30 @@ public class AutonFarRed extends AutonTemplate {
                         autonShoot2_5();
                     }
                     turret.stopOuttake();
+                }
+                break;
+            case SHOOT_PRELOAD3:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
+                    follower.setMaxPower(0.4);
+                    runAutonIntake();
+                    follower.followPath(AimingtoGrabbing3,true);
+                    setPathState(PathState.BALLROW_GRABBING3);
+                    telemetry.addLine("Done Aiming towards Grab 3");
+                }
+                break;
+            case BALLROW_GRABBING3:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
+                    balls.setCurrent(new int[]{0,1,1});
+                    follower.setMaxPower(1.0);
+                    stopAutonIntake();
+                    follower.followPath(GrabbingReversal3, true);
+                    setPathState(PathState.GRABBING_REVERSAL3);
+                    telemetry.addLine("Done Grabbing");
+                }
+                break;
+            case GRABBING_REVERSAL3:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
+                    telemetry.addLine("Done");
                 }
                 break;
             default:

@@ -5,8 +5,10 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import java.util.Arrays;
+
 @Autonomous
-public class AutonFarRed extends AutonTemplate {
+public class AutonFarBlueGetOut extends AutonTemplate {
     public enum PathState {
         //START POSITION-END POSITION
         //DRIVE > MOVEMENT STATE
@@ -14,19 +16,18 @@ public class AutonFarRed extends AutonTemplate {
         STARTPOS,
         STARTPOS_SCANPOS,
         SCANPOS_SHOOTPOS,
-        SHOOT1_SHOOT2,
-        SHOOT2_SHOOT3,
-        SHOOT_PRELOAD,
-        BALLROW_GRABBING1,
-        GRABBING_REVERSAL1,
+        GETOUT, BALLROW_GRABBING3, GRABBING_REVERSAL3
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(84,8, Math.toRadians(-90));
-    private final Pose scanPose = new Pose(84,20, Math.toRadians(7));
+    private final Pose scanPose = new Pose(60,20, Math.toRadians(-7));
 
-    private final Pose shootPose = new Pose(84,10, Math.toRadians(-19));
-    private PathChain StartToScan, ScantoShoot;
+    private final Pose startPose = new Pose(60,8, Math.toRadians(90));
+
+    private final Pose shootPose = new Pose(60,10, Math.toRadians(20));
+    private final Pose BallsRowAiming3 = new Pose(11, 10, Math.toRadians(0));
+    private final Pose grabBalls3 = new Pose(15, 35.5, Math.toRadians(0));
+    private PathChain StartToScan, ScantoShoot, shootToBallAiming3, AimingtoGrabbing3, GrabbingReversal3, ReversaltoAiming3;
 
 
     public void buildPaths(){
@@ -37,6 +38,22 @@ public class AutonFarRed extends AutonTemplate {
         ScantoShoot = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, shootPose))
                 .setConstantHeadingInterpolation(shootPose.getHeading())
+                .build();
+        shootToBallAiming3 = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, BallsRowAiming3))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), BallsRowAiming3.getHeading())
+                .build();
+        AimingtoGrabbing3 = follower.pathBuilder()
+                .addPath(new BezierLine(BallsRowAiming3, grabBalls3))
+                .setLinearHeadingInterpolation(BallsRowAiming3.getHeading(), grabBalls3.getHeading())
+                .build();
+        GrabbingReversal3 = follower.pathBuilder()
+                .addPath(new BezierLine(grabBalls3, BallsRowAiming3))
+                .setLinearHeadingInterpolation(grabBalls3.getHeading(), BallsRowAiming3.getHeading())
+                .build();
+        ReversaltoAiming3 = follower.pathBuilder()
+                .addPath(new BezierLine(BallsRowAiming3, shootPose))
+                .setLinearHeadingInterpolation(BallsRowAiming3.getHeading(), shootPose.getHeading())
                 .build();
     }
 
@@ -66,12 +83,32 @@ public class AutonFarRed extends AutonTemplate {
                 {
                     turret.setPower(1690);
                     turret.startOuttake();
-                    if(balls.getFullMotif() !=null) {
+                    if(!Arrays.equals(balls.getFullMotif(), new int[]{-1, -1, -1})) {
                         autonShoot3();
                     }else{
                         autonShoot2_5();
                     }
                     turret.stopOuttake();
+                }
+                break;
+            case GETOUT:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
+                    telemetry.addLine("Done Aiming towards Grab 3");
+                }
+                break;
+            case BALLROW_GRABBING3:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
+                    balls.setCurrent(new int[]{0,1,1});
+                    follower.setMaxPower(1.0);
+                    stopAutonIntake();
+                    follower.followPath(GrabbingReversal3, true);
+                    setPathState(PathState.GRABBING_REVERSAL3);
+                    telemetry.addLine("Done Grabbing");
+                }
+                break;
+            case GRABBING_REVERSAL3:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
+                    telemetry.addLine("Done");
                 }
                 break;
             default:
