@@ -152,7 +152,7 @@ public class FirstAutonRed extends AutonTemplate {
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2)
                 {
                     stopAutonIntake();
-                    turret.setPower(1370);
+                    turret.setPower(1365);
                     turret.startOuttake();
                     autonShoot3();
 
