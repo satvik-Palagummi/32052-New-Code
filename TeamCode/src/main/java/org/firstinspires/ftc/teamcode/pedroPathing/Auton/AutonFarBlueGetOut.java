@@ -20,9 +20,9 @@ public class AutonFarBlueGetOut extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose scanPose = new Pose(60,20, Math.toRadians(-7));
 
     private final Pose startPose = new Pose(60,8, Math.toRadians(90));
+    private final Pose scanPose = new Pose(60,20, Math.toRadians(-7));
 
     private final Pose shootPose = new Pose(60,10, Math.toRadians(20));
     private final Pose BallsRowAiming3 = new Pose(11, 10, Math.toRadians(0));
