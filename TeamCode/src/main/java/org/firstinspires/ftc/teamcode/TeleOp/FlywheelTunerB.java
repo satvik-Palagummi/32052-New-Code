@@ -1,14 +1,17 @@
-package org.firstinspires.ftc.teamcode.Outtake;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Outtake.Turret;
 
-public class Turret {
+@TeleOp
+public class FlywheelTunerB extends OpMode {
     double speed = 1420;//Target Velocity
     ElapsedTime loopTime = new ElapsedTime();
     private double lastVelocity = 0;
@@ -21,46 +24,30 @@ public class Turret {
     private static double V_kD = 0.0;
     private static double MAX_ACCELERATION;
     private double integralSum = 0;
+    public DcMotorEx turretL;
+    public DcMotorEx turretR;
+    double highVelocity = 1640;
+    double curTargetVelocity = highVelocity;
+    double lowVelocity = 900;
+    double Power = 0;
+    double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001};
+    int stepIndex  = 1;
+    private boolean powered;
 
-    private DcMotorEx turretL;
-    private DcMotorEx turretR;
-
-    public void initTurret(HardwareMap hw) {
-        turretL = hw.get(DcMotorEx.class, "TurretL");
-        turretR = hw.get(DcMotorEx.class, "TurretR");
+    @Override
+    public void init() {
+        turretL = hardwareMap.get(DcMotorEx.class, "TurretL");
+        turretR = hardwareMap.get(DcMotorEx.class, "TurretR");
         turretL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretL.setDirection(DcMotorEx.Direction.FORWARD);
         turretR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretR.setDirection(DcMotorEx.Direction.REVERSE);
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(107, 0, 0, 12.813);
-        turretL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-        turretR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-    }
-    public void startOuttake(){
-        turretL.setVelocity(speed);
-        turretR.setVelocity(speed);
-    }
-    public void startOuttake(boolean outtake){
-        if(outtake){
-            turretL.setVelocity(speed);
-            turretR.setVelocity(speed);
-        }else{
-            turretL.setVelocity(0);
-            turretR.setVelocity(0);
-        }
-    }
-    /*
-    public void startOuttake(boolean outtake){
-        if(outtake){
-            turretL.setPower(calc());
-            turretR.setPower(calc());
-        }else{
-            turretL.setPower(0);
-            turretR.setPower(0);
-        }
-    }
+        telemetry.addLine("Init complete");
 
-     */
+    }
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
     public double calc(){
         double dt = loopTime.seconds();
         loopTime.reset();
@@ -119,24 +106,28 @@ public class Turret {
         return totalPower;
     }
 
-    public void setPower(double sped){
-        speed = sped;
-    }
-    private double clamp(double value, double min, double max) {
-        return Math.max(min, Math.min(max, value));
-    }
+    @Override
+    public void loop() {
+        double dt = loopTime.seconds();
+        loopTime.reset();
+        if(gamepad1.yWasPressed()){
+            powered = !powered;
+        }
+        if(powered) turretL.setPower(calc());
+        if(gamepad1.bWasPressed()){
+            stepIndex = (stepIndex + 1) % stepSizes.length;
+        }
+        if(gamepad1.dpadUpWasPressed()){
+            Power += 1;
+        }
+        if(gamepad1.dpadDownWasPressed()){
+            Power -= 1;
+        }
 
-    public double getSpeed() {
-        return speed;
+        telemetry.addData("Target Velocity", curTargetVelocity);
+        telemetry.addLine("----------------------------------------");
+        telemetry.addData("Tuning Power", Power);
+        telemetry.addData("Step Size", stepSizes[stepIndex]);
+        telemetry.addData("Acceleration", ((turretR.getVelocity()+turretL.getVelocity())/2)/dt);
     }
-
-    public double getTurretLPower(){return turretL.getPower();}
-    public double getTurretRPower(){return turretR.getPower();}
-    public double getTurretLVelocity(){return turretL.getVelocity();}
-    public double getTurretRVelocity(){return turretR.getVelocity();}
-    public void stopOuttake(){
-        turretL.setPower(0);
-        turretR.setPower(0);
-    }
-
 }

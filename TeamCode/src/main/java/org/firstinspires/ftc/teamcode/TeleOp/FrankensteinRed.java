@@ -44,8 +44,10 @@ public class FrankensteinRed extends LinearOpMode {
     private ElapsedTime time = new ElapsedTime();
     private ElapsedTime gameTime = new ElapsedTime();
     private int shootingPos = 0;
+    private boolean motifSet;
     private boolean fromFar;
     private int current;
+    private boolean outtake;
 
 
     @Override
@@ -109,32 +111,39 @@ public class FrankensteinRed extends LinearOpMode {
         }else if(gamepad1.right_trigger<0.3 &&allThree){
             pushServo.retract(shootingPos);
         }
-        if(gamepad2.right_trigger>0.1){
-            turret.startOuttake();
-        }else if(gamepad2.right_trigger<0.3&& allThree){
-            turret.stopOuttake();
+        if(gamepad2.rightBumperWasPressed()&& allThree){
+            outtake = !outtake;
         }
-        if(gamepad2.square){
-            limelight.setPipeline(0);
-            LLResult result = limelight.updateLimelight();
-            Id = limelight.scanMotif(result);
-            balls.setMotif(Id);
-            if(balls.getFullMotif() != null){
-                limelight.stop();
-                gamepad2.rumble(1000);
+        turret.startOuttake(outtake);
+        if(gamepad2.dpadDownWasPressed()){
+            turret.setPower(turret.getSpeed()+10);
+        }
+        if(gamepad2.squareWasPressed()){
+            if(!motifSet){
+                motifSet = true;
+            }else {
+                balls.sortBalls();
             }
         }
-        if(gamepad2.circleWasPressed()){
-            sorted = balls.sortBalls();
-        }
-        if(gamepad2.rightBumperWasPressed()){
-            current++;
-            if(current % 3 == 1){
-                balls.setCurrent(1);
-            }else if(current % 3 == 2){
-                balls.setCurrent(2);
-            }else if(current % 3 == 0){
-                balls.setCurrent(3);
+        if(gamepad2.leftBumperWasPressed()){
+            if(!motifSet) {
+                current++;
+                if (current % 3 == 1) {
+                    balls.setMotif(21);
+                } else if (current % 3 == 2) {
+                    balls.setMotif(22);
+                } else if (current % 3 == 0) {
+                    balls.setMotif(23);
+                }
+            }else{
+                current++;
+                if (current % 3 == 1) {
+                    balls.setCurrent(1);
+                } else if (current % 3 == 2) {
+                    balls.setCurrent(2);
+                } else if (current % 3 == 0) {
+                    balls.setCurrent(3);
+                }
             }
         }
         if(gamepad1.left_trigger>0.1){
@@ -149,15 +158,20 @@ public class FrankensteinRed extends LinearOpMode {
                 nightcall.cutPower();
             }
         }
-        if(gamepad2.y){
+        if(gamepad2.triangle){
             turret.setPower(1420);
             toTheLeft = -1.5;
             toTheRight = 1.5;
         }
-        if(gamepad2.a){
+        if(gamepad2.cross){
             turret.setPower(1700);
             toTheLeft = -4.0;
             toTheRight = -2.5;
+        }
+        if(gamepad2.circle){
+            turret.setPower(1460);
+            toTheLeft = -2.5;
+            toTheRight = 0.5;
         }
         if(gamepad2.optionsWasPressed()){
             time.reset();

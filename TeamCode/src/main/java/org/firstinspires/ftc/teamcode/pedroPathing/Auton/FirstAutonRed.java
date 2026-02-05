@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Auton;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
@@ -82,12 +83,8 @@ public class FirstAutonRed extends AutonTemplate {
                 .setLinearHeadingInterpolation(BallsRowAiming1.getHeading(), grabBalls1.getHeading())
                 .build();
         GrabbingReversal1 = follower.pathBuilder()
-                .addPath(new BezierLine(grabBalls1, BallsRowAiming1))
+                .addPath(new BezierLine(grabBalls1, shootPose))
                 .setLinearHeadingInterpolation(grabBalls1.getHeading(), BallsRowAiming1.getHeading())
-                .build();
-        ReversaltoAiming1 = follower.pathBuilder()
-                .addPath(new BezierLine(BallsRowAiming1, shootPose))
-                .setLinearHeadingInterpolation(BallsRowAiming1.getHeading(), shootPose.getHeading())
                 .build();
         //SECOND ROW PATHS
 
@@ -139,6 +136,7 @@ public class FirstAutonRed extends AutonTemplate {
             case SCANPOSE:
                 if(!follower.isBusy()&& !scanned){
                     scan();
+                    turret.setPower(1365);
                     if(limelight.getDetectedTagId() > 20) {
                         scanned = true;
                     }
@@ -150,10 +148,9 @@ public class FirstAutonRed extends AutonTemplate {
 
                 break;
             case SHOOTING:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2)
+                if(!follower.isBusy())
                 {
                     stopAutonIntake();
-                    turret.setPower(1365);
                     turret.startOuttake();
                     autonShoot3();
 
@@ -167,6 +164,7 @@ public class FirstAutonRed extends AutonTemplate {
                     } else if (!thirdGrab) {
                         follower.followPath(shootToBallAiming3, true);
                         setPathState(PathState.SHOOT_PRELOAD3);
+                        turret.setPower(1700);
                     }
                     else{
                         telemetry.addLine("DONE");
@@ -225,7 +223,8 @@ public class FirstAutonRed extends AutonTemplate {
                     follower.setMaxPower(1.0);
                     stopAutonIntake();
                     follower.followPath(GrabbingReversal1, true);
-                    setPathState(PathState.GRABBING_REVERSAL1);
+                    setPathState(PathState.SHOOTING);
+                    firstGrab = true;
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
@@ -247,14 +246,6 @@ public class FirstAutonRed extends AutonTemplate {
                     follower.followPath(GrabbingReversal3, true);
                     setPathState(PathState.GRABBING_REVERSAL3);
                     telemetry.addLine("Done Grabbing");
-                }
-                break;
-            case GRABBING_REVERSAL1:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>0.5){
-                    follower.followPath(ReversaltoAiming1, true);
-                    setPathState(PathState.SHOOTING);
-                    telemetry.addLine("Going to Shoot Position");
-                    firstGrab = true;
                 }
                 break;
             case GRABBING_REVERSAL2:

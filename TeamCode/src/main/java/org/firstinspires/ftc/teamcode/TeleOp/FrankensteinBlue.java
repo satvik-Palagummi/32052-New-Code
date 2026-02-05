@@ -45,7 +45,9 @@ public class FrankensteinBlue extends LinearOpMode {
     private ElapsedTime gameTime = new ElapsedTime();
     private int shootingPos = 0;
     private boolean fromFar;
+    private boolean outtake;
     private int current = 1;
+    private boolean motifSet;
 
 
     @Override
@@ -108,32 +110,43 @@ public class FrankensteinBlue extends LinearOpMode {
         }else if(gamepad1.right_trigger<0.3 &&allThree){
             pushServo.retract(shootingPos);
         }
-        if(gamepad2.right_trigger>0.3){
-            turret.startOuttake();
-        }else if(gamepad2.right_trigger<0.3&& allThree){
-            turret.stopOuttake();
+        if(gamepad2.rightBumperWasPressed()&& allThree){
+            outtake = !outtake;
         }
-        if(gamepad2.square){
-            limelight.setPipeline(0);
-            LLResult result = limelight.updateLimelight();
-            Id = limelight.scanMotif(result);
-            balls.setMotif(Id);
-            if(balls.getFullMotif() != null){
-                limelight.stop();
-                gamepad2.rumble(1000);
+        turret.startOuttake(outtake);
+        if(gamepad2.circle){
+            turret.setPower(1450);
+        }
+        if(gamepad2.dpadDownWasPressed()){
+            turret.setPower(turret.getSpeed()+10);
+        }
+        if(gamepad2.squareWasPressed()){
+            if(!motifSet){
+                motifSet = true;
+                addTelemetry("Motif Set", motifSet);
+            } else {
+                balls.sortBalls();
             }
         }
-        if(gamepad2.circleWasPressed()){
-            sorted = balls.sortBalls();
-        }
-        if(gamepad2.rightBumperWasPressed()){
-            current++;
-            if(current % 3 == 1){
-                balls.setCurrent(1);
-            }else if(current % 3 == 2){
-                balls.setCurrent(2);
-            }else if(current % 3 == 0){
-                balls.setCurrent(3);
+        if(gamepad2.leftBumperWasPressed()){
+            if(!motifSet) {
+                current++;
+                if (current % 3 == 1) {
+                    balls.setMotif(21);
+                } else if (current % 3 == 2) {
+                    balls.setMotif(22);
+                } else if (current % 3 == 0) {
+                    balls.setMotif(23);
+                }
+            }else{
+                current++;
+                if (current % 3 == 1) {
+                    balls.setCurrent(1);
+                } else if (current % 3 == 2) {
+                    balls.setCurrent(2);
+                } else if (current % 3 == 0) {
+                    balls.setCurrent(3);
+                }
             }
         }
         if(gamepad1.left_trigger>0.1){
@@ -148,12 +161,12 @@ public class FrankensteinBlue extends LinearOpMode {
                 nightcall.cutPower();
             }
         }
-        if(gamepad2.y){
+        if(gamepad2.triangle){
             turret.setPower(1420);
             toTheLeft = -1.5;
             toTheRight = 1.5;
         }
-        if(gamepad2.a){
+        if(gamepad2.cross){
             turret.setPower(1700);
             toTheLeft = 2.5;
             toTheRight = 4.5;
@@ -167,7 +180,7 @@ public class FrankensteinBlue extends LinearOpMode {
             time.reset();
             pos = Position.FIRSTPOS;
             sortedPos = Position.FIRSTPOS;
-            if(turretLocalization.getTurretPos()>0&&sorted == null){
+            if(turretLocalization.getTurretPos()>0){
                 fromFar = true;
             }
         }
@@ -220,10 +233,10 @@ public class FrankensteinBlue extends LinearOpMode {
             switch(sortedPos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(sorted[0]);
-                    if (time.seconds() > 0.4) {
+                    if (time.seconds() > 0.6) {
                         pushServo.propel(sorted[0]);
                     }
-                    if(time.seconds()>0.75){
+                    if(time.seconds()>0.95){
                         pushServo.retract(sorted[0]);
                         setPathState(Position.SECPOS);
                     }
