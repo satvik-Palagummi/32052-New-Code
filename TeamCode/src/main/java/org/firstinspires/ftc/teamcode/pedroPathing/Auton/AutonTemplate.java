@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.FrankensteinBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Base template for all autonomous OpModes.
@@ -136,7 +137,7 @@ public abstract class AutonTemplate extends OpMode {
         LLResult result = limelight.updateLimelight();
         id = limelight.scanMotif(result);
         balls.setMotif(id);
-        if(balls.getFullMotif() != null){
+        if(!Arrays.equals(balls.getFullMotif(), new int[]{-1, -1, -1})){
             limelight.stop();
         }
     }

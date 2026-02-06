@@ -17,12 +17,12 @@ public class FlywheelTunerB extends OpMode {
     private double lastVelocity = 0;
     private double lastVelocityError = 0;
     private static double kS = 0.05;
-    private static double kV = 0;
-    private static double kA = 0;
-    private static double V_kP = 0.0001;
-    private static double V_kI = 0.0002;
-    private static double V_kD = 0.0;
-    private static double MAX_ACCELERATION;
+    private double kV = 0.000387;
+    private  double kA = 0.0;
+    private  double V_kP = 0.000015;
+    private  double V_kI = 0.0;
+    private  double V_kD = 0.0000008;
+    private static double MAX_ACCELERATION = 15000;
     private double integralSum = 0;
     public DcMotorEx turretL;
     public DcMotorEx turretR;
@@ -30,9 +30,13 @@ public class FlywheelTunerB extends OpMode {
     double curTargetVelocity = highVelocity;
     double lowVelocity = 900;
     double Power = 0;
-    double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001};
+    double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001,0.00001,0.000001};
     int stepIndex  = 1;
     private boolean powered;
+    private double accel;
+    private double totalPower;
+    private double velError;
+    private double lastTotalPower;
 
     @Override
     public void init() {
@@ -50,6 +54,7 @@ public class FlywheelTunerB extends OpMode {
     }
     public double calc(){
         double dt = loopTime.seconds();
+        if (dt <= 0 || dt > 0.1) dt = 0.02;
         loopTime.reset();
         double currentVelocity = (turretL.getVelocity() + turretR.getVelocity()) / 2.0;
         double measuredAcceleration = (currentVelocity - lastVelocity) / dt;
@@ -63,6 +68,7 @@ public class FlywheelTunerB extends OpMode {
         desiredAcceleration = clamp(desiredAcceleration,
                 -MAX_ACCELERATION,
                 MAX_ACCELERATION);
+        accel = desiredAcceleration;
 
         // ==================== FEEDFORWARD ====================
         // Full equation: kS * sign(v) + kV * targetVel + kA * acceleration
@@ -76,7 +82,7 @@ public class FlywheelTunerB extends OpMode {
 
         // Integral with anti-windup
         integralSum += velocityError * dt;
-        integralSum = clamp(integralSum, -0.3, 0.3);//Integral Max
+        integralSum = clamp(integralSum, -0.2, 0.2);//Integral Max
 
         // Zero-crossing reset prevents overshoot
         if (lastVelocityError != 0 && Math.signum(velocityError) != Math.signum(lastVelocityError)) {
@@ -85,7 +91,7 @@ public class FlywheelTunerB extends OpMode {
         double iOutput = V_kI * integralSum;
 
         // Derivative (on measurement to avoid setpoint kick)
-        double dOutput = V_kD * -measuredAcceleration;
+        double dOutput = V_kD * (velocityError-lastVelocityError)/dt;
 
         lastVelocityError = velocityError;
 
@@ -95,8 +101,14 @@ public class FlywheelTunerB extends OpMode {
 
         // ==================== TOTAL OUTPUT ====================
         double totalPower = ffOutput + pidOutput;
+        double maxDelta = 0.005; // power per loop
+        totalPower = clamp(
+                totalPower,
+                lastTotalPower - maxDelta,
+                lastTotalPower + maxDelta
+        );
         totalPower = clamp(totalPower, 0, 1.0);  // Motor power range (flywheel only spins one direction)
-        //lastTotalPower = totalPower;
+        lastTotalPower = totalPower;
 
         // Apply power to both motors
         /*robot.shooterMotor1.setPower(totalPower);
@@ -113,20 +125,44 @@ public class FlywheelTunerB extends OpMode {
         if(gamepad1.yWasPressed()){
             powered = !powered;
         }
-        if(powered) turretL.setPower(calc());
+        if(gamepad1.aWasPressed()){
+            speed = 900;
+        }
+        if(gamepad1.xWasPressed()){
+            speed = 1420;
+        }
+        if(powered) {
+            turretL.setPower(calc());
+            turretR.setPower(calc());
+        }else{
+            turretL.setPower(0);
+            turretR.setPower(0);
+        }
         if(gamepad1.bWasPressed()){
             stepIndex = (stepIndex + 1) % stepSizes.length;
         }
         if(gamepad1.dpadUpWasPressed()){
-            Power += 1;
+             V_kI+= 0.00005;
         }
         if(gamepad1.dpadDownWasPressed()){
-            Power -= 1;
+            V_kI-= 0.00005;
+        }
+        if(gamepad1.dpadLeftWasPressed()){
+            V_kP+= 0.00005;
+        }
+        if(gamepad1.dpadRightWasPressed()){
+            V_kP -= 0.00005;
         }
 
-        telemetry.addData("Target Velocity", curTargetVelocity);
+        telemetry.addData("Current Velocity", (turretL.getVelocity()+turretR.getVelocity())/2);
         telemetry.addLine("----------------------------------------");
-        telemetry.addData("Tuning Power", Power);
+        telemetry.addData("Total Power", totalPower);
+        telemetry.addData("Velocity Error ",  velError);
+        telemetry.addData("V_kI", V_kI*1000);
+        telemetry.addData("V_kP", V_kP*1000);
+        telemetry.addData("V_kD", V_kD*1000);
+        telemetry.addData("Accel", accel);
+        telemetry.addData("total Power", lastTotalPower);
         telemetry.addData("Step Size", stepSizes[stepIndex]);
         telemetry.addData("Acceleration", ((turretR.getVelocity()+turretL.getVelocity())/2)/dt);
     }

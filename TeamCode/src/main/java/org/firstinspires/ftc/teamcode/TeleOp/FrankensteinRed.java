@@ -88,10 +88,9 @@ public class FrankensteinRed extends LinearOpMode {
         addTelemetry("Rotation", rx);
         boolean slow = false;
         boolean shooting = false;
-        if(gamepad1.left_trigger > 0.1){
-            slow = true;
-        }
         if(gamepad1.left_bumper){
+            slow = true;
+        }else{
             slow = false;
         }
         nightcall.drive(x, y, rx, slow);
@@ -122,7 +121,7 @@ public class FrankensteinRed extends LinearOpMode {
             if(!motifSet){
                 motifSet = true;
             }else {
-                balls.sortBalls();
+                sorted = balls.sortBalls();
             }
         }
         if(gamepad2.leftBumperWasPressed()){
@@ -164,14 +163,14 @@ public class FrankensteinRed extends LinearOpMode {
             toTheRight = 1.5;
         }
         if(gamepad2.cross){
-            turret.setPower(1700);
+            turret.setPower(1740);
             toTheLeft = -4.0;
             toTheRight = -2.5;
         }
         if(gamepad2.circle){
             turret.setPower(1460);
-            toTheLeft = -2.5;
-            toTheRight = 0.5;
+            toTheLeft = -1.5;
+            toTheRight = 1.5;
         }
         if(gamepad2.optionsWasPressed()){
             time.reset();
@@ -305,6 +304,8 @@ public class FrankensteinRed extends LinearOpMode {
         addTelemetry("Current Balls", Arrays.toString(balls.getCurrentBalls()));
         addTelemetry("Motif", Arrays.toString(balls.getFullMotif()));
         addTelemetry("Sorted ", Arrays.toString(sorted));
+        addTelemetry("Turret Velocity", (turret.getTurretLVelocity()+ turret.getTurretRVelocity())/2);
+        /*
         addTelemetry("Turret Position", turretLocalization.getTurretPos());
         addTelemetry("Is Left Flywheel Motor Shooting", turret.getTurretLPower());
         addTelemetry("Is Right Flywheel Motor Shooting", turret.getTurretRPower());
@@ -316,6 +317,8 @@ public class FrankensteinRed extends LinearOpMode {
         addTelemetry("Limelight X", limelight.getTx());
         addTelemetry("Time", time.seconds());
         addTelemetry("Game Time", gameTime.seconds());
+
+         */
         telemetry.update();
     }
     public void addTelemetry(String value, int position){

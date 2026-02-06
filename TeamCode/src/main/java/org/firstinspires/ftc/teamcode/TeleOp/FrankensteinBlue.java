@@ -114,9 +114,6 @@ public class FrankensteinBlue extends LinearOpMode {
             outtake = !outtake;
         }
         turret.startOuttake(outtake);
-        if(gamepad2.circle){
-            turret.setPower(1450);
-        }
         if(gamepad2.dpadDownWasPressed()){
             turret.setPower(turret.getSpeed()+10);
         }
@@ -125,7 +122,7 @@ public class FrankensteinBlue extends LinearOpMode {
                 motifSet = true;
                 addTelemetry("Motif Set", motifSet);
             } else {
-                balls.sortBalls();
+                sorted = balls.sortBalls();
             }
         }
         if(gamepad2.leftBumperWasPressed()){
@@ -166,8 +163,13 @@ public class FrankensteinBlue extends LinearOpMode {
             toTheLeft = -1.5;
             toTheRight = 1.5;
         }
+        if(gamepad2.circle){
+            turret.setPower(1460);
+            toTheLeft = -1.5;
+            toTheRight = 1.5;
+        }
         if(gamepad2.cross){
-            turret.setPower(1700);
+            turret.setPower(1740);
             toTheLeft = 2.5;
             toTheRight = 4.5;
         }
@@ -303,17 +305,19 @@ public class FrankensteinBlue extends LinearOpMode {
         addTelemetry("Current Balls", Arrays.toString(balls.getCurrentBalls()));
         addTelemetry("Motif", Arrays.toString(balls.getFullMotif()));
         addTelemetry("Sorted ", Arrays.toString(sorted));
+        addTelemetry("Turret Velocity", (turret.getTurretLVelocity()+ turret.getTurretRVelocity())/2);
+        /*
         addTelemetry("Turret Position", turretLocalization.getTurretPos());
         addTelemetry("Is Left Flywheel Motor Shooting", turret.getTurretLPower());
         addTelemetry("Is Right Flywheel Motor Shooting", turret.getTurretRPower());
-        addTelemetry("TurretL Velocity", turret.getTurretLVelocity());
-        addTelemetry("TurretR Velocity", turret.getTurretRVelocity());
         addTelemetry("Right Spinner Power: ", spinner.getSpinnerRight());
         addTelemetry("Left Spinner Power: ", spinner.getSpinnerLeft());
         addTelemetry("April Tag ID: ", limelight.getDetectedTagId());
         addTelemetry("Limelight X", limelight.getTx());
         addTelemetry("Time", time.seconds());
         addTelemetry("Game Time", gameTime.seconds());
+
+         */
         telemetry.update();
     }
     public void addTelemetry(String value, int position){
