@@ -79,14 +79,14 @@ public class AutonFarBlueGetOut extends AutonTemplate {
                 }
                 break;
             case SCANPOS_SHOOTPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>23)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>17)
                 {
-                    turret.setPower(1690);
+                    turret.setPower(1720);
                     turret.startOuttake();
                     if(!Arrays.equals(balls.getFullMotif(), new int[]{-1, -1, -1})) {
-                        autonShoot3();
+                        autonShoot3_5();
                     }else{
-                        autonShoot2_5();
+                        autonShoot2();
                     }
                     turret.stopOuttake();
                 }

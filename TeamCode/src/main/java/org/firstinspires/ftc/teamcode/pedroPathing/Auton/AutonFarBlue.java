@@ -5,6 +5,8 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import java.util.Arrays;
+
 @Autonomous
 public class AutonFarBlue extends AutonTemplate {
     public enum PathState {
@@ -52,7 +54,7 @@ public class AutonFarBlue extends AutonTemplate {
                 break;
             case STARTPOS_SCANPOS:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3&& !scanned){
-                    scan();
+                    //scan();
                     if(limelight.getDetectedTagId() > 20) {
                         scanned = true;
                     }
@@ -65,11 +67,11 @@ public class AutonFarBlue extends AutonTemplate {
             case SCANPOS_SHOOTPOS:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>23)
                 {
-                    turret.setPower(1690);
-                    if(balls.getFullMotif() !=null) {
-                        autonShoot3();
+                    turret.setPower(1720);
+                    if(!Arrays.equals(balls.getFullMotif(), new int[]{-1, -1, -1})) {
+                        autonShoot3_5();
                     }else{
-                        autonShoot2_5();
+                        autonShoot2();
                     }
                 }
                 break;
