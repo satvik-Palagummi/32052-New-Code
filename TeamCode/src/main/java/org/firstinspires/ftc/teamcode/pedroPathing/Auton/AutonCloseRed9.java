@@ -25,21 +25,22 @@ public class AutonCloseRed9 extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(122,123, Math.toRadians(36));
-    private final Pose scanPose = new Pose(93, 94, Math.toRadians(15));
+    private final Pose startPose = new Pose(121,125, Math.toRadians(36));
+    private final Pose scanPose = new Pose(93, 94, Math.toRadians(25));
     private final Pose scanningControl = new Pose(61,63);
     private final Pose shootPose = new Pose(84,83, Math.toRadians(-50));
     private final Pose grabBalls1 = new Pose(125,82, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(76, 91.5);
-    private final Pose grabBalls2 = new Pose(130, 58, Math.toRadians(0));
-    private final Pose grabBalls2Control = new Pose(70,62);
-    private final Pose hitLever = new Pose(129,66,Math.toRadians(90));
-    private final Pose hitLeverControl = new Pose(90, 60);
+    private final Pose grabBalls2 = new Pose(130, 60, Math.toRadians(0));
+    private final Pose grabBalls2Control = new Pose(70,60);
+    private final Pose hitLever = new Pose(130,69,Math.toRadians(-100));
+    private final Pose hitLeverControl = new Pose(82, 60);
     private final Pose shootPos2Control = new Pose(80, 60);
-    private final Pose grabBalls3 = new Pose(130, 33, Math.toRadians(5));
+    private final Pose grabBalls3 = new Pose(130, 34.7, Math.toRadians(5));
     private final Pose shootPose3Orient = new Pose(124,41,Math.toRadians(-50));
-    private final Pose grabBalls3Control = new Pose(76, 34);
+    private final Pose grabBalls3Control = new Pose(71, 33);
     private final Pose shootPos3Control = new Pose(81, 46);
+    private boolean zeroGrab = false;
     private boolean firstGrab = false;
     private boolean secondGrab = false;
     private boolean thirdGrab = false;
@@ -48,14 +49,14 @@ public class AutonCloseRed9 extends AutonTemplate {
             ShootPos1To2,
             ShootPos2To3,
             shootToBallGrabbing1, GrabbingReversal1,
-            shootToBallGrabbing2, GrabbingReversal2, ReversaltoAiming2,
+            shootToBallGrabbing2, GrabbingReversal2, LeverPush,
             shootToBallGrabbing3, GrabbingReversal3, Reverse3;
 
 
     public void buildPaths(){
         StartToShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(startPose, scanningControl, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .addPath(new BezierLine(startPose, scanPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
                 .build();
         ShootPose = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, shootPose))
@@ -80,7 +81,7 @@ public class AutonCloseRed9 extends AutonTemplate {
 
         GrabbingReversal1 = follower.pathBuilder()
                 .addPath(new BezierLine(grabBalls1, shootPose))
-                .setLinearHeadingInterpolation(grabBalls1.getHeading(), grabBalls1.getHeading())
+                .setLinearHeadingInterpolation(grabBalls1.getHeading(), shootPose.getHeading())
                 .build();
         //SECOND ROW PATHS
 
@@ -88,10 +89,13 @@ public class AutonCloseRed9 extends AutonTemplate {
                 .addPath(new BezierCurve(shootPose, grabBalls2Control, grabBalls2))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), grabBalls2.getHeading())
                 .build();
-
+        LeverPush = follower.pathBuilder()
+                .addPath(new BezierCurve(grabBalls2, hitLeverControl, hitLever))
+                .setLinearHeadingInterpolation(grabBalls2.getHeading(), hitLever.getHeading())
+                .build();
         GrabbingReversal2 = follower.pathBuilder()
-                .addPath(new BezierCurve(grabBalls2, shootPos2Control, shootPose))
-                .setLinearHeadingInterpolation(grabBalls2.getHeading(), shootPose.getHeading())
+                .addPath(new BezierCurve(hitLever, shootPos2Control, shootPose))
+                .setLinearHeadingInterpolation(hitLever.getHeading(), shootPose.getHeading())
                 .build();
         //THIRD ROW PATHS
 
@@ -100,8 +104,8 @@ public class AutonCloseRed9 extends AutonTemplate {
                 .setLinearHeadingInterpolation(shootPose.getHeading(), grabBalls3.getHeading())
                 .build();
         GrabbingReversal3 = follower.pathBuilder()
-                .addPath(new BezierLine(grabBalls3, shootPose3Orient))
-                .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose3Orient.getHeading())
+                .addPath(new BezierLine(grabBalls3, shootPose))
+                .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose.getHeading())
                 .build();
         Reverse3 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose3Orient, shootPose))
@@ -241,8 +245,6 @@ public class AutonCloseRed9 extends AutonTemplate {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
-        telemetry.addData("Blue: ", colorsensor.getBlue());
-        telemetry.addData("Green: ", colorsensor.getGreen());
         telemetry.addData("Motif: ", Arrays.toString(balls.getFullMotif()));
         telemetry.addData("Current Balls ", Arrays.toString(balls.getCurrentBalls()));
         telemetry.addData("Green in right spot", greenCheck);

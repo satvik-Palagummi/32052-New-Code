@@ -40,7 +40,7 @@ public abstract class AutonTemplate extends OpMode {
     protected Nightcall nightcall;
     protected TurretLocalization turretLocalization;
     protected Balls balls;
-    protected Colorsensor colorsensor;
+    //protected Colorsensor colorsensor;
     protected Limelight limelight;
     protected int[] sorted;
     protected int id;
@@ -74,7 +74,6 @@ public abstract class AutonTemplate extends OpMode {
             }
         }
         while (actionTimer.getElapsedTimeSeconds() < time) {
-            /*
             follower.update();
             limelight.setPipeline(8);
             limelight.updateLimelight();
@@ -86,9 +85,6 @@ public abstract class AutonTemplate extends OpMode {
             }else{
                 nightcall.cutPower();
             }
-
-             */
-            telemetry.addData("Velocity", turret.getTurretRVelocity());
         }
     }
     /*
@@ -109,7 +105,7 @@ public abstract class AutonTemplate extends OpMode {
     }
 
      */
-    protected boolean checkGreen(){
+    /*protected boolean checkGreen(){
         if(balls.getCurrentBalls() != null){
             int[] current = balls.getCurrentBalls();
             int posToCheck = 0;
@@ -137,6 +133,8 @@ public abstract class AutonTemplate extends OpMode {
         }
         return false;
     }
+
+     */
     protected void scan(){
         LLResult result = limelight.updateLimelight();
         id = limelight.scanMotif(result);
@@ -222,9 +220,11 @@ public abstract class AutonTemplate extends OpMode {
 
      */
     protected void autonShoot2_5() {
-        for(int i = 0; i<3; i++){
+        for(int i = 2; i>-1; i--){
             turretLocalization.setPos(i);
-            waitOrient(0.45);
+            if(i!=2){
+                waitOrient(0.45);
+            }
             pushServo.propel(i);
             if(i==2){
                 wait(0.35);
@@ -341,14 +341,14 @@ public abstract class AutonTemplate extends OpMode {
         pushServo = new PushServo();
         balls = new Balls();
         limelight = new Limelight();
-        colorsensor = new Colorsensor();
+        //colorsensor = new Colorsensor();
         nightcall.initialize(hardwareMap);
         spinner.initSpinner(hardwareMap);
         pushServo.initPushServos(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
         turret.initTurret(hardwareMap);
         limelight.initLimelight(hardwareMap);
-        colorsensor.initColorSensor(hardwareMap);
+        //colorsensor.initColorSensor(hardwareMap);
         buildPaths();
     }
 

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Outtake.Turret;
 import org.firstinspires.ftc.teamcode.Outtake.TurretLocalization;
 import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
 import org.firstinspires.ftc.teamcode.Sensor.Limelight;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.Arrays;
 
@@ -32,6 +34,7 @@ public class FrankensteinBlue extends LinearOpMode {
     private double toTheRight = 1.5;
     private int[] sorted;
     private int Id;
+    private Follower follower;
     private boolean allThree = true;
     private final Nightcall nightcall = new Nightcall();
     private final Turret turret = new Turret();
@@ -39,7 +42,7 @@ public class FrankensteinBlue extends LinearOpMode {
     private final Spinner spinner = new Spinner();
     private final PushServo pushServo = new PushServo();
     private final Limelight limelight = new Limelight();
-    private final Colorsensor colorsensor = new Colorsensor();
+    //private final Colorsensor colorsensor = new Colorsensor();
     private final Balls balls = new Balls();
     private ElapsedTime time = new ElapsedTime();
     private ElapsedTime gameTime = new ElapsedTime();
@@ -70,12 +73,13 @@ public class FrankensteinBlue extends LinearOpMode {
         }
     }
     private void initHardware() {
+        follower = Constants.createFollower(hardwareMap);
         nightcall.initialize(hardwareMap);
         spinner.initSpinner(hardwareMap);
         turret.initTurret(hardwareMap);
         pushServo.initPushServos(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
-        colorsensor.initColorSensor(hardwareMap);
+        //colorsensor.initColorSensor(hardwareMap);
         limelight.initLimelight(hardwareMap);
     }
 
@@ -194,7 +198,7 @@ public class FrankensteinBlue extends LinearOpMode {
                         if (time.seconds() > 0.4) {
                             pushServo.propel(0);
                         }
-                        if(time.seconds()>0.75){
+                        if(time.seconds()>0.8){
                             pushServo.retract(0);
                             setPathState(Position.SECPOS);
                             fromFar = false;
@@ -203,7 +207,7 @@ public class FrankensteinBlue extends LinearOpMode {
                         if(time.seconds()>0.1){
                             pushServo.propel(0);
                         }
-                        if(time.seconds()>0.45){
+                        if(time.seconds()>0.55){
                             pushServo.retract(0);
                             setPathState(Position.SECPOS);
                         }
@@ -211,22 +215,23 @@ public class FrankensteinBlue extends LinearOpMode {
                     break;
                 case SECPOS:
                     turretLocalization.setPos(1);
-                    if (time.seconds() > 0.2 && time.seconds() < 0.55) {
+                    if (time.seconds() > 0.3 && time.seconds() < 0.75) {
                         pushServo.propel(1);
                     }
-                    if(time.seconds()>0.55){
+                    if(time.seconds()>0.75){
                         pushServo.retract(1);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(2);
-                    if (time.seconds() > 0.2&& time.seconds()<0.55) {
+                    if (time.seconds() > 0.25&& time.seconds()<0.6) {
                         pushServo.propel(2);
                     }
-                    if(time.seconds()>0.55){
+                    if(time.seconds()>0.6){
                         pushServo.retract(2);
                         allThree = true;
+                        turretLocalization.setPos(1);
                     }
                     break;
             }
@@ -262,10 +267,14 @@ public class FrankensteinBlue extends LinearOpMode {
                         pushServo.retract(sorted[2]);
                         allThree = true;
                         sorted = null;
+                        turretLocalization.setPos(1);
                     }
                     break;
             }
         }
+    }
+    public void handleFollower(){
+        follower.update();
     }
     public void setPathState(Position newState) {
         pos = newState;

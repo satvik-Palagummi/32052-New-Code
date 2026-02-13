@@ -39,7 +39,7 @@ public class FrankensteinRed extends LinearOpMode {
     private final Spinner spinner = new Spinner();
     private final PushServo pushServo = new PushServo();
     private final Limelight limelight = new Limelight();
-    private final Colorsensor colorsensor = new Colorsensor();
+    //private final Colorsensor colorsensor = new Colorsensor();
     private final Balls balls = new Balls();
     private ElapsedTime time = new ElapsedTime();
     private ElapsedTime gameTime = new ElapsedTime();
@@ -75,7 +75,7 @@ public class FrankensteinRed extends LinearOpMode {
         turret.initTurret(hardwareMap);
         pushServo.initPushServos(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
-        colorsensor.initColorSensor(hardwareMap);
+        //colorsensor.initColorSensor(hardwareMap);
         limelight.initLimelight(hardwareMap);
     }
 
@@ -203,7 +203,7 @@ public class FrankensteinRed extends LinearOpMode {
                         if(time.seconds()>0.1){
                             pushServo.propel(0);
                         }
-                        if(time.seconds()>0.45){
+                        if(time.seconds()>0.55){
                             pushServo.retract(0);
                             setPathState(Position.SECPOS);
                         }
@@ -211,22 +211,23 @@ public class FrankensteinRed extends LinearOpMode {
                     break;
                 case SECPOS:
                     turretLocalization.setPos(1);
-                    if (time.seconds() > 0.25 && time.seconds() < 0.65) {
+                    if (time.seconds() > 0.3 && time.seconds() < 0.75) {
                         pushServo.propel(1);
                     }
-                    if(time.seconds()>0.65){
+                    if(time.seconds()>0.75){
                         pushServo.retract(1);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(2);
-                    if (time.seconds() > 0.25 && time.seconds() < 0.65) {
+                    if (time.seconds() > 0.25 && time.seconds() < 0.60) {
                         pushServo.propel(2);
                     }
-                    if(time.seconds()>0.65){
+                    if(time.seconds()>0.60){
                         pushServo.retract(2);
                         allThree = true;
+                        turretLocalization.setPos(1);
                     }
                     break;
             }
@@ -262,6 +263,7 @@ public class FrankensteinRed extends LinearOpMode {
                         pushServo.retract(sorted[2]);
                         allThree = true;
                         sorted = null;
+                        turretLocalization.setPos(1);
                     }
                     break;
             }

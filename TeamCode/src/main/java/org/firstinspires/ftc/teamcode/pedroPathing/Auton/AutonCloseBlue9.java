@@ -25,21 +25,22 @@ public class AutonCloseBlue9 extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(20,125, Math.toRadians(54));
-    private final Pose scanPose = new Pose(49, 97, Math.toRadians(-20));
+    private final Pose startPose = new Pose(23,123, Math.toRadians(-36));
+    private final Pose scanPose = new Pose(49, 97, Math.toRadians(-25));
     private final Pose scanControl = new Pose(83,63);
     private final Pose shootPose = new Pose(60,83, Math.toRadians(50));
     private final Pose grabBalls1 = new Pose(17,82, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(68, 91.5);
-    private final Pose grabBalls2 = new Pose(13, 58, Math.toRadians(0));
+    private final Pose grabBalls2 = new Pose(13, 60, Math.toRadians(0));
     private final Pose grabBalls2Control = new Pose(74,62);
-    private final Pose hitLever = new Pose(14,66,Math.toRadians(90));
-    private final Pose hitLeverControl = new Pose (54,60);
+    private final Pose hitLever = new Pose(15,69,Math.toRadians(90));
+    private final Pose hitLeverControl = new Pose (62,60);
     private final Pose shootPos2Control = new Pose(64, 60);
     private final Pose grabBalls3 = new Pose(15, 33, Math.toRadians(-5));
     private final Pose grabBalls3Control = new Pose(68, 33);
     private final Pose shootPose3Orient = new Pose (20,41, Math.toRadians(50));
     private final Pose shootPos3Control = new Pose(63, 46);
+    private boolean zeroGrab = false;
     private boolean firstGrab = false;
     private boolean secondGrab = false;
     private boolean thirdGrab = false;
@@ -57,8 +58,8 @@ public class AutonCloseBlue9 extends AutonTemplate {
 
     public void buildPaths(){
         StartToShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(startPose,scanControl, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .addPath(new BezierLine(startPose, scanPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
                 .build();
         ShootPose = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, shootPose))
@@ -97,7 +98,7 @@ public class AutonCloseBlue9 extends AutonTemplate {
                 .build();
         GrabbingReversal2 = follower.pathBuilder()
                 .addPath(new BezierCurve(hitLever, shootPos2Control, shootPose))
-                .setLinearHeadingInterpolation(grabBalls2.getHeading(), shootPose.getHeading())
+                .setLinearHeadingInterpolation(hitLever.getHeading(), shootPose.getHeading())
                 .build();
         //THIRD ROW PATHS
 
@@ -106,8 +107,8 @@ public class AutonCloseBlue9 extends AutonTemplate {
                 .setLinearHeadingInterpolation(shootPose.getHeading(), grabBalls3.getHeading())
                 .build();
         GrabbingReversal3 = follower.pathBuilder()
-                .addPath(new BezierLine(grabBalls3, shootPose3Orient))
-                .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose3Orient.getHeading())
+                .addPath(new BezierLine(grabBalls3, shootPose))
+                .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose.getHeading())
                 .build();
         Reverse3 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose3Orient, shootPose))
@@ -245,8 +246,6 @@ public class AutonCloseBlue9 extends AutonTemplate {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
-        telemetry.addData("Blue: ", colorsensor.getBlue());
-        telemetry.addData("Green: ", colorsensor.getGreen());
         telemetry.addData("Motif: ", Arrays.toString(balls.getFullMotif()));
         telemetry.addData("Current Balls ", Arrays.toString(balls.getCurrentBalls()));
         telemetry.addData("Green in right spot", greenCheck);

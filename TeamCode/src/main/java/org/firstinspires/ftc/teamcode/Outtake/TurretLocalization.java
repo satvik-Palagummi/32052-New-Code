@@ -7,7 +7,7 @@ public class TurretLocalization {
     private Servo turret = null;
     private final double posTwo = 0;
     private final double posOne = 0.47;
-    private final double posZero = 0.94;
+    private final double posZero = 1.0;
     private static int position;
     public void initTurretLocalization(HardwareMap hwM){
         turret = hwM.get(Servo.class, "turretLocalization");
