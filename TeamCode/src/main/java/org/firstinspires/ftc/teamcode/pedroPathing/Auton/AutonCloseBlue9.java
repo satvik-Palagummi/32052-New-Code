@@ -150,7 +150,7 @@ public class AutonCloseBlue9 extends AutonTemplate {
                 {
                     stopAutonIntake();
                     turret.startOuttake();
-                    autonShoot3();
+                    autonShoot3Blue();
 
                     turret.stopOuttake();
                     if(!firstGrab) {

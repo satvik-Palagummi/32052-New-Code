@@ -34,17 +34,18 @@ public class FirstAutonRed extends AutonTemplate {
     private final Pose startPose = new Pose(121,125, Math.toRadians(36));
     private final Pose scanPose = new Pose(93, 94, Math.toRadians(25));
     private final Pose scanningControl = new Pose(61,63);
+    private final Pose ZeroGrabShoot = new Pose(84,83, Math.toRadians(-48));
     private final Pose shootPose = new Pose(84,83, Math.toRadians(-50));
-    private final Pose grabBalls1 = new Pose(125,82, Math.toRadians(0));
+    private final Pose grabBalls1 = new Pose(126,82, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(76, 91.5);
     private final Pose grabBalls2 = new Pose(130, 60, Math.toRadians(0));
     private final Pose grabBalls2Control = new Pose(70,60);
-    private final Pose hitLever = new Pose(130,69,Math.toRadians(-100));
+    private final Pose hitLever = new Pose(129,69,Math.toRadians(-100));
     private final Pose hitLeverControl = new Pose(82, 60);
     private final Pose shootPos2Control = new Pose(80, 60);
-    private final Pose grabBalls3 = new Pose(130, 34.7, Math.toRadians(5));
+    private final Pose grabBalls3 = new Pose(130, 36, Math.toRadians(-5));
     private final Pose shootPose3Orient = new Pose(124,41,Math.toRadians(-50));
-    private final Pose grabBalls3Control = new Pose(71, 33);
+    private final Pose grabBalls3Control = new Pose(67, 33);
     private final Pose shootPos3Control = new Pose(81, 46);
     private boolean zeroGrab = false;
     private boolean firstGrab = false;
@@ -65,8 +66,8 @@ public class FirstAutonRed extends AutonTemplate {
                 .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
                 .build();
         ShootPose = follower.pathBuilder()
-                .addPath(new BezierLine(scanPose, shootPose))
-                .setLinearHeadingInterpolation(scanPose.getHeading(), shootPose.getHeading())
+                .addPath(new BezierLine(scanPose, ZeroGrabShoot))
+                .setLinearHeadingInterpolation(scanPose.getHeading(),ZeroGrabShoot.getHeading())
                 .build();
         /*ShootPos1To2 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPosePos1, shootPosePos2))
@@ -93,7 +94,7 @@ public class FirstAutonRed extends AutonTemplate {
 
         shootToBallGrabbing2 = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, grabBalls2Control, grabBalls2))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), grabBalls2.getHeading())
+                .setLinearHeadingInterpolation(ZeroGrabShoot.getHeading(), grabBalls2.getHeading())
                 .build();
         LeverPush = follower.pathBuilder()
                 .addPath(new BezierCurve(grabBalls2, hitLeverControl, hitLever))
@@ -114,8 +115,8 @@ public class FirstAutonRed extends AutonTemplate {
                 .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose.getHeading())
                 .build();
         Reverse3 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose3Orient, shootPose))
-                .setLinearHeadingInterpolation(shootPose3Orient.getHeading(),shootPose.getHeading())
+                .addPath(new BezierLine(shootPose, grabBalls3))
+                .setConstantHeadingInterpolation(shootPose.getHeading())
                 .build();
     }
 
@@ -125,7 +126,7 @@ public class FirstAutonRed extends AutonTemplate {
                 balls.setCurrent(new int[]{1,1,0});
                 turretLocalization.setPos(2);
                 limelight.setPipeline(0);
-                turret.setPower(1385);
+                turret.setPower(1375);
                 turret.startOuttake();
                 follower.followPath(StartToShoot, true);
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
@@ -146,11 +147,13 @@ public class FirstAutonRed extends AutonTemplate {
                 if(!follower.isBusy())
                 {
                     if(!zeroGrab){
-                        autonShoot2_5();
+                        autonShoot2_5Red();
                         zeroGrab = true;
+                        turret.setPower(1382);
+
                     }else{
                         stopAutonIntake();
-                        autonShoot3();
+                        autonShoot3Red();
                     }
 
                     turret.stopOuttake();
@@ -170,6 +173,8 @@ public class FirstAutonRed extends AutonTemplate {
                         follower.followPath(shootToBallGrabbing3, true);
                         setPathState(PathState.BALLROW_GRABBING3);
                     }else{
+                        follower.followPath(Reverse3);
+                        setPathState(PathState.GRABBING3SLOW);
                         telemetry.addLine("DONE");
                     }
                     turretLocalization.setPos(1);
@@ -225,8 +230,8 @@ public class FirstAutonRed extends AutonTemplate {
                 }
                 break;
             case BALLROW_GRABBING3:
-                if(pathTimer.getElapsedTimeSeconds()>0.5) {
-                    follower.setMaxPower(0.58);
+                if(pathTimer.getElapsedTimeSeconds()>0.67) {
+                    follower.setMaxPower(0.56);
                 }
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1.0){
                     balls.setCurrent(new int[]{0,1,1});
@@ -235,9 +240,13 @@ public class FirstAutonRed extends AutonTemplate {
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal3, true);
                     setPathState(PathState.SHOOTING);
+                    thirdGrab = true;
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
+            case GRABBING3SLOW:
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>5){
+                }
             default:
                 telemetry.addLine("No State Commanded");
                 break;
@@ -253,7 +262,7 @@ public class FirstAutonRed extends AutonTemplate {
     @Override
     public void init() {
         super.init();
-        pathState = PathState.STARTPOS;;
+        pathState = PathState.STARTPOS;
         //Add other init mechanisms
         follower.setPose(startPose);
     }

@@ -66,6 +66,48 @@ public abstract class AutonTemplate extends OpMode {
             telemetry.update();
         }
     }
+    protected void waitOrientRed(double time) {
+        actionTimer.resetTimer();
+        if(actionTimer.getElapsedTimeSeconds() == time){
+            if(fromFar){
+                fromFar = false;
+            }
+        }
+        while (actionTimer.getElapsedTimeSeconds() < time) {
+            follower.update();
+            limelight.setPipeline(8);
+            limelight.updateLimelight();
+            limelight.scanGoal();
+            if(limelight.resultWorks()&&limelight.getTx()>3){
+                nightcall.rightOrient();
+            }else if(limelight.resultWorks()&&limelight.getTx()<1){
+                nightcall.leftOrient();
+            }else{
+                nightcall.cutPower();
+            }
+        }
+    }
+    protected void waitOrientBlue(double time) {
+        actionTimer.resetTimer();
+        if(actionTimer.getElapsedTimeSeconds() == time){
+            if(fromFar){
+                fromFar = false;
+            }
+        }
+        while (actionTimer.getElapsedTimeSeconds() < time) {
+            follower.update();
+            limelight.setPipeline(8);
+            limelight.updateLimelight();
+            limelight.scanGoal();
+            if(limelight.resultWorks()&&limelight.getTx()>1){
+                nightcall.rightOrient();
+            }else if(limelight.resultWorks()&&limelight.getTx()<-3){
+                nightcall.leftOrient();
+            }else{
+                nightcall.cutPower();
+            }
+        }
+    }
     protected void waitOrient(double time) {
         actionTimer.resetTimer();
         if(actionTimer.getElapsedTimeSeconds() == time){
@@ -219,11 +261,28 @@ public abstract class AutonTemplate extends OpMode {
     }
 
      */
-    protected void autonShoot2_5() {
+    protected void autonShoot2_5Blue() {
         for(int i = 2; i>-1; i--){
             turretLocalization.setPos(i);
             if(i!=2){
-                waitOrient(0.45);
+                waitOrientBlue(0.45);
+            }
+            pushServo.propel(i);
+            if(i==2){
+                wait(0.35);
+            }else{
+                wait(0.45);
+            }
+            pushServo.retract(i);
+        }
+    }
+    protected void autonShoot2_5Red() {
+        for(int i = 2; i>-1; i--){
+            turretLocalization.setPos(i);
+            if(i!=2){
+                waitOrientRed(0.45);
+            }else{
+                waitOrient(0.3);
             }
             pushServo.propel(i);
             if(i==2){
@@ -249,7 +308,7 @@ public abstract class AutonTemplate extends OpMode {
     }
 
 
-    protected void autonShoot3() {
+    protected void autonShoot3Red() {
         if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
@@ -258,10 +317,34 @@ public abstract class AutonTemplate extends OpMode {
                 }
                 if(fromFar){
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.5);
+                    waitOrientRed(0.5);
                 }else {
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.4);
+                    waitOrientRed(0.4);
+                }
+                pushServo.propel(sorted[i]);
+                if(sorted[i]== 2){
+                    wait(0.35);
+                }else {
+                    wait(0.45);
+                }
+                pushServo.retract(sorted[i]);
+            }
+        }
+    }
+    protected void autonShoot3Blue() {
+        if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
+            sorted = balls.sortBalls();
+            for (int i = 0; i < 3; i++) {
+                if(sorted[i] - turretLocalization.getTurretPos() ==2 || sorted[i] -turretLocalization.getTurretPos() == -2){
+                    fromFar = true;
+                }
+                if(fromFar){
+                    turretLocalization.setPos(sorted[i]);
+                    waitOrientBlue(0.5);
+                }else {
+                    turretLocalization.setPos(sorted[i]);
+                    waitOrientBlue(0.4);
                 }
                 pushServo.propel(sorted[i]);
                 if(sorted[i]== 2){
