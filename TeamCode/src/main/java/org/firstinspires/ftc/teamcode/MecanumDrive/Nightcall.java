@@ -81,10 +81,10 @@ public class Nightcall {
 
         if (slow) {
 
-            frontLeftPower = frontLeftPower/2;
-            frontRightPower = frontRightPower/2;
-            backLeftPower = backLeftPower/2;
-            backRightPower = backRightPower/2;
+            frontLeftPower = frontLeftPower/1.5;
+            frontRightPower = frontRightPower/1.5;
+            backLeftPower = backLeftPower/1.5;
+            backRightPower = backRightPower/1.5;
         }
 
         frontLeftMotor.setPower(frontLeftPower);

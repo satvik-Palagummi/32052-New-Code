@@ -6,21 +6,19 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Sensor.Limelight;
+
 import java.util.List;
 
 @Autonomous
 public class AprilTagLimelightTest extends OpMode {
-    private Limelight3A limelight;
+    Limelight limelight = new Limelight();
+    LLResult llResult;
     private boolean motifDetected;
     @Override
     public void init() {
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        limelight.setPollRateHz(30);
-    }
-    @Override
-    public void start(){
-        limelight.start();
+        limelight.initLimelight(hardwareMap);
+        limelight.setPipeline(8);
     }
     public int scanMotif(LLResult result){
         if(result != null && result.isValid()) {
@@ -38,15 +36,19 @@ public class AprilTagLimelightTest extends OpMode {
         }
         return -1;
     }
+    public void scan(){
+        llResult = limelight.updateLimelight();
+        limelight.scanGoal();
+    }
 
     @Override
     public void loop() {
-        LLResult llResult = limelight.getLatestResult();
+        scan();
         if(llResult != null && llResult.isValid()){
-            telemetry.addData("Motif ID", scanMotif(llResult));
             telemetry.addData("Tx", llResult.getTx());
             telemetry.addData("Ty", llResult.getTy());
             telemetry.addData("Ta", llResult.getTa());
+            telemetry.addData("Distance in CM", limelight.getDistance(llResult.getTa()));
         }
     }
 }
