@@ -126,6 +126,11 @@ public class FrankensteinRed extends LinearOpMode {
                 sorted = balls.sortBalls();
             }
         }
+        if(gamepad2.dpadDownWasPressed()&& motifSet){
+            motifSet = false;
+            balls.setMotif(0);
+            current = 0;
+        }
         if(gamepad2.leftBumperWasPressed()){
             if(!motifSet) {
                 current++;
@@ -307,20 +312,20 @@ public class FrankensteinRed extends LinearOpMode {
                     break;
                 case SECPOS:
                     turretLocalization.setPos(1);
-                    if (time.seconds() > 0.7 && time.seconds() < 1.0) {
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
                         pushServo.propel(1);
                     }
-                    if(time.seconds()>1.0){
+                    if(time.seconds()>0.7){
                         pushServo.retract(1);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(2);
-                    if (time.seconds() > 0.7 && time.seconds() < 1.0) {
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
                         pushServo.propel(2);
                     }
-                    if(time.seconds()>1.0){
+                    if(time.seconds()>0.7){
                         pushServo.retract(2);
                         allThree = true;
                         turretLocalization.setPos(1);

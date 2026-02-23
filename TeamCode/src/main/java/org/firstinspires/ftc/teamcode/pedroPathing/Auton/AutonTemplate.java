@@ -120,9 +120,9 @@ public abstract class AutonTemplate extends OpMode {
             limelight.setPipeline(8);
             limelight.updateLimelight();
             limelight.scanGoal();
-            if(limelight.resultWorks()&&limelight.getTx()>1.5){
+            if(limelight.resultWorks()&&limelight.getTx()>3){
                 nightcall.rightOrient();
-            }else if(limelight.resultWorks()&&limelight.getTx()<-1.5){
+            }else if(limelight.resultWorks()&&limelight.getTx()<-3){
                 nightcall.leftOrient();
             }else{
                 nightcall.cutPower();
@@ -282,7 +282,7 @@ public abstract class AutonTemplate extends OpMode {
             if(i!=2){
                 waitOrientRed(0.45);
             }else{
-                waitOrient(0.3);
+                waitOrientRed(0.3);
             }
             pushServo.propel(i);
             if(i==2){
@@ -296,12 +296,12 @@ public abstract class AutonTemplate extends OpMode {
     protected void autonShoot2() {
         for(int i = 0; i<3; i++){
             turretLocalization.setPos(i);
-            waitOrient(0.6);
+            waitOrient(0.4);
             pushServo.propel(i);
             if(i==2){
                 wait(0.3);
             }else{
-                wait(0.45);
+                wait(0.4);
             }
             pushServo.retract(i);
         }
@@ -366,10 +366,10 @@ public abstract class AutonTemplate extends OpMode {
                 }
                 if(fromFar){
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(1.0);
+                    waitOrient(0.8);
                 }else {
                     turretLocalization.setPos(sorted[i]);
-                    waitOrient(0.9);
+                    waitOrient(0.5);
                 }
                 pushServo.propel(sorted[i]);
                 if(sorted[i]== 2){

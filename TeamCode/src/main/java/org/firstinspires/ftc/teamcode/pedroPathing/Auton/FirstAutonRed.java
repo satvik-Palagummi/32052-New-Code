@@ -31,7 +31,7 @@ public class FirstAutonRed extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(121,125, Math.toRadians(36));
+    private final Pose startPose = new Pose(120.5,125.2, Math.toRadians(36));
     private final Pose scanPose = new Pose(93, 94, Math.toRadians(25));
     private final Pose scanningControl = new Pose(61,63);
     private final Pose ZeroGrabShoot = new Pose(84,83, Math.toRadians(-48));
@@ -44,7 +44,7 @@ public class FirstAutonRed extends AutonTemplate {
     private final Pose hitLeverControl = new Pose(82, 60);
     private final Pose shootPos2Control = new Pose(80, 60);
     private final Pose grabBalls3 = new Pose(130, 36, Math.toRadians(-5));
-    private final Pose shootPose3Orient = new Pose(124,41,Math.toRadians(-50));
+    private final Pose shootPose3Orient = new Pose(94,70,Math.toRadians(-50));
     private final Pose grabBalls3Control = new Pose(67, 33);
     private final Pose shootPos3Control = new Pose(81, 46);
     private boolean zeroGrab = false;
@@ -115,7 +115,7 @@ public class FirstAutonRed extends AutonTemplate {
                 .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose.getHeading())
                 .build();
         Reverse3 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, grabBalls3))
+                .addPath(new BezierLine(shootPose, shootPose3Orient))
                 .setConstantHeadingInterpolation(shootPose.getHeading())
                 .build();
     }

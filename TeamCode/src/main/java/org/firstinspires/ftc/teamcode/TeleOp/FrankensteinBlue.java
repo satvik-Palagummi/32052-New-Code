@@ -130,6 +130,11 @@ public class FrankensteinBlue extends LinearOpMode {
                 sorted = balls.sortBalls();
             }
         }
+        if(gamepad2.dpadDownWasPressed()&& motifSet){
+            motifSet = false;
+            balls.setMotif(0);
+            current = 0;
+        }
         if(gamepad2.leftBumperWasPressed()){
             if(!motifSet) {
                 current++;
@@ -215,9 +220,6 @@ public class FrankensteinBlue extends LinearOpMode {
                 turret.setPower(1740);
                 toTheLeft = 2.5;
                 toTheRight = 4.5;
-            }
-            if(gamepad2.dpadDownWasPressed()){
-                turret.setPower(turret.getSpeed()+10);
             }
         }
         if(gamepad2.optionsWasPressed()){
@@ -307,20 +309,20 @@ public class FrankensteinBlue extends LinearOpMode {
                     break;
                 case SECPOS:
                     turretLocalization.setPos(1);
-                    if (time.seconds() > 0.5 && time.seconds() < 0.8) {
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
                         pushServo.propel(1);
                     }
-                    if(time.seconds()>0.8){
+                    if(time.seconds()>0.7){
                         pushServo.retract(1);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(2);
-                    if (time.seconds() > 0.5 && time.seconds() < 0.8) {
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
                         pushServo.propel(2);
                     }
-                    if(time.seconds()>0.8){
+                    if(time.seconds()>0.7){
                         pushServo.retract(2);
                         allThree = true;
                         turretLocalization.setPos(1);

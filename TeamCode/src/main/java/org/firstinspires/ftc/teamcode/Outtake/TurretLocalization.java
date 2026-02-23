@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.teamcode.Outtake;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class TurretLocalization {
     private Servo turret = null;
+    private AnalogInput servoFeedback;
     private final double posTwo = 0;
     private final double posOne = 0.47;
     private final double posZero = 1.0;
     private static int position;
     public void initTurretLocalization(HardwareMap hwM){
         turret = hwM.get(Servo.class, "turretLocalization");
+        servoFeedback = hwM.get(AnalogInput.class, "servoFeedback");
     }
     public void setTurretPos(double pos){
         turret.setPosition(pos);
