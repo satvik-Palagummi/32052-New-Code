@@ -31,6 +31,7 @@ public class FrankensteinBlue extends LinearOpMode {
     Position pos;
     Position sortedPos;
     Position farPos;
+    Position sortedFarPos;
     private double toTheLeft = -1.5;
     private double toTheRight = 1.5;
     private int[] sorted;
@@ -43,7 +44,7 @@ public class FrankensteinBlue extends LinearOpMode {
     private final Spinner spinner = new Spinner();
     private final PushServo pushServo = new PushServo();
     private final Limelight limelight = new Limelight();
-    //private final Colorsensor colorsensor = new Colorsensor();
+    private final Colorsensor colorsensor = new Colorsensor();
     private final Balls balls = new Balls();
     private ElapsedTime time = new ElapsedTime();
     private ElapsedTime gameTime = new ElapsedTime();
@@ -55,6 +56,7 @@ public class FrankensteinBlue extends LinearOpMode {
     private double distance;
     private boolean manualMode = false;
     private boolean farShot;
+    private boolean intook;
 
 
     @Override
@@ -126,8 +128,6 @@ public class FrankensteinBlue extends LinearOpMode {
             if(!motifSet){
                 motifSet = true;
                 addTelemetry("Motif Set", motifSet);
-            } else {
-                sorted = balls.sortBalls();
             }
         }
         if(gamepad2.dpadDownWasPressed()&& motifSet){
@@ -144,18 +144,6 @@ public class FrankensteinBlue extends LinearOpMode {
                     balls.setMotif(22);
                 } else if (current % 3 == 0) {
                     balls.setMotif(23);
-                }
-            }else{
-                if(Arrays.equals(balls.getCurrentBalls(), new int[]{-1, -1, -1})){
-                    current = 0;
-                }
-                current++;
-                if (current % 3 == 1) {
-                    balls.setCurrent(1);
-                } else if (current % 3 == 2) {
-                    balls.setCurrent(2);
-                } else if (current % 3 == 0) {
-                    balls.setCurrent(3);
                 }
             }
         }
@@ -187,7 +175,7 @@ public class FrankensteinBlue extends LinearOpMode {
                 toTheRight = 1.5;
                 distance = 0;
             }else if(distance>180 && distance < 220){
-                turret.setPower(1450);
+                turret.setPower(1460);
                 farShot = false;
                 toTheLeft = -1.5;
                 toTheRight = 1.5;
@@ -232,51 +220,75 @@ public class FrankensteinBlue extends LinearOpMode {
             pos = Position.FIRSTPOS;
             sortedPos = Position.FIRSTPOS;
             farPos = Position.FIRSTPOS;
+            sortedFarPos = Position.FIRSTPOS;
             if(turretLocalization.getTurretPos()==2){
                 fromFar = true;
             }
         }
+        if(intook){
+            int[] temp = colorsensor.getCurrent();
+            balls.setCurrent(temp);
+            if(((Arrays.equals(balls.getCurrentBalls(), new int[]{0, 1, 1}))
+                    || (Arrays.equals(balls.getCurrentBalls(), new int[]{1, 0, 1}))
+                    || (Arrays.equals(balls.getCurrentBalls(), new int[]{1, 1, 0})))
+                    &&(!(Arrays.equals(balls.getFullMotif(), new int[]{-1,-1,-1})))){
+                sorted = balls.sortBalls();
+            }
+            intook = false;
+        }
         if(!allThree && sorted == null && !farShot){
             switch(pos) {
                 case FIRSTPOS:
-                    turretLocalization.setPos(0);
-                    if(fromFar) {
+                    if(balls.getCurrentSpecPos(0)!=-1){
                         turretLocalization.setPos(0);
-                        if (time.seconds() > 0.5) {
-                            pushServo.propel(0);
-                        }
-                        if(time.seconds()>0.85){
-                            pushServo.retract(0);
-                            setPathState(Position.SECPOS);
-                            fromFar = false;
+                        if(fromFar) {
+                            if (time.seconds() > 0.5) {
+                                pushServo.propel(0);
+                            }
+                            if(time.seconds()>0.85){
+                                pushServo.retract(0);
+                                setPathState(Position.SECPOS);
+                                fromFar = false;
+                            }
+                        }else {
+                            if (time.seconds() > 0.2) {
+                                pushServo.propel(0);
+                            }
+                            if (time.seconds() > 0.5) {
+                                pushServo.retract(0);
+                                setPathState(Position.SECPOS);
+                            }
                         }
                     }else{
-                        if(time.seconds()>0.2){
-                            pushServo.propel(0);
-                        }
-                        if(time.seconds()>0.5){
-                            pushServo.retract(0);
-                            setPathState(Position.SECPOS);
-                        }
+                        setPathState(Position.SECPOS);
                     }
                     break;
                 case SECPOS:
-                    turretLocalization.setPos(1);
-                    if (time.seconds() > 0.3 && time.seconds() < 0.6) {
-                        pushServo.propel(1);
-                    }
-                    if(time.seconds()>0.6){
-                        pushServo.retract(1);
+                    if(balls.getCurrentSpecPos(1)!=-1) {
+                        turretLocalization.setPos(1);
+                        if (time.seconds() > 0.3 && time.seconds() < 0.6) {
+                            pushServo.propel(1);
+                        }
+                        if (time.seconds() > 0.6) {
+                            pushServo.retract(1);
+                            setPathState(Position.THIRDPOS);
+                        }
+                    }else{
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
-                    turretLocalization.setPos(2);
-                    if (time.seconds() > 0.25 && time.seconds() < 0.60) {
-                        pushServo.propel(2);
-                    }
-                    if(time.seconds()>0.60){
-                        pushServo.retract(2);
+                    if(balls.getCurrentSpecPos(2)!=-1) {
+                        turretLocalization.setPos(2);
+                        if (time.seconds() > 0.25 && time.seconds() < 0.60) {
+                            pushServo.propel(2);
+                        }
+                        if (time.seconds() > 0.60) {
+                            pushServo.retract(2);
+                            allThree = true;
+                            turretLocalization.setPos(1);
+                        }
+                    }else{
                         allThree = true;
                         turretLocalization.setPos(1);
                     }
@@ -286,44 +298,56 @@ public class FrankensteinBlue extends LinearOpMode {
         if(!allThree && sorted == null && farShot){
             switch(farPos) {
                 case FIRSTPOS:
-                    turretLocalization.setPos(0);
-                    if(fromFar) {
+                    if(balls.getCurrentSpecPos(0)!=-1){
                         turretLocalization.setPos(0);
-                        if (time.seconds() > 0.5) {
-                            pushServo.propel(0);
-                        }
-                        if(time.seconds()>0.8){
-                            pushServo.retract(0);
-                            setPathState(Position.SECPOS);
-                            fromFar = false;
+                        if(fromFar) {
+                            if (time.seconds() > 0.5) {
+                                pushServo.propel(0);
+                            }
+                            if(time.seconds()>0.85){
+                                pushServo.retract(0);
+                                setPathState(Position.SECPOS);
+                                fromFar = false;
+                            }
+                        }else {
+                            if (time.seconds() > 0.3) {
+                                pushServo.propel(0);
+                            }
+                            if (time.seconds() > 0.6) {
+                                pushServo.retract(0);
+                                setPathState(Position.SECPOS);
+                            }
                         }
                     }else{
-                        if(time.seconds()>0.3){
-                            pushServo.propel(0);
-                        }
-                        if(time.seconds()>0.6){
-                            pushServo.retract(0);
-                            setPathState(Position.SECPOS);
-                        }
+                        setPathState(Position.SECPOS);
                     }
                     break;
                 case SECPOS:
-                    turretLocalization.setPos(1);
-                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
-                        pushServo.propel(1);
-                    }
-                    if(time.seconds()>0.7){
-                        pushServo.retract(1);
+                    if(balls.getCurrentSpecPos(1)!=-1) {
+                        turretLocalization.setPos(1);
+                        if (time.seconds() > 0.4 && time.seconds() < 0.7) {
+                            pushServo.propel(1);
+                        }
+                        if (time.seconds() > 0.7) {
+                            pushServo.retract(1);
+                            setPathState(Position.THIRDPOS);
+                        }
+                    }else{
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
-                    turretLocalization.setPos(2);
-                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
-                        pushServo.propel(2);
-                    }
-                    if(time.seconds()>0.7){
-                        pushServo.retract(2);
+                    if(balls.getCurrentSpecPos(2)!=-1) {
+                        turretLocalization.setPos(2);
+                        if (time.seconds() > 0.4 && time.seconds() < 0.70) {
+                            pushServo.propel(2);
+                        }
+                        if (time.seconds() > 0.70) {
+                            pushServo.retract(2);
+                            allThree = true;
+                            turretLocalization.setPos(1);
+                        }
+                    }else{
                         allThree = true;
                         turretLocalization.setPos(1);
                     }
@@ -366,6 +390,42 @@ public class FrankensteinBlue extends LinearOpMode {
                     break;
             }
         }
+        if(!allThree && sorted != null && farShot){
+            switch(sortedFarPos) {
+                case FIRSTPOS:
+                    turretLocalization.setPos(sorted[0]);
+                    if (time.seconds() > 0.35) {
+                        pushServo.propel(sorted[0]);
+                    }
+                    if(time.seconds()>0.75){
+                        pushServo.retract(sorted[0]);
+                        setPathState(Position.SECPOS);
+                    }
+                    break;
+                case SECPOS:
+                    turretLocalization.setPos(sorted[1]);
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
+                        pushServo.propel(sorted[1]);
+                    }
+                    if(time.seconds()>0.7){
+                        pushServo.retract(sorted[1]);
+                        setPathState(Position.THIRDPOS);
+                    }
+                    break;
+                case THIRDPOS:
+                    turretLocalization.setPos(sorted[2]);
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) {
+                        pushServo.propel(sorted[2]);
+                    }
+                    if(time.seconds()>0.7){
+                        pushServo.retract(sorted[2]);
+                        allThree = true;
+                        sorted = null;
+                        turretLocalization.setPos(1);
+                    }
+                    break;
+            }
+        }
     }
     public void handleFollower(){
         follower.update();
@@ -374,6 +434,7 @@ public class FrankensteinBlue extends LinearOpMode {
         pos = newState;
         sortedPos = newState;
         farPos = newState;
+        sortedFarPos = newState;
         time.reset();
     }
     public void handleLocalization(){
@@ -403,6 +464,9 @@ public class FrankensteinBlue extends LinearOpMode {
             spinner.reverse();
         }else if(!gamepad1.square && gamepad2.left_trigger<0.3){
             spinner.stopIntake();
+        }
+        if(gamepad1.squareWasReleased()){
+            intook = true;
         }
     }
     private void displayTelemetry() {

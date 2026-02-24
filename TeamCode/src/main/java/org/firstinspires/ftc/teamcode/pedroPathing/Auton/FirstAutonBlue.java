@@ -25,15 +25,15 @@ public class FirstAutonBlue extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(23.5,125.2, Math.toRadians(-36));
+    private final Pose startPose = new Pose(23.5,126, Math.toRadians(-36));
     private final Pose scanPose = new Pose(49, 97, Math.toRadians(-25));
     private final Pose scanControl = new Pose(83,63);
-    private final Pose shootPose = new Pose(60,83, Math.toRadians(50));
+    private final Pose shootPose = new Pose(60,83, Math.toRadians(45));
     private final Pose grabBalls1 = new Pose(18,82, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(68, 91.5);
     private final Pose grabBalls2 = new Pose(11.367, 59, Math.toRadians(0));
-    private final Pose grabBalls2Control = new Pose(74,60);
-    private final Pose hitLever = new Pose(15,69,Math.toRadians(100));
+    private final Pose grabBalls2Control = new Pose(77,63);
+    private final Pose hitLever = new Pose(17,69,Math.toRadians(100));
     private final Pose hitLeverControl = new Pose (62,60);
     private final Pose shootPos2Control = new Pose(64, 60);
     private final Pose grabBalls3 = new Pose(13, 36, Math.toRadians(5));

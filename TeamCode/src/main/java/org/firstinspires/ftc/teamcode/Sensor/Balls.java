@@ -69,6 +69,7 @@ public class Balls {
     public void setCurrent(int[] num){
         currentBalls = num;
     }
+    public int getCurrentSpecPos(int pos){return currentBalls[pos];}
     public int[] getCurrentBalls(){
         return currentBalls;
     }

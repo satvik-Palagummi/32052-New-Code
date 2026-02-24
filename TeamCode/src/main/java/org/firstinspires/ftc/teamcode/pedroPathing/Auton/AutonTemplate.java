@@ -75,7 +75,7 @@ public abstract class AutonTemplate extends OpMode {
         }
         while (actionTimer.getElapsedTimeSeconds() < time) {
             follower.update();
-            limelight.setPipeline(8);
+            limelight.setPipeline(9);
             limelight.updateLimelight();
             limelight.scanGoal();
             if(limelight.resultWorks()&&limelight.getTx()>3){
@@ -117,7 +117,7 @@ public abstract class AutonTemplate extends OpMode {
         }
         while (actionTimer.getElapsedTimeSeconds() < time) {
             follower.update();
-            limelight.setPipeline(8);
+            limelight.setPipeline(7);
             limelight.updateLimelight();
             limelight.scanGoal();
             if(limelight.resultWorks()&&limelight.getTx()>3){
@@ -265,14 +265,10 @@ public abstract class AutonTemplate extends OpMode {
         for(int i = 2; i>-1; i--){
             turretLocalization.setPos(i);
             if(i!=2){
-                waitOrientBlue(0.45);
+                waitOrientBlue(0.3);
             }
             pushServo.propel(i);
-            if(i==2){
-                wait(0.35);
-            }else{
-                wait(0.45);
-            }
+            wait(0.3);
             pushServo.retract(i);
         }
     }
@@ -280,16 +276,10 @@ public abstract class AutonTemplate extends OpMode {
         for(int i = 2; i>-1; i--){
             turretLocalization.setPos(i);
             if(i!=2){
-                waitOrientRed(0.45);
-            }else{
                 waitOrientRed(0.3);
             }
             pushServo.propel(i);
-            if(i==2){
-                wait(0.35);
-            }else{
-                wait(0.45);
-            }
+            wait(0.3);
             pushServo.retract(i);
         }
     }
@@ -312,21 +302,12 @@ public abstract class AutonTemplate extends OpMode {
         if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
-                if(sorted[i] - turretLocalization.getTurretPos() ==2 || sorted[i] -turretLocalization.getTurretPos() == -2){
-                    fromFar = true;
-                }
-                if(fromFar){
-                    turretLocalization.setPos(sorted[i]);
-                    waitOrientRed(0.5);
-                }else {
-                    turretLocalization.setPos(sorted[i]);
-                    waitOrientRed(0.4);
-                }
+                waitOrientRed(0.35);
                 pushServo.propel(sorted[i]);
                 if(sorted[i]== 2){
                     wait(0.35);
                 }else {
-                    wait(0.45);
+                    wait(0.4);
                 }
                 pushServo.retract(sorted[i]);
             }
@@ -336,21 +317,12 @@ public abstract class AutonTemplate extends OpMode {
         if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
             sorted = balls.sortBalls();
             for (int i = 0; i < 3; i++) {
-                if(sorted[i] - turretLocalization.getTurretPos() ==2 || sorted[i] -turretLocalization.getTurretPos() == -2){
-                    fromFar = true;
-                }
-                if(fromFar){
-                    turretLocalization.setPos(sorted[i]);
-                    waitOrientBlue(0.5);
-                }else {
-                    turretLocalization.setPos(sorted[i]);
-                    waitOrientBlue(0.4);
-                }
+                waitOrientBlue(0.35);
                 pushServo.propel(sorted[i]);
                 if(sorted[i]== 2){
                     wait(0.35);
                 }else {
-                    wait(0.45);
+                    wait(0.4);
                 }
                 pushServo.retract(sorted[i]);
             }
