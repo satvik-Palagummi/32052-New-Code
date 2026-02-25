@@ -13,8 +13,8 @@ public class TurretLocalization {
     private final double posTwoV = 1.23;
     private final double posTwoVRange = 0.03;
 
-    private final double posOneV = 1.79;
-    private final double posOneVRange = 0.03;
+    private final double posOneV = 1.78;
+    private final double posOneVRange = 0.05;
     private final double posZeroV = 2.13;
     private final double posZeroVRange = 0.01;
 
