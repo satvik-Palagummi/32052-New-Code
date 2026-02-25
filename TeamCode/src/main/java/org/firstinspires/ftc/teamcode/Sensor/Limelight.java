@@ -47,8 +47,12 @@ public class Limelight{
     public void setPipeline(int ppSwitch){
         if(ppSwitch == 8){
             limelight.pipelineSwitch(8);
+        }else if(ppSwitch == 9){
+            limelight.pipelineSwitch(9);
         }else if(ppSwitch == 0){
             limelight.pipelineSwitch(0);
+        }else if(ppSwitch==2){
+            limelight.pipelineSwitch(2);
         }
     }
     public int scanMotif(LLResult result){

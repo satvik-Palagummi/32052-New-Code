@@ -10,6 +10,15 @@ public class TurretLocalization {
     private final double posTwo = 0;
     private final double posOne = 0.47;
     private final double posZero = 1.0;
+    private final double posTwoV = 1.23;
+    private final double posTwoVRange = 0.03;
+
+    private final double posOneV = 1.79;
+    private final double posOneVRange = 0.03;
+    private final double posZeroV = 2.13;
+    private final double posZeroVRange = 0.01;
+
+
     private static int position;
     public void initTurretLocalization(HardwareMap hwM){
         turret = hwM.get(Servo.class, "turretLocalization");
@@ -24,6 +33,9 @@ public class TurretLocalization {
     public int getTurretPos(){
         return position;
     }
+    public double getServoFeedback(){
+        return servoFeedback.getVoltage();
+    }
     public void setPos(int num){
         position = num;
         if(position == 0){
@@ -35,6 +47,25 @@ public class TurretLocalization {
         if(position == 2){
             setTurretPos(posTwo);
         }
+    }
+    public boolean getTurretArrived(int pos){
+        double servo = getServoFeedback();
+        if(pos == 0){
+            if(servo< posZeroV+posZeroVRange && servo > posZeroV-posZeroVRange){
+                return true;
+            }
+        }
+        if(pos == 1){
+            if(servo< posOneV+posOneVRange && servo > posOneV-posOneVRange){
+                return true;
+            }
+        }
+        if(pos == 2){
+            if(servo< posTwoV+posTwoVRange && servo > posTwoV-posTwoVRange){
+                return true;
+            }
+        }
+        return false;
     }
 
 
