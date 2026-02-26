@@ -126,7 +126,7 @@ public class FirstAutonRed extends AutonTemplate {
                 balls.setCurrent(new int[]{1,1,0});
                 turretLocalization.setPos(2);
                 limelight.setPipeline(0);
-                turret.setPower(1375);
+                turret.setPower(1382);
                 turret.startOuttake();
                 follower.followPath(StartToShoot, true);
                 setPathState(PathState.SCANPOSE);//Resets timer & makes new state
@@ -148,36 +148,45 @@ public class FirstAutonRed extends AutonTemplate {
                 {
                     if(!zeroGrab){
                         autonShoot2_5Red();
-                        zeroGrab = true;
-                        turret.setPower(1382);
-
                     }else{
                         stopAutonIntake();
+
                         autonShoot3Red();
                     }
 
-                    turret.stopOuttake();
-                    if(!secondGrab) {
-                        follower.setMaxPower(0.55);
-                        runAutonIntake();
-                        follower.followPath(shootToBallGrabbing2, true);
-                        setPathState(PathState.BALLROW_GRABBING2);
-                    }else if(!firstGrab){
-                        follower.setMaxPower(0.61);
-                        runAutonIntake();
-                        follower.followPath(shootToBallGrabbing1, true);
-                        setPathState(PathState.BALLROW_GRABBING1);
-                    } else if (!thirdGrab) {
-                        follower.setMaxPower(0.9);
-                        runAutonIntake();
-                        follower.followPath(shootToBallGrabbing3, true);
-                        setPathState(PathState.BALLROW_GRABBING3);
-                    }else{
-                        follower.followPath(Reverse3);
-                        setPathState(PathState.GRABBING3SLOW);
-                        telemetry.addLine("DONE");
+                    if(allThreeUnsorted){
+                        if(!zeroGrab){
+                            zeroGrab = true;
+                        }
+                        if(!secondGrab) {
+                            turretLocalization.setPos(1);
+                            turret.stopOuttake();
+                            follower.setMaxPower(0.55);
+                            runAutonIntake();
+                            follower.followPath(shootToBallGrabbing2, true);
+                            setPathState(PathState.BALLROW_GRABBING2);
+                        }else if(!firstGrab&&allThreeSorted){
+                            turretLocalization.setPos(1);
+                            turret.stopOuttake();
+                            follower.setMaxPower(0.61);
+                            runAutonIntake();
+                            follower.followPath(shootToBallGrabbing1, true);
+                            setPathState(PathState.BALLROW_GRABBING1);
+                        } else if (!thirdGrab&&allThreeSorted) {
+                            turretLocalization.setPos(1);
+                            turret.stopOuttake();
+                            follower.setMaxPower(0.9);
+                            runAutonIntake();
+                            follower.followPath(shootToBallGrabbing3, true);
+                            setPathState(PathState.BALLROW_GRABBING3);
+                        }else if(firstGrab && thirdGrab && allThreeSorted){
+                            turretLocalization.setPos(1);
+                            turret.stopOuttake();
+                            follower.followPath(Reverse3);
+                            setPathState(PathState.GRABBING3SLOW);
+                            telemetry.addLine("DONE");
+                        }
                     }
-                    turretLocalization.setPos(1);
                 }
                 break;
                 /*
@@ -200,18 +209,27 @@ public class FirstAutonRed extends AutonTemplate {
             case BALLROW_GRABBING1:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1.5){
                     balls.setCurrent(new int[]{1,1,0});
+                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
+                        sorted = balls.sortBalls();
+                    }
                     follower.setMaxPower(1.0);
                     stopAutonIntake();
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal1, true);
                     setPathState(PathState.SHOOTING);
                     firstGrab = true;
+                    allThreeSorted = false;
+                    pos = Shooting.MOVE;
+                    sortingIndex = 0;
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
             case BALLROW_GRABBING2:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     balls.setCurrent(new int[]{1,0,1});
+                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
+                        sorted = balls.sortBalls();
+                    }
                     follower.setMaxPower(0.8);
                     stopAutonIntake();
                     follower.followPath(LeverPush, true);
@@ -226,6 +244,9 @@ public class FirstAutonRed extends AutonTemplate {
                     follower.followPath(GrabbingReversal2, true);
                     setPathState(PathState.SHOOTING);
                     secondGrab = true;
+                    allThreeSorted = false;
+                    pos = Shooting.MOVE;
+                    sortingIndex = 0;
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
@@ -235,12 +256,18 @@ public class FirstAutonRed extends AutonTemplate {
                 }
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1.0){
                     balls.setCurrent(new int[]{0,1,1});
+                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
+                        sorted = balls.sortBalls();
+                    }
                     follower.setMaxPower(1.0);
                     stopAutonIntake();
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal3, true);
                     setPathState(PathState.SHOOTING);
                     thirdGrab = true;
+                    allThreeSorted = false;
+                    pos = Shooting.MOVE;
+                    sortingIndex = 0;
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
@@ -278,12 +305,15 @@ public class FirstAutonRed extends AutonTemplate {
         statePathUpdate();
 
         telemetry.addData("path state", pathState.toString());
+        telemetry.addData("pos state", pos.toString());
+        telemetry.addData("allThreeSorted", allThreeSorted);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("Motif: ", Arrays.toString(balls.getFullMotif()));
         telemetry.addData("Current Balls ", Arrays.toString(balls.getCurrentBalls()));
+        telemetry.addData("Sorted: ", Arrays.toString(sorted));
         telemetry.addData("Green in right spot", greenCheck);
         telemetry.addData("Pushed", pushed);
         telemetry.update();
