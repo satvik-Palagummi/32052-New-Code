@@ -10,6 +10,7 @@ public class HoodMovement {
     // PID coefficients for hood positioning if needed
     // private static final double kP = 5.0;
 
+    //i fucked up somwhere SATHVIK HELP
     public void initHood(HardwareMap hardwareMap){
         hoodMotor = hardwareMap.get(DcMotorEx.class, "hoodMotor");
         hoodMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

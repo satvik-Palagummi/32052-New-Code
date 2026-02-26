@@ -170,6 +170,7 @@ public abstract class Frankenstein extends LinearOpMode {
             if(distance != 0){
                 ShotLookupTable.ShotParams params = ShotLookupTable.getParams(distance);
                 turret.setPower(params.flywheelVelocity);
+                //TODO i think this is wrong
                 hoodMovement.setHoodPosition(params.hoodPosition);
 
                 if (distance > 300) {

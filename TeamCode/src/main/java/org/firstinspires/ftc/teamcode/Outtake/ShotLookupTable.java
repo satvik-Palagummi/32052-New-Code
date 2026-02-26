@@ -19,7 +19,7 @@ public class ShotLookupTable {
 
     static {
         // Distance (cm) -> {Flywheel Velocity (ticks/sec), Hood Position (ticks)}
-        // These are example values based on your existing code and should be tuned.
+        // These are example values based on  existing code TODO should be tuned.
         table.put(0.0, new ShotParams(1370, 0));
         table.put(150.0, new ShotParams(1370, 100));
         table.put(170.0, new ShotParams(1410, 200));
