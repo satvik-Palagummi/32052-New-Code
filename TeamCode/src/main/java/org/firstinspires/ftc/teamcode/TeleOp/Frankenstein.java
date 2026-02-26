@@ -7,7 +7,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Sensor.Balls;
 import org.firstinspires.ftc.teamcode.Intake.Spinner;
 import org.firstinspires.ftc.teamcode.MecanumDrive.Nightcall;
+import org.firstinspires.ftc.teamcode.Outtake.HoodMovement;
 import org.firstinspires.ftc.teamcode.Outtake.PushServo;
+import org.firstinspires.ftc.teamcode.Outtake.ShotLookupTable;
 import org.firstinspires.ftc.teamcode.Outtake.Turret;
 import org.firstinspires.ftc.teamcode.Outtake.TurretLocalization;
 import org.firstinspires.ftc.teamcode.Sensor.Colorsensor;
@@ -45,6 +47,7 @@ public abstract class Frankenstein extends LinearOpMode {
     protected final TurretLocalization turretLocalization = new TurretLocalization();
     protected final Spinner spinner = new Spinner();
     protected final PushServo pushServo = new PushServo();
+    protected final HoodMovement hoodMovement = new HoodMovement();
     protected final Limelight limelight = new Limelight();
     protected final Colorsensor colorsensor = new Colorsensor();
     protected final Balls balls = new Balls();
@@ -86,6 +89,7 @@ public abstract class Frankenstein extends LinearOpMode {
         spinner.initSpinner(hardwareMap);
         turret.initTurret(hardwareMap);
         pushServo.initPushServos(hardwareMap);
+        hoodMovement.initHood(hardwareMap);
         turretLocalization.initTurretLocalization(hardwareMap);
         //colorsensor.initColorSensor(hardwareMap);
         limelight.initLimelight(hardwareMap);
@@ -163,51 +167,38 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = limelight.getDistance(limelight.getTa());
         }
         if(!manualMode){
-            if(distance == 0){
-            }else if(distance < 160){
-                turret.setPower(1370);
-                farShot = false;
-                toTheLeft = -1.5;
-                toTheRight = 1.5;
-                distance = 0;
-            }else if(distance>160 && distance < 180){
-                turret.setPower(1410);
-                farShot = false;
-                toTheLeft = -1.5;
-                toTheRight = 1.5;
-                distance = 0;
-            }else if(distance>180 && distance < 220){
-                turret.setPower(1460);
-                farShot = false;
-                toTheLeft = -1.5;
-                toTheRight = 1.5;
-                distance = 0;
-            } else if(distance>320 && distance < 335){
-                turret.setPower(1720);
-                farShot = true;
-                toTheLeft = toTheLeftFar();
-                toTheRight = toTheRightFar();
-                distance = 0;
-            } else if(distance>335){
-                turret.setPower(1740);
-                farShot = true;
-                toTheLeft = toTheLeftFar();
-                toTheRight = toTheRightFar();
+            if(distance != 0){
+                ShotLookupTable.ShotParams params = ShotLookupTable.getParams(distance);
+                turret.setPower(params.flywheelVelocity);
+                hoodMovement.setHoodPosition(params.hoodPosition);
+
+                if (distance > 300) {
+                    farShot = true;
+                    toTheLeft = toTheLeftFar();
+                    toTheRight = toTheRightFar();
+                } else {
+                    farShot = false;
+                    toTheLeft = -1.5;
+                    toTheRight = 1.5;
+                }
                 distance = 0;
             }
         }else{
             if(gamepad2.triangle){
                 turret.setPower(1420);
+                hoodMovement.setHoodPosition(0);
                 toTheLeft = -1.5;
                 toTheRight = 1.5;
             }
             if(gamepad2.circle){
                 turret.setPower(1460);
+                hoodMovement.setHoodPosition(350);
                 toTheLeft = -1.5;
                 toTheRight = 1.5;
             }
             if(gamepad2.cross){
                 turret.setPower(1740);
+                hoodMovement.setHoodPosition(950);
                 toTheLeft = 2.5;
                 toTheRight = 4.5;
             }
@@ -476,6 +467,7 @@ public abstract class Frankenstein extends LinearOpMode {
         addTelemetry("Motif", Arrays.toString(balls.getFullMotif()));
         addTelemetry("Sorted ", Arrays.toString(sorted));
         addTelemetry("Turret Velocity", (turret.getTurretLVelocity()+ turret.getTurretRVelocity())/2);
+        addTelemetry("Hood Position", hoodMovement.getHoodPosition());
         addTelemetry("Limelight Distance", distance);
         /*
         addTelemetry("Turret Position", turretLocalization.getTurretPos());
