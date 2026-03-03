@@ -40,11 +40,11 @@ public class FirstAutonRed extends AutonTemplate {
     private final Pose grabBalls1Control = new Pose(76, 91.5);
     private final Pose grabBalls2 = new Pose(133, 58.5, Math.toRadians(0));
     private final Pose grabBalls2Control = new Pose(67,63);
-    private final Pose hitLever = new Pose(128,69,Math.toRadians(-100));
+    private final Pose hitLever = new Pose(126,69,Math.toRadians(20));
     private final Pose hitLeverControl = new Pose(82, 60);
     private final Pose shootPos2Control = new Pose(80, 60);
     private final Pose grabBalls3 = new Pose(130, 36, Math.toRadians(-5));
-    private final Pose shootPose3Orient = new Pose(94,70,Math.toRadians(-50));
+    private final Pose shootPose3Orient = new Pose(94,70,Math.toRadians(-180));
     private final Pose grabBalls3Control = new Pose(67, 33);
     private final Pose shootPos3Control = new Pose(81, 46);
     private boolean zeroGrab = false;
@@ -62,8 +62,8 @@ public class FirstAutonRed extends AutonTemplate {
 
     public void buildPaths(){
         StartToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, scanPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
+                .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         ShootPose = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, ZeroGrabShoot))
@@ -116,7 +116,7 @@ public class FirstAutonRed extends AutonTemplate {
                 .build();
         Reverse3 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, shootPose3Orient))
-                .setConstantHeadingInterpolation(shootPose.getHeading())
+                .setLinearHeadingInterpolation(shootPose.getHeading(), shootPose3Orient.getHeading())
                 .build();
     }
 
@@ -125,12 +125,13 @@ public class FirstAutonRed extends AutonTemplate {
             case STARTPOS:
                 balls.setCurrent(new int[]{1,1,0});
                 turretLocalization.setPos(2);
-                limelight.setPipeline(0);
+                limelight.setPipeline(9);
                 turret.setPower(1382);
                 turret.startOuttake();
                 follower.followPath(StartToShoot, true);
-                setPathState(PathState.SCANPOSE);//Resets timer & makes new state
+                setPathState(PathState.SHOOTING);//Resets timer & makes new state
                 break;
+            /*
             case SCANPOSE:
                 if(!follower.isBusy()) {
                     scan();
@@ -143,6 +144,8 @@ public class FirstAutonRed extends AutonTemplate {
 
 
                 break;
+
+             */
             case SHOOTING:
                 if(!follower.isBusy())
                 {
@@ -227,18 +230,24 @@ public class FirstAutonRed extends AutonTemplate {
             case BALLROW_GRABBING2:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     balls.setCurrent(new int[]{1,0,1});
-                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
-                        sorted = balls.sortBalls();
-                    }
                     follower.setMaxPower(0.8);
                     stopAutonIntake();
                     follower.followPath(LeverPush, true);
                     setPathState(PathState.LEVER);
+                    limelight.setPipeline(0);
+                    turretLocalization.setPos(0);
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
             case LEVER:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2.5){
+                    scan();
+                    if(limelight.getDetectedTagId() > 20) {
+                        scanned = true;
+                    }
+                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
+                        sorted = balls.sortBalls();
+                    }
                     follower.setMaxPower(1.0);
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal2, true);

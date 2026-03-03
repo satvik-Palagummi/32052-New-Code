@@ -8,18 +8,21 @@ public class PushServo {
     private Servo push0 = null;
     private Servo push1 = null;
     private Servo push2 = null;
-    private ElapsedTime time = new ElapsedTime();
 
     public void initPushServos(HardwareMap hweM){
         push0 = hweM.get(Servo.class, "push0");
         push1 = hweM.get(Servo.class, "push1");
         push2 = hweM.get(Servo.class, "push2");
     }
+
+    /**
+     * @param servoNum is the position for which the code will either move the servo up to launch an artifact or bring the servo down
+     */
     public void propel(int servoNum){
         if(servoNum == 0){
-            push0.setPosition(0.3);
+            push0.setPosition(0.767);
         }else if(servoNum == 1){
-            push1.setPosition(0.65);
+            push1.setPosition(0);
         }else if(servoNum == 2){
             push2.setPosition(0.4);
         }
@@ -37,7 +40,7 @@ public class PushServo {
         if(servoNum == 0){
             push0.setPosition(0.6);
         }else if(servoNum == 1){
-            push1.setPosition(0);
+            push1.setPosition(1.0);
         }else if(servoNum == 2){
             push2.setPosition(0.77);
         }

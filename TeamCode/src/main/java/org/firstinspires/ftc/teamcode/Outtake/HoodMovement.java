@@ -9,14 +9,23 @@ public class HoodMovement {
     public void initHoodServo(HardwareMap hardwareMap){
         hood = hardwareMap.get(Servo.class, "hood");
     }
-    public void adjustHoodUp(boolean farShot){
-        if(farShot){
-            hood.setPosition(hood.getPosition()+10);
-        }
+    public void adjustHoodUp(){
+        hood.setPosition(hood.getPosition()-0.05);
     }
-    public void adjustHoodDown(boolean farShot){
-        if(farShot){
-            hood.setPosition(hood.getPosition()-10);
-        }
+    public void setHood(double pos){
+        hood.setPosition(pos);
     }
+    public void adjustHoodDown(){
+        hood.setPosition(hood.getPosition()+0.05);
+    }
+    public double hoodPos(){
+        return hood.getPosition();
+    }
+    public void setHoodZero(){
+        hood.setPosition(0);
+    }
+    public void setHoodOne(){
+        hood.setPosition(0.9);
+    }
+
 }

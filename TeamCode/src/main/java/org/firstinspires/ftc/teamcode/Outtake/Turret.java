@@ -151,7 +151,11 @@ public class Turret {
     public double getSpeed() {
         return speed;
     }
-
+    public void setPIDF(double P, double F){
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
+        turretL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        turretR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+    }
     public double getTurretLPower(){return turretL.getPower();}
     public double getTurretRPower(){return turretR.getPower();}
     public double getTurretLVelocity(){return turretL.getVelocity();}

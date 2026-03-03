@@ -11,7 +11,7 @@ public class Balls {
     private final int[] twentyOne = {0,1,1};
     private final int[] twentyTwo = {1,0,1};
     private final int[] twentyThree = {1,1,0};
-    private int[] currentBalls = {1,1,1};
+    private int[] currentBalls = {-1,-1,-1};
 
     public void setMotif(int id){
         if(id == 0){
@@ -29,27 +29,32 @@ public class Balls {
         int[] sorted = new int[3];
         int[] giveUpArray = {0, 1, 2};
         if(!Arrays.equals(motif, new int[]{-1, -1, -1})) {
-            boolean giveUp = false;
-            for (int i = 0; i < 3; i++) {
-                int currentPos;
-                if (!giveUp) {
-                    for (int j = 0; j < 3; j++) {
-                        if (getMotif(i) == currentBalls[j]) {
-                            currentPos = j;
-                            sorted[i] = currentPos;
-                            currentBalls[currentPos] = -1;
-                            break;
-                        } else {
-                            if (j == 2) {
-                                giveUp = true;
+            if((Arrays.equals(motif, new int[]{1,1,0})&&Arrays.equals(getCurrentBalls(), new int[]{0,1,1}))||(Arrays.equals(motif, new int[]{0,1,1})&&Arrays.equals(getCurrentBalls(), new int[]{1,1,0}))){
+                sorted = new int[]{2,1,0};
+                currentBalls = new int[]{-1,-1,-1};
+            }else{
+                boolean giveUp = false;
+                for (int i = 0; i < 3; i++) {
+                    int currentPos;
+                    if (!giveUp) {
+                        for (int j = 0; j < 3; j++) {
+                            if (getMotif(i) == currentBalls[j]) {
+                                currentPos = j;
+                                sorted[i] = currentPos;
+                                currentBalls[currentPos] = -1;
                                 break;
+                            } else {
+                                if (j == 2) {
+                                    giveUp = true;
+                                    break;
+                                }
                             }
                         }
                     }
                 }
+                if (giveUp) {
+                    return giveUpArray;
             }
-            if (giveUp) {
-                return giveUpArray;
             }
             return sorted;
         }

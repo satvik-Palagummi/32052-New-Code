@@ -31,14 +31,14 @@ public class FirstAutonBlue extends AutonTemplate {
     private final Pose shootPose = new Pose(60,83, Math.toRadians(45));
     private final Pose grabBalls1 = new Pose(18,82, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(68, 91.5);
-    private final Pose grabBalls2 = new Pose(11.367, 59, Math.toRadians(0));
+    private final Pose grabBalls2 = new Pose(11.5, 59, Math.toRadians(0));
     private final Pose grabBalls2Control = new Pose(77,63);
-    private final Pose hitLever = new Pose(17,69,Math.toRadians(100));
+    private final Pose hitLever = new Pose(19,69,Math.toRadians(-20));
     private final Pose hitLeverControl = new Pose (62,60);
     private final Pose shootPos2Control = new Pose(64, 60);
     private final Pose grabBalls3 = new Pose(13, 36, Math.toRadians(5));
     private final Pose grabBalls3Control = new Pose(77, 33);
-    private final Pose shootPose3Orient = new Pose (49,70, Math.toRadians(50));
+    private final Pose shootPose3Orient = new Pose (49,70, Math.toRadians(178.5));
     private final Pose shootPos3Control = new Pose(63, 46);
     private boolean zeroGrab = false;
     private boolean firstGrab = false;
@@ -58,8 +58,8 @@ public class FirstAutonBlue extends AutonTemplate {
 
     public void buildPaths(){
         StartToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, scanPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), scanPose.getHeading())
+                .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         ShootPose = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, shootPose))
@@ -112,7 +112,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 .build();
         Reverse3 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, shootPose3Orient))
-                .setConstantHeadingInterpolation(shootPose.getHeading())
+                .setLinearHeadingInterpolation(shootPose.getHeading(), shootPose3Orient.getHeading())
                 .build();
     }
 
@@ -121,12 +121,13 @@ public class FirstAutonBlue extends AutonTemplate {
             case STARTPOS:
                 balls.setCurrent(new int[]{1,1,0});
                 turretLocalization.setPos(2);
-                limelight.setPipeline(0);
+                limelight.setPipeline(8);
                 turret.setPower(1382);
                 turret.startOuttake();
                 follower.followPath(StartToShoot, true);
-                setPathState(PathState.SCANPOSE);//Resets timer & makes new state
+                setPathState(PathState.SHOOTING);//Resets timer & makes new state
                 break;
+            /*
             case SCANPOSE:
                 if(!follower.isBusy()) {
                     scan();
@@ -139,6 +140,8 @@ public class FirstAutonBlue extends AutonTemplate {
 
 
                 break;
+
+             */
             case SHOOTING:
                 if(!follower.isBusy())
                 {
@@ -222,18 +225,24 @@ public class FirstAutonBlue extends AutonTemplate {
             case BALLROW_GRABBING2:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     balls.setCurrent(new int[]{1,0,1});
-                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
-                        sorted = balls.sortBalls();
-                    }
                     follower.setMaxPower(0.8);
                     stopAutonIntake();
                     follower.followPath(LeverPush, true);
                     setPathState(PathState.LEVER);
                     telemetry.addLine("Done Grabbing");
+                    limelight.setPipeline(0);
+                    turretLocalization.setPos(2);
                 }
                 break;
             case LEVER:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2.5){
+                    scan();
+                    if(limelight.getDetectedTagId() > 20) {
+                        scanned = true;
+                    }
+                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
+                        sorted = balls.sortBalls();
+                    }
                     follower.setMaxPower(1.0);
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal2, true);
@@ -312,6 +321,8 @@ public class FirstAutonBlue extends AutonTemplate {
         telemetry.addData("Sorted: ", Arrays.toString(sorted));
         telemetry.addData("Green in right spot", greenCheck);
         telemetry.addData("Pushed", pushed);
+        telemetry.addData("Zero Grab", zeroGrab);
+        telemetry.addData("allThreeunsorted", allThreeUnsorted);
         telemetry.update();
 
     }
