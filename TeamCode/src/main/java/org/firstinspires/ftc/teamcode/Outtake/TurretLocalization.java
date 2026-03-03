@@ -11,7 +11,7 @@ public class TurretLocalization {
     private final double posOne = 0.5;
     private final double posZero = 1.0;
     /**
-     * The V values for each of the Positions is what the Servo Feedback Matistic Gizmo says the servo is currently position at for each of the three shooter positions.
+     * The V values for each of the Positions is what the Servo Feedback Matistic Gizmo says the servo is currently at for each of the three shooter positions.
      * SO, because we know what value each position is, and depending on from which other position the shooter is coming from, that is what the range is for.
      * The V range is for the boolean that states whether the shooter has reached the right position.
      * I am using a range because the Servo Feedback gizmo and the servo linkage can sometimes trip heavy and make lets say position 2 anywhere from 1.16 to 1.22 instead of dead-on 1.19 as I've written below.
