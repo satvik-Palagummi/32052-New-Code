@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Intake.Spinner;
 import org.firstinspires.ftc.teamcode.MecanumDrive.Nightcall;
+import org.firstinspires.ftc.teamcode.Outtake.HoodMovement;
 import org.firstinspires.ftc.teamcode.Outtake.PushServo;
 import org.firstinspires.ftc.teamcode.Outtake.Turret;
 import org.firstinspires.ftc.teamcode.Outtake.TurretLocalization;
@@ -37,6 +38,7 @@ public abstract class AutonTemplate extends OpMode {
     protected Nightcall nightcall;
     protected TurretLocalization turretLocalization;
     protected Balls balls;
+    protected HoodMovement hoodMovement;
     //protected Colorsensor colorsensor;
     protected Limelight limelight;
     protected int[] sorted;
@@ -299,7 +301,7 @@ public abstract class AutonTemplate extends OpMode {
                     }
                     break;
                 case PROPEL:
-                    double waitTime = (unsortedIndex == 2) ? 0.2 : 0.25;
+                    double waitTime = (unsortedIndex == 2) ? 0.4 : 0.3;
                     if (actionTimer.getElapsedTimeSeconds() >= waitTime) {
                         pushServo.retract(unsortedIndex);
                         actionTimer.resetTimer();
@@ -330,7 +332,7 @@ public abstract class AutonTemplate extends OpMode {
                     }
                     break;
                 case PROPEL:
-                    double waitTime = (unsortedIndex == 2) ? 0.2 : 0.25;
+                    double waitTime = (unsortedIndex == 2) ? 0.4 : 0.3;
                     if (actionTimer.getElapsedTimeSeconds() >= waitTime) {
                         pushServo.retract(unsortedIndex);
                         actionTimer.resetTimer();
@@ -369,14 +371,22 @@ public abstract class AutonTemplate extends OpMode {
                 case MOVE:
                     turretLocalization.setPos(sorted[sortingIndex]);
                     waitOrientRedNoTIme();
-                    if (turretLocalization.getTurretArrived(sorted[sortingIndex])) {
-                        pushServo.propel(sorted[sortingIndex]);
-                        actionTimer.resetTimer();
-                        pos = Shooting.PROPEL;
+                    if(sorted[sortingIndex]==2){
+                        if (turretLocalization.getTurretArrived(sorted[sortingIndex])|| actionTimer.getElapsedTimeSeconds()>0.45) {
+                            pushServo.propel(sorted[sortingIndex]);
+                            actionTimer.resetTimer();
+                            pos = Shooting.PROPEL;
+                        }
+                    }else{
+                        if (turretLocalization.getTurretArrived(sorted[sortingIndex])) {
+                            pushServo.propel(sorted[sortingIndex]);
+                            actionTimer.resetTimer();
+                            pos = Shooting.PROPEL;
+                        }
                     }
                     break;
                 case PROPEL:
-                    double waitTime = (sorted[sortingIndex] == 2) ? 0.2 : 0.25;
+                    double waitTime = 0.3;
                     if (actionTimer.getElapsedTimeSeconds() >= waitTime) {
                         pushServo.retract(sorted[sortingIndex]);
                         actionTimer.resetTimer();
@@ -400,14 +410,24 @@ public abstract class AutonTemplate extends OpMode {
                 case MOVE:
                     turretLocalization.setPos(sorted[sortingIndex]);
                     waitOrientBlueNoTIme();
-                    if (turretLocalization.getTurretArrived(sorted[sortingIndex])) {
-                        pushServo.propel(sorted[sortingIndex]);
-                        actionTimer.resetTimer();
-                        pos = Shooting.PROPEL;
+                    if(sorted[sortingIndex]==2){
+                        if (turretLocalization.getTurretArrived(sorted[sortingIndex])|| actionTimer.getElapsedTimeSeconds()>0.45) {
+                            pushServo.propel(sorted[sortingIndex]);
+                            actionTimer.resetTimer();
+                            pos = Shooting.PROPEL;
+                        }
+                    }else{
+                        if (turretLocalization.getTurretArrived(sorted[sortingIndex])) {
+                            pushServo.propel(sorted[sortingIndex]);
+                            actionTimer.resetTimer();
+                            pos = Shooting.PROPEL;
+                        }
                     }
+
+
                     break;
                 case PROPEL:
-                    double waitTime = (sorted[sortingIndex] == 2) ? 0.21 : 0.25;
+                    double waitTime = 0.3;
                     if (actionTimer.getElapsedTimeSeconds() >= waitTime) {
                         pushServo.retract(sorted[sortingIndex]);
                         actionTimer.resetTimer();
@@ -504,6 +524,7 @@ public abstract class AutonTemplate extends OpMode {
         pushServo = new PushServo();
         balls = new Balls();
         limelight = new Limelight();
+        hoodMovement = new HoodMovement();
         //colorsensor = new Colorsensor();
         nightcall.initialize(hardwareMap);
         spinner.initSpinner(hardwareMap);
@@ -511,6 +532,7 @@ public abstract class AutonTemplate extends OpMode {
         turretLocalization.initTurretLocalization(hardwareMap);
         turret.initTurret(hardwareMap);
         limelight.initLimelight(hardwareMap);
+        hoodMovement.initHoodServo(hardwareMap);
         //colorsensor.initColorSensor(hardwareMap);
         pos = Shooting.MOVE;
         buildPaths();

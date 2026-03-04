@@ -17,6 +17,6 @@ public class FrankensteinRed extends Frankenstein {
 
     @Override
     public double toTheRightFar() {
-        return 2;
+        return 0;
     }
 }

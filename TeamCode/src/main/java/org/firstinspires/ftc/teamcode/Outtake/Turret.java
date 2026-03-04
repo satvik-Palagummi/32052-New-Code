@@ -105,7 +105,7 @@ public class Turret {
         turretL.setDirection(DcMotorEx.Direction.FORWARD);
         turretR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretR.setDirection(DcMotorEx.Direction.REVERSE);
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(150, 0, 0, 11.8721);
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(160, 0, 0, 11.87215);
         turretL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         turretR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 

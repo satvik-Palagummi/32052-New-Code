@@ -25,20 +25,20 @@ public class FirstAutonBlue extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(23.5,126, Math.toRadians(-36));
+    private final Pose startPose = new Pose(33.7,135.67, Math.toRadians(0));
     private final Pose scanPose = new Pose(49, 97, Math.toRadians(-25));
     private final Pose scanControl = new Pose(83,63);
     private final Pose shootPose = new Pose(60,83, Math.toRadians(45));
-    private final Pose grabBalls1 = new Pose(18,82, Math.toRadians(0));
+    private final Pose grabBalls1 = new Pose(16,83, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(68, 91.5);
-    private final Pose grabBalls2 = new Pose(11.5, 59, Math.toRadians(0));
-    private final Pose grabBalls2Control = new Pose(77,63);
-    private final Pose hitLever = new Pose(19,69,Math.toRadians(-20));
+    private final Pose grabBalls2 = new Pose(10, 60, Math.toRadians(0));
+    private final Pose grabBalls2Control = new Pose(73,63);
+    private final Pose hitLever = new Pose(17.5,69,Math.toRadians(-20));
     private final Pose hitLeverControl = new Pose (62,60);
     private final Pose shootPos2Control = new Pose(64, 60);
-    private final Pose grabBalls3 = new Pose(13, 36, Math.toRadians(5));
-    private final Pose grabBalls3Control = new Pose(77, 33);
-    private final Pose shootPose3Orient = new Pose (49,70, Math.toRadians(178.5));
+    private final Pose grabBalls3 = new Pose(12, 36, Math.toRadians(5));
+    private final Pose grabBalls3Control = new Pose(72, 38);
+    private final Pose shootPose3Orient = new Pose (49,70, Math.toRadians(180));
     private final Pose shootPos3Control = new Pose(63, 46);
     private boolean zeroGrab = false;
     private boolean firstGrab = false;
@@ -119,11 +119,14 @@ public class FirstAutonBlue extends AutonTemplate {
     public void statePathUpdate(){
         switch(pathState){
             case STARTPOS:
+                hoodMovement.setHood(0.5);
                 balls.setCurrent(new int[]{1,1,0});
-                turretLocalization.setPos(2);
+                sorted = balls.sortBalls();
+                turretLocalization.setPos(1);
                 limelight.setPipeline(8);
-                turret.setPower(1382);
+                turret.setPower(1520);
                 turret.startOuttake();
+                allThreeSorted = false;
                 follower.followPath(StartToShoot, true);
                 setPathState(PathState.SHOOTING);//Resets timer & makes new state
                 break;
@@ -145,45 +148,36 @@ public class FirstAutonBlue extends AutonTemplate {
             case SHOOTING:
                 if(!follower.isBusy())
                 {
-                    if(!zeroGrab){
-                        autonShoot2_5Blue();
-                    }else{
-                        stopAutonIntake();
-                        autonShoot3Blue();
-                    }
+                    stopAutonIntake();
+                    autonShoot3Blue();
 
-                    if(allThreeUnsorted){
-                        if(!zeroGrab){
-                            zeroGrab = true;
-                        }
-                        if(!secondGrab) {
-                            turret.stopOuttake();
-                            turretLocalization.setPos(1);
-                            follower.setMaxPower(0.55);
-                            runAutonIntake();
-                            follower.followPath(shootToBallGrabbing2, true);
-                            setPathState(PathState.BALLROW_GRABBING2);
-                        }else if(!firstGrab && allThreeSorted){
-                            turret.stopOuttake();
-                            turretLocalization.setPos(1);
-                            follower.setMaxPower(0.61);
-                            runAutonIntake();
-                            follower.followPath(shootToBallGrabbing1, true);
-                            setPathState(PathState.BALLROW_GRABBING1);
-                        } else if (!thirdGrab && allThreeSorted) {
-                            turret.stopOuttake();
-                            turretLocalization.setPos(1);
-                            follower.setMaxPower(0.9);
-                            runAutonIntake();
-                            follower.followPath(shootToBallGrabbing3, true);
-                            setPathState(PathState.BALLROW_GRABBING3);
-                        }else if(firstGrab && thirdGrab && allThreeSorted){
-                            turret.stopOuttake();
-                            turretLocalization.setPos(1);
-                            follower.followPath(Reverse3);
-                            setPathState(PathState.GRABBING_REVERSAL3);
-                            telemetry.addLine("DONE");
-                        }
+                    if(!secondGrab && allThreeSorted) {
+                        turret.stopOuttake();
+                        turretLocalization.setPos(1);
+                        follower.setMaxPower(0.65);
+                        runAutonIntake();
+                        follower.followPath(shootToBallGrabbing2, true);
+                        setPathState(PathState.BALLROW_GRABBING2);
+                    }else if(!firstGrab && allThreeSorted){
+                        turret.stopOuttake();
+                        turretLocalization.setPos(1);
+                        follower.setMaxPower(0.65);
+                        runAutonIntake();
+                        follower.followPath(shootToBallGrabbing1, true);
+                        setPathState(PathState.BALLROW_GRABBING1);
+                    } else if (!thirdGrab && allThreeSorted) {
+                        turret.stopOuttake();
+                        turretLocalization.setPos(1);
+                        follower.setMaxPower(0.9);
+                        runAutonIntake();
+                        follower.followPath(shootToBallGrabbing3, true);
+                        setPathState(PathState.BALLROW_GRABBING3);
+                    }else if(firstGrab && thirdGrab && allThreeSorted){
+                        turret.stopOuttake();
+                        turretLocalization.setPos(1);
+                        follower.followPath(Reverse3);
+                        setPathState(PathState.GRABBING_REVERSAL3);
+                        telemetry.addLine("DONE");
                     }
                 }
                 break;
@@ -323,6 +317,7 @@ public class FirstAutonBlue extends AutonTemplate {
         telemetry.addData("Pushed", pushed);
         telemetry.addData("Zero Grab", zeroGrab);
         telemetry.addData("allThreeunsorted", allThreeUnsorted);
+        telemetry.addData("Servo Voltage: ", turretLocalization.getServoFeedback());
         telemetry.update();
 
     }

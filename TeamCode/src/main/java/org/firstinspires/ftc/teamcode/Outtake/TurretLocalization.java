@@ -19,7 +19,7 @@ public class TurretLocalization {
      * This is to avoid the delay of getting exact with the value the shooter is currently at and wasting time.
      * TO EDIT THESE VALUES: Go to the main teleop, either Blue or Red and check what the telemetry prints for the Servo voltage at each of the three positions. If it is off for any of then fix it.
      */
-    private final double posTwoV = 1.19;
+    private final double posTwoV = 1.33;
     private final double posTwoVRange = 0.03;
     private final double posOneV = 1.7;
     private final double posOneVRange = 0.05;
