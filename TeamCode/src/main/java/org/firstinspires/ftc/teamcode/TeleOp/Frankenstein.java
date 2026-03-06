@@ -77,6 +77,7 @@ public abstract class Frankenstein extends LinearOpMode {
     protected double errorL;
     protected double errorR;
     protected boolean autoAim;
+    protected double addition;
 
 
     @Override
@@ -211,7 +212,6 @@ public abstract class Frankenstein extends LinearOpMode {
          */
         if(distance == 0){
         } else if(distance >110 && distance < 150){
-            turret.setPower(1500);
             curTargetVelocity = 1500;
             farShot = false;
             toTheLeft = -1.75;
@@ -219,7 +219,6 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = 0;
             hoodMovement.setHood(0.6);
         }else if(distance >150 && distance < 160){
-            turret.setPower(1520);
             curTargetVelocity = 1520;
             farShot = false;
             toTheLeft = -1.75;
@@ -227,7 +226,6 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = 0;
             hoodMovement.setHood(0.5);
         }else if(distance>160 && distance < 175){
-            turret.setPower(1530);
             curTargetVelocity = 1530;
             farShot = false;
             toTheLeft = -1.75;
@@ -243,7 +241,6 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = 0;
             hoodMovement.setHood(0.5);
         } else if(distance>290 && distance < 310){
-            turret.setPower(1860);
             curTargetVelocity = 1860;
             farShot = true;
             toTheLeft = toTheLeftFar();
@@ -251,7 +248,6 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = 0;
             hoodMovement.setHood(0.3);
         } else if(distance>310 && distance < 325){
-            turret.setPower(1880);
             curTargetVelocity = 1880;
             farShot = true;
             toTheLeft = toTheLeftFar();
@@ -259,7 +255,6 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = 0;
             hoodMovement.setHood(0.3);
         }else if(distance>325 && distance < 335){
-            turret.setPower(1920);
             curTargetVelocity = 1920;
             farShot = true;
             toTheLeft = toTheLeftFar();
@@ -267,7 +262,6 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = 0;
             hoodMovement.setHood(0.3);
         }else if(distance>335 && distance < 355){
-            turret.setPower(1930);
             curTargetVelocity = 1930;
             farShot = true;
             toTheLeft = toTheLeftFar();
@@ -287,7 +281,7 @@ public abstract class Frankenstein extends LinearOpMode {
                 fromFar = true;
             }
             intook = true;
-            F += 0.04;
+            F += 0.02;
         }
         /**Enables sorting in Tele-op after motif has been set.
 
@@ -296,6 +290,7 @@ public abstract class Frankenstein extends LinearOpMode {
             startSort = !startSort;
         }
         //Changes velocity during flywheel PIDF tuning.
+        /*
         if(gamepad2.yWasPressed()){
             if(curTargetVelocity == highVelocity){
                 curTargetVelocity = lowVelocity;
@@ -303,13 +298,15 @@ public abstract class Frankenstein extends LinearOpMode {
                 curTargetVelocity = highVelocity;
             }
         }
-        if(gamepad1.yWasPressed()){
-            curTargetVelocity+=10;
+
+         */
+        if(gamepad2.yWasPressed()){
+            addition+=10;
         }
-        if(gamepad1.aWasPressed()) {
-            curTargetVelocity-=10;
+        if(gamepad2.aWasPressed()) {
+            addition-=10;
         }
-        turret.setPower(curTargetVelocity);
+        turret.setPower(addition + curTargetVelocity);
         /*
         if(gamepad2.bWasPressed()){
             stepIndex = (stepIndex + 1) % stepSizes.length;
@@ -582,20 +579,20 @@ public abstract class Frankenstein extends LinearOpMode {
         addTelemetry("Current Balls", Arrays.toString(balls.getCurrentBalls()));
         addTelemetry("Motif", Arrays.toString(balls.getFullMotif()));
         addTelemetry("Sorted ", Arrays.toString(sorted));
+        addTelemetry("SORTING ACTIVATED::: ", startSort);
         addTelemetry("Turret Velocity", (turret.getTurretLVelocity()+ turret.getTurretRVelocity())/2);
+        addTelemetry("Target Velocity", curTargetVelocity);
+        addTelemetry("Addition", addition);
         addTelemetry("Hood Position: ", hoodMovement.hoodPos());
         addTelemetry("Limelight Distance", lastDistance);
         addTelemetry("Servo Voltage: ", turretLocalization.getServoFeedback());
-        addTelemetry("Path States", pos);
         addTelemetry("Motif Set", motifSet);
-        addTelemetry("SORTING ACTIVATED::: ", startSort);
         addTelemetry("P:", P);
         addTelemetry("F: ",F);
         /*
         addTelemetry("ErrorL", errorL);
         addTelemetry("ErrorR", errorR);
         addTelemetry("Step Size", stepSizes[stepIndex]);
-
         addTelemetry("Green1: ", colorsensor.getGreen1());
         addTelemetry("Blue1: ", colorsensor.getBlue1());
         addTelemetry("ColorVal1", colorsensor.getColorVal1());
