@@ -312,10 +312,10 @@ public abstract class Frankenstein extends LinearOpMode {
         if(gamepad2.bWasPressed()){
             stepIndex = (stepIndex + 1) % stepSizes.length;
         }
-        if(gamepad2.dpadLeftWasPressed()){
+        if(gamepad2.dpadLeftWasPressed() && !gamepad2.back){
             F += stepSizes[stepIndex];
         }
-        if(gamepad2.dpadRightWasPressed()){
+        if(gamepad2.dpadRightWasPressed() && !gamepad2.back){
             F -= stepSizes[stepIndex];
         }
         if(gamepad2.dpadUpWasPressed() &&!gamepad2.back){
@@ -584,6 +584,7 @@ public abstract class Frankenstein extends LinearOpMode {
         addTelemetry("Servo Voltage: ", turretLocalization.getServoFeedback());
         addTelemetry("Path States", pos);
         addTelemetry("Motif Set", motifSet);
+        addTelemetry("SORTING ACTIVATED::: ", startSort);
         /*
         addTelemetry("ErrorL", errorL);
         addTelemetry("ErrorR", errorR);
