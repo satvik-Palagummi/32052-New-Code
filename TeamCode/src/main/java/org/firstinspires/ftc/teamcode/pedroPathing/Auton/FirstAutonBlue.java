@@ -33,7 +33,7 @@ public class FirstAutonBlue extends AutonTemplate {
     private final Pose grabBalls1Control = new Pose(68, 91.5);
     private final Pose grabBalls2 = new Pose(10, 60, Math.toRadians(0));
     private final Pose grabBalls2Control = new Pose(73,63);
-    private final Pose hitLever = new Pose(17.5,69,Math.toRadians(-20));
+    private final Pose hitLever = new Pose(17.5,72,Math.toRadians(-20));
     private final Pose hitLeverControl = new Pose (62,60);
     private final Pose shootPos2Control = new Pose(64, 60);
     private final Pose grabBalls3 = new Pose(12, 36, Math.toRadians(5));
@@ -119,7 +119,7 @@ public class FirstAutonBlue extends AutonTemplate {
     public void statePathUpdate(){
         switch(pathState){
             case STARTPOS:
-                hoodMovement.setHood(0.5);
+                hoodMovement.setHood(0.45);
                 balls.setCurrent(new int[]{1,1,0});
                 sorted = balls.sortBalls();
                 turretLocalization.setPos(1);
@@ -175,6 +175,7 @@ public class FirstAutonBlue extends AutonTemplate {
                     }else if(firstGrab && thirdGrab && allThreeSorted){
                         turret.stopOuttake();
                         turretLocalization.setPos(1);
+                        follower.setMaxPower(0.6);
                         follower.followPath(Reverse3);
                         setPathState(PathState.GRABBING_REVERSAL3);
                         telemetry.addLine("DONE");
@@ -205,7 +206,7 @@ public class FirstAutonBlue extends AutonTemplate {
                         sorted = balls.sortBalls();
                     }
                     follower.setMaxPower(1.0);
-                    stopAutonIntake();
+
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal1, true);
                     setPathState(PathState.SHOOTING);
@@ -220,7 +221,6 @@ public class FirstAutonBlue extends AutonTemplate {
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     balls.setCurrent(new int[]{1,0,1});
                     follower.setMaxPower(0.8);
-                    stopAutonIntake();
                     follower.followPath(LeverPush, true);
                     setPathState(PathState.LEVER);
                     telemetry.addLine("Done Grabbing");
@@ -245,6 +245,7 @@ public class FirstAutonBlue extends AutonTemplate {
                     allThreeSorted = false;
                     sortingIndex = 0;
                     pos = Shooting.MOVE;
+                    stopAutonIntake();
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
@@ -258,7 +259,6 @@ public class FirstAutonBlue extends AutonTemplate {
                         sorted = balls.sortBalls();
                     }
                     follower.setMaxPower(1.0);
-                    stopAutonIntake();
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal3, true);
                     thirdGrab = true;

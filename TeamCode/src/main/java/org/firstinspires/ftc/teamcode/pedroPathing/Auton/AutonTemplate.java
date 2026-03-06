@@ -90,10 +90,10 @@ public abstract class AutonTemplate extends OpMode {
         limelight.setPipeline(9);
         limelight.updateLimelight();
         limelight.scanGoal();
-        if(limelight.resultWorks()&&limelight.getTx()>3){
-            nightcall.rightOrient();
-        }else if(limelight.resultWorks()&&limelight.getTx()<1){
-            nightcall.leftOrient();
+        if(limelight.resultWorks()&&limelight.getTx()>2){
+            nightcall.rightOrientAuton();
+        }else if(limelight.resultWorks()&&limelight.getTx()<-2){
+            nightcall.leftOrientAuton();
         }else{
             nightcall.cutPower();
         }
@@ -119,10 +119,10 @@ public abstract class AutonTemplate extends OpMode {
         limelight.setPipeline(8);
         limelight.updateLimelight();
         limelight.scanGoal();
-        if(limelight.resultWorks()&&limelight.getTx()>1){
-            nightcall.rightOrient();
-        }else if(limelight.resultWorks()&&limelight.getTx()<-3){
-            nightcall.leftOrient();
+        if(limelight.resultWorks()&&limelight.getTx()>2){
+            nightcall.rightOrientAuton();
+        }else if(limelight.resultWorks()&&limelight.getTx()<-2){
+            nightcall.leftOrientAuton();
         }else{
             nightcall.cutPower();
         }
@@ -372,7 +372,7 @@ public abstract class AutonTemplate extends OpMode {
                     turretLocalization.setPos(sorted[sortingIndex]);
                     waitOrientRedNoTIme();
                     if(sorted[sortingIndex]==2){
-                        if (turretLocalization.getTurretArrived(sorted[sortingIndex])|| actionTimer.getElapsedTimeSeconds()>0.45) {
+                        if (turretLocalization.getTurretArrived(sorted[sortingIndex])) {
                             pushServo.propel(sorted[sortingIndex]);
                             actionTimer.resetTimer();
                             pos = Shooting.PROPEL;
@@ -410,24 +410,16 @@ public abstract class AutonTemplate extends OpMode {
                 case MOVE:
                     turretLocalization.setPos(sorted[sortingIndex]);
                     waitOrientBlueNoTIme();
-                    if(sorted[sortingIndex]==2){
-                        if (turretLocalization.getTurretArrived(sorted[sortingIndex])|| actionTimer.getElapsedTimeSeconds()>0.45) {
-                            pushServo.propel(sorted[sortingIndex]);
-                            actionTimer.resetTimer();
-                            pos = Shooting.PROPEL;
-                        }
-                    }else{
-                        if (turretLocalization.getTurretArrived(sorted[sortingIndex])) {
-                            pushServo.propel(sorted[sortingIndex]);
-                            actionTimer.resetTimer();
-                            pos = Shooting.PROPEL;
-                        }
+                    if (turretLocalization.getTurretArrived(sorted[sortingIndex])) {
+                        pushServo.propel(sorted[sortingIndex]);
+                        actionTimer.resetTimer();
+                        pos = Shooting.PROPEL;
                     }
 
 
                     break;
                 case PROPEL:
-                    double waitTime = 0.3;
+                    double waitTime = 0.35;
                     if (actionTimer.getElapsedTimeSeconds() >= waitTime) {
                         pushServo.retract(sorted[sortingIndex]);
                         actionTimer.resetTimer();

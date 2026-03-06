@@ -11,7 +11,7 @@ public class Balls {
     private final int[] twentyOne = {0,1,1};
     private final int[] twentyTwo = {1,0,1};
     private final int[] twentyThree = {1,1,0};
-    private int[] currentBalls = {-1,-1,-1};
+    private int[] currentBalls = {1,1,1};
 
     public void setMotif(int id){
         if(id == 0){

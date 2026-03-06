@@ -123,7 +123,7 @@ public class FirstAutonRed extends AutonTemplate {
     public void statePathUpdate(){
         switch(pathState){
             case STARTPOS:
-                hoodMovement.setHood(0.5);
+                hoodMovement.setHood(0.45);
                 balls.setCurrent(new int[]{1,1,0});
                 sorted = balls.sortBalls();
                 turretLocalization.setPos(2);
@@ -177,6 +177,7 @@ public class FirstAutonRed extends AutonTemplate {
                         setPathState(PathState.BALLROW_GRABBING3);
                     }else if(firstGrab && thirdGrab && allThreeSorted){
                         turretLocalization.setPos(1);
+                        follower.setMaxPower(0.6);
                         turret.stopOuttake();
                         follower.followPath(Reverse3);
                         setPathState(PathState.GRABBING3SLOW);
@@ -208,7 +209,6 @@ public class FirstAutonRed extends AutonTemplate {
                         sorted = balls.sortBalls();
                     }
                     follower.setMaxPower(1.0);
-                    stopAutonIntake();
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal1, true);
                     setPathState(PathState.SHOOTING);
@@ -223,7 +223,6 @@ public class FirstAutonRed extends AutonTemplate {
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
                     balls.setCurrent(new int[]{1,0,1});
                     follower.setMaxPower(0.8);
-                    stopAutonIntake();
                     follower.followPath(LeverPush, true);
                     setPathState(PathState.LEVER);
                     limelight.setPipeline(0);
@@ -248,6 +247,7 @@ public class FirstAutonRed extends AutonTemplate {
                     allThreeSorted = false;
                     pos = Shooting.MOVE;
                     sortingIndex = 0;
+                    stopAutonIntake();
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
@@ -261,7 +261,6 @@ public class FirstAutonRed extends AutonTemplate {
                         sorted = balls.sortBalls();
                     }
                     follower.setMaxPower(1.0);
-                    stopAutonIntake();
                     turret.startOuttake();
                     follower.followPath(GrabbingReversal3, true);
                     setPathState(PathState.SHOOTING);
