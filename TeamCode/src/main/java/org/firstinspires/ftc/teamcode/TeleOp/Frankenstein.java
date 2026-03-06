@@ -286,6 +286,8 @@ public abstract class Frankenstein extends LinearOpMode {
             if(turretLocalization.getTurretPos()==2){
                 fromFar = true;
             }
+            intook = true;
+            F += 0.04;
         }
         /**Enables sorting in Tele-op after motif has been set.
 
@@ -308,7 +310,7 @@ public abstract class Frankenstein extends LinearOpMode {
             curTargetVelocity-=10;
         }
         turret.setPower(curTargetVelocity);
-
+        /*
         if(gamepad2.bWasPressed()){
             stepIndex = (stepIndex + 1) % stepSizes.length;
         }
@@ -324,6 +326,8 @@ public abstract class Frankenstein extends LinearOpMode {
         if(gamepad2.dpadDownWasPressed()&&!gamepad2.back){
             P -= stepSizes[stepIndex];
         }
+
+         */
 
         double curLVelocity = turret.getTurretLVelocity();
         double curRVelocity = turret.getTurretRVelocity();
