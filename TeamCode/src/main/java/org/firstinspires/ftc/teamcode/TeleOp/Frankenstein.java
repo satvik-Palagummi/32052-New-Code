@@ -577,7 +577,7 @@ public abstract class Frankenstein extends LinearOpMode {
     }
     private void displayTelemetry() {
         addTelemetry("Current Balls", Arrays.toString(balls.getCurrentBalls()));
-        addTelemetry("Motif", Arrays.toString(balls.getFullMotif()));
+        addTelemetry("Motif ", Arrays.toString(balls.getFullMotif()));
         addTelemetry("Sorted ", Arrays.toString(sorted));
         addTelemetry("SORTING ACTIVATED::: ", startSort);
         addTelemetry("Turret Velocity", (turret.getTurretLVelocity()+ turret.getTurretRVelocity())/2);
