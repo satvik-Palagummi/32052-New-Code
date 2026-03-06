@@ -280,7 +280,7 @@ public abstract class Frankenstein extends LinearOpMode {
             if(turretLocalization.getTurretPos()==2){
                 fromFar = true;
             }
-            intook = true;
+            intook =  true;
             F += 0.02;
         }
         /**Enables sorting in Tele-op after motif has been set.
