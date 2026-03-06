@@ -235,7 +235,7 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = 0;
             hoodMovement.setHood(0.45);
         }else if(distance>175 && distance < 210){
-            turret.setPower(1530);
+            turret.setPower(1535);
             curTargetVelocity = 1530;
             farShot = false;
             toTheLeft = -1.75;
@@ -381,9 +381,9 @@ public abstract class Frankenstein extends LinearOpMode {
                 case SECPOS:
                     if(balls.getCurrentSpecPos(1)!=-1) {
                         turretLocalization.setPos(1);
-                        if (turretLocalization.getTurretArrived(1)&& time.seconds()<0.5) {
+                        if (turretLocalization.getTurretArrived(1)&& time.seconds()<0.55) {
                             pushServo.propel(1);
-                        }else if(time.seconds()>0.5){
+                        }else if(time.seconds()>0.55){
                             pushServo.retract(1);
                             setPathState(Position.THIRDPOS);
                         }
@@ -431,9 +431,9 @@ public abstract class Frankenstein extends LinearOpMode {
                 case SECPOS:
                     if(balls.getCurrentSpecPos(1)!=-1) {
                         turretLocalization.setPos(1);
-                        if (turretLocalization.getTurretArrived(1)&& time.seconds()<0.55) {
+                        if (turretLocalization.getTurretArrived(1)&& time.seconds()<0.6) {
                             pushServo.propel(1);
-                        }else if(time.seconds()>0.55){
+                        }else if(time.seconds()>0.6){
                             pushServo.retract(1);
                             setPathState(Position.THIRDPOS);
                         }
@@ -475,9 +475,9 @@ public abstract class Frankenstein extends LinearOpMode {
                     break;
                 case SECPOS:
                     turretLocalization.setPos(sorted[1]);
-                    if (turretLocalization.getTurretArrived(sorted[1])&& time.seconds()<0.55) {
+                    if (turretLocalization.getTurretArrived(sorted[1])&& time.seconds()<0.6) {
                         pushServo.propel(sorted[1]);
-                    }else if(time.seconds()>0.55){
+                    }else if(time.seconds()>0.6){
                         pushServo.retract(sorted[1]);
                         setPathState(Position.THIRDPOS);
                     }
@@ -503,27 +503,27 @@ public abstract class Frankenstein extends LinearOpMode {
             switch(sortedFarPos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(sorted[0]);
-                    if (turretLocalization.getTurretArrived(sorted[0])&& time.seconds()<0.6) {
+                    if (turretLocalization.getTurretArrived(sorted[0])&& time.seconds()<0.65) {
                         pushServo.propel(sorted[0]);
-                    }else if(time.seconds()>0.6){
+                    }else if(time.seconds()>0.65){
                         pushServo.retract(sorted[0]);
                         setPathState(Position.SECPOS);
                     }
                     break;
                 case SECPOS:
                     turretLocalization.setPos(sorted[1]);
-                    if (turretLocalization.getTurretArrived(sorted[1])&& time.seconds()<0.6) {
+                    if (turretLocalization.getTurretArrived(sorted[1])&& time.seconds()<0.65) {
                         pushServo.propel(sorted[1]);
-                    }else if(time.seconds()>0.6){
+                    }else if(time.seconds()>0.65){
                         pushServo.retract(sorted[1]);
                         setPathState(Position.THIRDPOS);
                     }
                     break;
                 case THIRDPOS:
                     turretLocalization.setPos(sorted[2]);
-                    if (turretLocalization.getTurretArrived(sorted[2])&& time.seconds()<0.6){
+                    if (turretLocalization.getTurretArrived(sorted[2])&& time.seconds()<0.65){
                         pushServo.propel(sorted[2]);
-                    }else if(time.seconds()>0.6){
+                    }else if(time.seconds()>0.65){
                         pushServo.retract(sorted[2]);
                         allThree = true;
                         sorted = null;
@@ -589,11 +589,11 @@ public abstract class Frankenstein extends LinearOpMode {
         addTelemetry("Path States", pos);
         addTelemetry("Motif Set", motifSet);
         addTelemetry("SORTING ACTIVATED::: ", startSort);
+        addTelemetry("P:", P);
+        addTelemetry("F: ",F);
         /*
         addTelemetry("ErrorL", errorL);
         addTelemetry("ErrorR", errorR);
-        addTelemetry("P:", P);
-        addTelemetry("F: ",F);
         addTelemetry("Step Size", stepSizes[stepIndex]);
 
         addTelemetry("Green1: ", colorsensor.getGreen1());
