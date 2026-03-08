@@ -20,11 +20,11 @@ public class AutonFarRedGetOut extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(84,8, Math.toRadians(-90));
-    private final Pose scanPose = new Pose(84,20, Math.toRadians(7));
+    private final Pose startPose = new Pose(84,9, Math.toRadians(-90));
+    private final Pose scanPose = new Pose(84,20, Math.toRadians(5));
 
-    private final Pose shootPose = new Pose(84,10, Math.toRadians(-19));
-    private final Pose BallsRowAiming3 = new Pose(130, 8, Math.toRadians(180));
+    private final Pose shootPose = new Pose(84,11, Math.toRadians(-19));
+    private final Pose BallsRowAiming3 = new Pose(130, 8, Math.toRadians(0));
     private final Pose grabBalls3 = new Pose(130, 35, Math.toRadians(0));
     private PathChain StartToScan, ScantoShoot, shootToBallAiming3, AimingtoGrabbing3, GrabbingReversal3, ReversaltoAiming3;
 
@@ -63,6 +63,10 @@ public class AutonFarRedGetOut extends AutonTemplate {
                 turretLocalization.setPos(0);
                 follower.followPath(StartToScan, true);
                 setPathState(PathState.STARTPOS_SCANPOS);//Resets timer & makes new state
+                hoodMovement.setHood(0.3);
+                turret.startOuttake();
+                turret.setPower(1930);
+                balls.setCurrent(new int[]{1,1,0});
                 break;
             case STARTPOS_SCANPOS:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3&& !scanned){
@@ -75,19 +79,16 @@ public class AutonFarRedGetOut extends AutonTemplate {
                 if(!follower.isBusy()&&scanned) {
                     follower.followPath(ScantoShoot, true);
                     setPathState(PathState.SCANPOS_SHOOTPOS);
+                    sorted = balls.sortBalls();
                 }
                 break;
             case SCANPOS_SHOOTPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>17)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
                 {
-                    turret.setPower(1720);
-                    turret.startOuttake();
-                    if(!Arrays.equals(balls.getFullMotif(), new int[]{-1, -1, -1})) {
-                        autonShoot3_5();
-                    }else{
-                        autonShoot2();
+                    if(allThreeSorted){
+                        follower.followPath(shootToBallAiming3, true);
+                        setPathState(PathState.SHOOT_PRELOAD3);
                     }
-                    turret.stopOuttake();
                 }
                 break;
             case SHOOT_PRELOAD3:

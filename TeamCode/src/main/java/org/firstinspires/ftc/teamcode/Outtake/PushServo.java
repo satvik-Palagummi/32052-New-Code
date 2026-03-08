@@ -29,7 +29,7 @@ public class PushServo {
     }
     public void propelScan(int servoNum){
         if(servoNum == 0){
-            push0.setPosition(0.5);
+            push0.setPosition(0.50);
         }else if(servoNum == 1){
             push1.setPosition(0.55);
         }else if(servoNum == 2){

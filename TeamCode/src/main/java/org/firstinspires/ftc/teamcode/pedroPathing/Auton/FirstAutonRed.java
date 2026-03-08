@@ -31,20 +31,20 @@ public class FirstAutonRed extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(111.3,135.67, Math.toRadians(0));
+    private final Pose startPose = new Pose(111.5,135.67, Math.toRadians(0));
     private final Pose scanPose = new Pose(93, 94, Math.toRadians(25));
     private final Pose scanningControl = new Pose(61,63);
     private final Pose ZeroGrabShoot = new Pose(84,83, Math.toRadians(-48));
     private final Pose shootPose = new Pose(84,83, Math.toRadians(-45));
-    private final Pose grabBalls1 = new Pose(128,83, Math.toRadians(0));
+    private final Pose grabBalls1 = new Pose(128,84.5, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(76, 91.5);
-    private final Pose grabBalls2 = new Pose(134, 60, Math.toRadians(0));
-    private final Pose grabBalls2Control = new Pose(71,63);
-    private final Pose hitLever = new Pose(126.5,69,Math.toRadians(20));
+    private final Pose grabBalls2 = new Pose(136, 60, Math.toRadians(0));
+    private final Pose grabBalls2Control = new Pose(70,61);
+    private final Pose hitLever = new Pose(129,72,Math.toRadians(20));
     private final Pose hitLeverControl = new Pose(82, 60);
     private final Pose shootPos2Control = new Pose(80, 60);
-    private final Pose grabBalls3 = new Pose(132, 36, Math.toRadians(-5));
-    private final Pose shootPose3Orient = new Pose(94,70,Math.toRadians(-180));
+    private final Pose grabBalls3 = new Pose(134, 36, Math.toRadians(-5));
+    private final Pose shootPose3Orient = new Pose(94,70,Math.toRadians(0));
     private final Pose grabBalls3Control = new Pose(72, 38);
     private final Pose shootPos3Control = new Pose(81, 46);
     private boolean zeroGrab = false;
@@ -62,8 +62,8 @@ public class FirstAutonRed extends AutonTemplate {
 
     public void buildPaths(){
         StartToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .addPath(new BezierLine(startPose, ZeroGrabShoot))
+                .setLinearHeadingInterpolation(startPose.getHeading(), ZeroGrabShoot.getHeading())
                 .build();
         ShootPose = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, ZeroGrabShoot))
@@ -82,7 +82,7 @@ public class FirstAutonRed extends AutonTemplate {
         //FIRST ROW PATHS
 
         shootToBallGrabbing1 = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, grabBalls1Control, grabBalls1))
+                .addPath(new BezierLine(shootPose, grabBalls1))
                 .setConstantHeadingInterpolation(grabBalls1.getHeading())
                 .build();
 
@@ -93,7 +93,7 @@ public class FirstAutonRed extends AutonTemplate {
         //SECOND ROW PATHS
 
         shootToBallGrabbing2 = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, grabBalls2Control, grabBalls2))
+                .addPath(new BezierCurve(ZeroGrabShoot, grabBalls2Control, grabBalls2))
                 .setLinearHeadingInterpolation(ZeroGrabShoot.getHeading(), grabBalls2.getHeading())
                 .build();
         LeverPush = follower.pathBuilder()
@@ -123,12 +123,12 @@ public class FirstAutonRed extends AutonTemplate {
     public void statePathUpdate(){
         switch(pathState){
             case STARTPOS:
-                hoodMovement.setHood(0.45);
+                hoodMovement.setHood(0.4);
                 balls.setCurrent(new int[]{1,1,0});
                 sorted = balls.sortBalls();
-                turretLocalization.setPos(2);
+                turretLocalization.setPos(1);
                 limelight.setPipeline(9);
-                turret.setPower(1520);
+                turret.setPower(1530);
                 turret.startOuttake();
                 allThreeSorted = false;
                 follower.followPath(StartToShoot, true);
@@ -157,14 +157,14 @@ public class FirstAutonRed extends AutonTemplate {
                     if(!secondGrab && allThreeSorted) {
                         turretLocalization.setPos(1);
                         turret.stopOuttake();
-                        follower.setMaxPower(0.55);
+                        follower.setMaxPower(0.7);
                         runAutonIntake();
                         follower.followPath(shootToBallGrabbing2, true);
                         setPathState(PathState.BALLROW_GRABBING2);
                     }else if(!firstGrab&&allThreeSorted){
                         turretLocalization.setPos(1);
                         turret.stopOuttake();
-                        follower.setMaxPower(0.61);
+                        follower.setMaxPower(0.7);
                         runAutonIntake();
                         follower.followPath(shootToBallGrabbing1, true);
                         setPathState(PathState.BALLROW_GRABBING1);

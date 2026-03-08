@@ -21,7 +21,7 @@ public class Colorsensor {
         colorSensor3 = hardwareMap.get(ColorSensor.class, "color_sensor3");
     }
     public int getColorVal1(){
-        if(getBlue1()<30 && getGreen1()<30){
+        if(getBlue1()<30 && getGreen1()<37){
             return -1;
         }else if(getBlue1()>getGreen1()) {
             return 1;
@@ -29,7 +29,7 @@ public class Colorsensor {
         return 0;
     }
     public int getColorVal2(){
-        if(getBlue2()<30 && getGreen2()<32){
+        if(getBlue2()<27 && getGreen2()<29){
             return -1;
         }else if(getBlue2()>getGreen2()) {
             return 1;
@@ -37,7 +37,7 @@ public class Colorsensor {
         return 0;
     }
     public int getColorVal3(){
-        if(getBlue3()<35 || getGreen3()<35){
+        if(getBlue3()<30 && getGreen3()<37){
             return -1;
         }else if(getBlue3()>getGreen3()) {
             return 1;

@@ -42,6 +42,22 @@ public class Spinner {
         spinnerLeft.setPower(speed);
         spinnerRight.setPower(speed);
     }
+    public void reverseLeft(){
+        spinnerLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        spinnerLeft.setPower(speed);
+    }
+    public void reverseRight(){
+        spinnerRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        spinnerRight.setPower(speed);
+    }
+    public void intakeLeft(){
+        spinnerLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        spinnerLeft.setPower(speed);
+    }
+    public void intakeRight(){
+        spinnerRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        spinnerRight.setPower(speed);
+    }
     public double getSpinnerRight(){
         return spinnerRight.getPower();
     }

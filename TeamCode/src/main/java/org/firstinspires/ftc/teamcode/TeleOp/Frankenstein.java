@@ -112,6 +112,7 @@ public abstract class Frankenstein extends LinearOpMode {
         hoodMovement.initHoodServo(hardwareMap);
         hoodMovement.setHood(0.4);
         turretLocalization.setPos(1);
+        nightcall.resetYaw();
     }
 
     public void handleDriving(){
@@ -281,7 +282,7 @@ public abstract class Frankenstein extends LinearOpMode {
                 fromFar = true;
             }
             intook =  true;
-            F += 0.02;
+            F += 0.013;
         }
         /**Enables sorting in Tele-op after motif has been set.
 

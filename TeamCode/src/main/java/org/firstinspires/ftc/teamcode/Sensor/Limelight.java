@@ -106,7 +106,7 @@ public class Limelight{
     }
     //Calcs distance from goal using limelight identified april tag area
     public double getDistance(double ta){
-        double scale = 30665.95;
+        double scale = 30665.950;
         return (Math.pow((scale/ta),0.5));
     }
     public void setLimelightMode(LimelightMode newMode){

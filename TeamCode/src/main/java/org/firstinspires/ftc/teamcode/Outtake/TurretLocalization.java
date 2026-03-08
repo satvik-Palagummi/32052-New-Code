@@ -32,7 +32,7 @@ public class TurretLocalization {
         turret = hwM.get(Servo.class, "turretLocalization");
         servoFeedback = hwM.get(AnalogInput.class, "servoFeedback");
     }
-    public void setTurretPos(double pos){
+    public void setTurretPos(double  pos){
         turret.setPosition(pos);
     }
     public void moveToLeft(boolean leftDPad){if(leftDPad){setPos(0);}}

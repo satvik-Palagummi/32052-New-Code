@@ -16,7 +16,7 @@ public class HoodMovement {
         hood.setPosition(pos);
     }
     public void adjustHoodDown(){
-        hood.setPosition(hood.getPosition()+0.05);
+        hood.setPosition(hood.getPosition()+0.055);
     }
     public double hoodPos(){
         return hood.getPosition();

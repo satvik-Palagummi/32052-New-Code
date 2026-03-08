@@ -96,7 +96,7 @@ public class Nightcall {
             frontLeftPower = frontLeftPower/1.5;
             frontRightPower = frontRightPower/1.5;
             backLeftPower = backLeftPower/1.5;
-            backRightPower = backRightPower/1.5;
+            backRightPower = backRightPower/1.50;
         }
 
         frontLeftMotor.setPower(frontLeftPower);
