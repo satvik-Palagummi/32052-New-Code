@@ -34,7 +34,7 @@ public class Balls {
                 currentBalls = new int[]{-1,-1,-1};
             }else{
                 boolean giveUp = false;
-                for (int i = 0; i <= 4; i++) {
+                for (int i = 0; i < 3; i++) {
                     int currentPos;
                     if (!giveUp) {
                         for (int j = 0; j < 3; j++) {
