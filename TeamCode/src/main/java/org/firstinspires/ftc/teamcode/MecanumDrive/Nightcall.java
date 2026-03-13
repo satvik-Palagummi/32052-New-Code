@@ -36,6 +36,13 @@ public class Nightcall {
         backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        imu = hardwareMap.get(IMU.class, "imu");
+        // Adjust the orientation parameters to match your robot
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+        // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
+        imu.initialize(parameters);
 
         // Retrieve the IMU from the hardware map
         follower = Constants.createFollower(hardwareMap);
@@ -53,6 +60,18 @@ public class Nightcall {
         frontRightMotor.setPower(0.22);
         backLeftMotor.setPower(-0.22);
         backRightMotor.setPower(0.22);
+    }
+    public void rightOrientFar(){
+        frontLeftMotor.setPower(0.27);
+        frontRightMotor.setPower(-0.27);
+        backLeftMotor.setPower(0.27);
+        backRightMotor.setPower(-0.27);
+    }
+    public void leftOrientFar(){
+        frontLeftMotor.setPower(-0.27);
+        frontRightMotor.setPower(0.27);
+        backLeftMotor.setPower(-0.27);
+        backRightMotor.setPower(0.27);
     }
     public void rightOrient(){
         frontLeftMotor.setPower(0.22);
@@ -73,7 +92,7 @@ public class Nightcall {
         backRightMotor.setPower(-0.25);
     }
     public void drive (double x, double y, double rx, boolean slow){
-        double botHeading = follower.getHeading();
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         // Rotate the movement direction counter to the bot's rotation
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -103,5 +122,8 @@ public class Nightcall {
         frontRightMotor.setPower(frontRightPower);
         backRightMotor.setPower(backRightPower);
     }
-    public void resetYaw(){follower.setPose(follower.getPose().setHeading(0));}
+    public void resetYaw(){
+        follower.setPose(follower.getPose().setHeading(0));
+        imu.resetYaw();
+    }
 }
