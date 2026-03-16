@@ -14,17 +14,13 @@ public class FirstAutonBlue extends AutonTemplate {
         STARTPOS,
         SHOOT1,
         GRAB1,
-        PUSH1,
         SHOOT2,
         REVERSAL1,
         GRAB2,
         PUSH2,
         SHOOT3,
-        REVERSAL2,
         GRAB3,
         SHOOT4,
-        REVERSAL3,
-        START_PARK,
         PARKING1,
         PARKING2,
         FINAL_SHOOT,
@@ -44,17 +40,18 @@ public class FirstAutonBlue extends AutonTemplate {
     private final Pose shootPos2Control = new Pose(54.254, 69.746);
     private final Pose grabBalls3 = new Pose(11.008, 35.832, Math.toRadians(0));
     private final Pose grabBalls3Control = new Pose(75.613, 31.925);
-    private final Pose parkPose1 = new Pose(23.628, 9.342, Math.toRadians(0));
-    private final Pose parkControl1 = new Pose(45.931, 10.045);
+    
+    // Updated Poses for Parking/End Sequence
+    private final Pose parkTransitionPose = new Pose(60.000, 11.252, Math.toRadians(45));
     private final Pose parkPose2 = new Pose(9.914, 8.737, Math.toRadians(0));
-    private final Pose parkPose3 = new Pose(58.418, 10.929, Math.toRadians(20));
+    private final Pose parkPose3 = new Pose(59.930, 11.265, Math.toRadians(20));
 
     private boolean shootingStarted = false;
 
     private PathChain StartToShoot, shootToBallGrabbing1, LeverPush2, GrabbingReversal1,
             shootToBallGrabbing2, LeverPush, GrabbingReversal2,
             shootToBallGrabbing3, GrabbingReversal3,
-            StartPark, Park1, Park2;
+            Park1, Park2;
 
     public void buildPaths() {
         // Path 1
@@ -107,23 +104,17 @@ public class FirstAutonBlue extends AutonTemplate {
 
         // Path 9
         GrabbingReversal3 = follower.pathBuilder()
-                .addPath(new BezierLine(grabBalls3, shootPose))
+                .addPath(new BezierLine(grabBalls3, parkTransitionPose))
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build();
 
         // Path 10
-        StartPark = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, parkControl1, parkPose1))
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
-                .build();
-
-        // Path 11
         Park1 = follower.pathBuilder()
-                .addPath(new BezierLine(parkPose1, parkPose2))
+                .addPath(new BezierLine(parkTransitionPose, parkPose2))
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
 
-        // Path 12
+        // Path 11
         Park2 = follower.pathBuilder()
                 .addPath(new BezierLine(parkPose2, parkPose3))
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(20))
@@ -139,7 +130,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 }
                 break;
 
-            case SHOOT1: // Shot after Path 1 (ReachShootingPoint)
+            case SHOOT1: // Shot after Path 1, before Path 2
                 if (!follower.isBusy()) {
                     if (!shootingStarted) {
                         autonShoot3Blue();
@@ -162,7 +153,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 }
                 break;
 
-            case SHOOT2: // Shot after Path 3 (LeverPush2)
+            case SHOOT2: // Shot after Path 3, before Path 4
                 if (!follower.isBusy()) {
                     stopAutonIntake();
                     if (!shootingStarted) {
@@ -181,19 +172,26 @@ public class FirstAutonBlue extends AutonTemplate {
             case REVERSAL1: // End of Path 4
                 if (!follower.isBusy()) {
                     follower.followPath(shootToBallGrabbing2, true); // Path 5
+                    setPathState(PathState.GRAB2);
+                }
+                break;
+
+            case GRAB2: // End of Path 5
+                if (!follower.isBusy()) {
+                    runAutonIntake();
+                    follower.followPath(LeverPush, true); // Path 6
                     setPathState(PathState.PUSH2);
                 }
                 break;
 
-            case PUSH2: // End of Path 5
+            case PUSH2: // End of Path 6
                 if (!follower.isBusy()) {
-                    runAutonIntake();
-                    follower.followPath(LeverPush, true); // Path 6
+                    follower.followPath(GrabbingReversal2, true); // Path 7
                     setPathState(PathState.SHOOT3);
                 }
                 break;
 
-            case SHOOT3: // Shot after Path 6 (LeverPush)
+            case SHOOT3: // Shot after Path 7, before Path 8
                 if (!follower.isBusy()) {
                     stopAutonIntake();
                     if (!shootingStarted) {
@@ -203,22 +201,23 @@ public class FirstAutonBlue extends AutonTemplate {
                     if (allThreeSorted) {
                         shootingStarted = false;
                         allThreeSorted = false;
-                        follower.followPath(GrabbingReversal2, true); // Path 7
-                        setPathState(PathState.REVERSAL2);
+                        follower.followPath(shootToBallGrabbing3, true); // Path 8
+                        setPathState(PathState.GRAB3);
                     }
                 }
                 break;
 
-            case REVERSAL2: // End of Path 7
+            case GRAB3: // End of Path 8
                 if (!follower.isBusy()) {
-                    follower.followPath(shootToBallGrabbing3, true); // Path 8
+                    runAutonIntake();
+                    follower.followPath(GrabbingReversal3, true); // Path 9
                     setPathState(PathState.SHOOT4);
                 }
                 break;
 
-            case SHOOT4: // Shot after Path 8 (shootToBallGrabbing3)
+            case SHOOT4: // Shot after Path 9, before Path 10
                 if (!follower.isBusy()) {
-                    runAutonIntake();
+                    stopAutonIntake();
                     if (!shootingStarted) {
                         autonShoot3Blue();
                         shootingStarted = true;
@@ -226,35 +225,20 @@ public class FirstAutonBlue extends AutonTemplate {
                     if (allThreeSorted) {
                         shootingStarted = false;
                         allThreeSorted = false;
-                        stopAutonIntake();
-                        follower.followPath(GrabbingReversal3, true); // Path 9
-                        setPathState(PathState.REVERSAL3);
+                        follower.followPath(Park1, true); // Path 10
+                        setPathState(PathState.PARKING1);
                     }
-                }
-                break;
-
-            case REVERSAL3: // End of Path 9
-                if (!follower.isBusy()) {
-                    follower.followPath(StartPark, true); // Path 10
-                    setPathState(PathState.PARKING1);
                 }
                 break;
 
             case PARKING1: // End of Path 10
                 if (!follower.isBusy()) {
-                    follower.followPath(Park1, true); // Path 11
-                    setPathState(PathState.PARKING2);
-                }
-                break;
-
-            case PARKING2: // End of Path 11
-                if (!follower.isBusy()) {
-                    follower.followPath(Park2, true); // Path 12
+                    follower.followPath(Park2, true); // Path 11
                     setPathState(PathState.FINAL_SHOOT);
                 }
                 break;
 
-            case FINAL_SHOOT: // End of Path 12
+            case FINAL_SHOOT: // Shot at the end of Path 11
                 if (!follower.isBusy()) {
                     if (!shootingStarted) {
                         autonShoot3Blue();
