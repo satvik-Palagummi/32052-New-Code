@@ -175,7 +175,7 @@ public class FirstAutonBlue extends AutonTemplate {
 
             case REVERSAL1: // End of Path 4
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(0.7);
+                    follower.setMaxPower(0.8);
                     follower.followPath(shootToBallGrabbing2, true); // Path 5
                     setPathState(PathState.GRAB2);
                 }
