@@ -125,6 +125,7 @@ public class FirstAutonBlue extends AutonTemplate {
         switch (pathState) {
             case STARTPOS: // End of Path 1
                 if (!follower.isBusy()) {
+                    follower.setMaxPower(1.0);
                     follower.followPath(StartToShoot, true);
                     setPathState(PathState.SHOOT1);
                 }
@@ -139,6 +140,7 @@ public class FirstAutonBlue extends AutonTemplate {
                     if (allThreeSorted) {
                         shootingStarted = false;
                         allThreeSorted = false;
+                        follower.setMaxPower(0.8);
                         follower.followPath(shootToBallGrabbing1, true); // Path 2
                         setPathState(PathState.GRAB1);
                     }
@@ -148,6 +150,7 @@ public class FirstAutonBlue extends AutonTemplate {
             case GRAB1: // End of Path 2
                 if (!follower.isBusy()) {
                     runAutonIntake();
+                    follower.setMaxPower(0.7);
                     follower.followPath(LeverPush2, true); // Path 3
                     setPathState(PathState.SHOOT2);
                 }
@@ -163,6 +166,7 @@ public class FirstAutonBlue extends AutonTemplate {
                     if (allThreeSorted) {
                         shootingStarted = false;
                         allThreeSorted = false;
+                        follower.setMaxPower(1.0);
                         follower.followPath(GrabbingReversal1, true); // Path 4
                         setPathState(PathState.REVERSAL1);
                     }
@@ -171,6 +175,7 @@ public class FirstAutonBlue extends AutonTemplate {
 
             case REVERSAL1: // End of Path 4
                 if (!follower.isBusy()) {
+                    follower.setMaxPower(0.7);
                     follower.followPath(shootToBallGrabbing2, true); // Path 5
                     setPathState(PathState.GRAB2);
                 }
@@ -179,6 +184,7 @@ public class FirstAutonBlue extends AutonTemplate {
             case GRAB2: // End of Path 5
                 if (!follower.isBusy()) {
                     runAutonIntake();
+                    follower.setMaxPower(0.7);
                     follower.followPath(LeverPush, true); // Path 6
                     setPathState(PathState.PUSH2);
                 }
@@ -186,6 +192,7 @@ public class FirstAutonBlue extends AutonTemplate {
 
             case PUSH2: // End of Path 6
                 if (!follower.isBusy()) {
+                    follower.setMaxPower(1.0);
                     follower.followPath(GrabbingReversal2, true); // Path 7
                     setPathState(PathState.SHOOT3);
                 }
@@ -201,6 +208,7 @@ public class FirstAutonBlue extends AutonTemplate {
                     if (allThreeSorted) {
                         shootingStarted = false;
                         allThreeSorted = false;
+                        follower.setMaxPower(1.0);
                         follower.followPath(shootToBallGrabbing3, true); // Path 8
                         setPathState(PathState.GRAB3);
                     }
@@ -208,8 +216,13 @@ public class FirstAutonBlue extends AutonTemplate {
                 break;
 
             case GRAB3: // End of Path 8
+                if (pathTimer.getElapsedTimeSeconds() > 0.67) {
+                    follower.setMaxPower(0.58);
+                }
+
                 if (!follower.isBusy()) {
                     runAutonIntake();
+                    follower.setMaxPower(1.0);
                     follower.followPath(GrabbingReversal3, true); // Path 9
                     setPathState(PathState.SHOOT4);
                 }
@@ -225,6 +238,7 @@ public class FirstAutonBlue extends AutonTemplate {
                     if (allThreeSorted) {
                         shootingStarted = false;
                         allThreeSorted = false;
+                        follower.setMaxPower(0.6);
                         follower.followPath(Park1, true); // Path 10
                         setPathState(PathState.PARKING1);
                     }
