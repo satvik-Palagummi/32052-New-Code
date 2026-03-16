@@ -123,7 +123,17 @@ public class FirstAutonBlue extends AutonTemplate {
 
     public void statePathUpdate() {
         switch (pathState) {
-            case STARTPOS: // End of Path 1
+            case STARTPOS:
+                // Functional initializations from older version
+                hoodMovement.setHood(0.43);
+                balls.setCurrent(new int[]{1, 1, 0});
+                sorted = balls.sortBalls();
+                turretLocalization.setPos(1);
+                limelight.setPipeline(8);
+                turret.setPower(1530);
+                turret.startOuttake();
+                allThreeSorted = false;
+                
                 if (!follower.isBusy()) {
                     follower.setMaxPower(1.0);
                     follower.followPath(StartToShoot, true);
@@ -131,7 +141,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 }
                 break;
 
-            case SHOOT1: // Shot after Path 1, before Path 2
+            case SHOOT1:
                 if (!follower.isBusy()) {
                     if (!shootingStarted) {
                         autonShoot3Blue();
@@ -141,22 +151,28 @@ public class FirstAutonBlue extends AutonTemplate {
                         shootingStarted = false;
                         allThreeSorted = false;
                         follower.setMaxPower(0.8);
-                        follower.followPath(shootToBallGrabbing1, true); // Path 2
+                        follower.followPath(shootToBallGrabbing1, true);
                         setPathState(PathState.GRAB1);
                     }
                 }
                 break;
 
-            case GRAB1: // End of Path 2
-                if (!follower.isBusy()) {
+            case GRAB1:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
+                    balls.setCurrent(new int[]{0, 1, 1});
+                    sorted = balls.sortBalls();
+                    allThreeSorted = false;
+                    sortingIndex = 0;
+                    pos = Shooting.MOVE;
+
                     runAutonIntake();
                     follower.setMaxPower(0.7);
-                    follower.followPath(LeverPush2, true); // Path 3
+                    follower.followPath(LeverPush2, true);
                     setPathState(PathState.SHOOT2);
                 }
                 break;
 
-            case SHOOT2: // Shot after Path 3, before Path 4
+            case SHOOT2:
                 if (!follower.isBusy()) {
                     stopAutonIntake();
                     if (!shootingStarted) {
@@ -167,38 +183,44 @@ public class FirstAutonBlue extends AutonTemplate {
                         shootingStarted = false;
                         allThreeSorted = false;
                         follower.setMaxPower(1.0);
-                        follower.followPath(GrabbingReversal1, true); // Path 4
+                        follower.followPath(GrabbingReversal1, true);
                         setPathState(PathState.REVERSAL1);
                     }
                 }
                 break;
 
-            case REVERSAL1: // End of Path 4
+            case REVERSAL1:
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(0.8);
-                    follower.followPath(shootToBallGrabbing2, true); // Path 5
+                    follower.setMaxPower(0.7);
+                    follower.followPath(shootToBallGrabbing2, true);
                     setPathState(PathState.GRAB2);
                 }
                 break;
 
-            case GRAB2: // End of Path 5
-                if (!follower.isBusy()) {
+            case GRAB2:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.0) {
+                    balls.setCurrent(new int[]{1, 0, 1});
+                    sorted = balls.sortBalls();
+                    allThreeSorted = false;
+                    sortingIndex = 0;
+                    pos = Shooting.MOVE;
+                    
                     runAutonIntake();
                     follower.setMaxPower(0.7);
-                    follower.followPath(LeverPush, true); // Path 6
+                    follower.followPath(LeverPush, true);
                     setPathState(PathState.PUSH2);
                 }
                 break;
 
-            case PUSH2: // End of Path 6
+            case PUSH2:
                 if (!follower.isBusy()) {
                     follower.setMaxPower(1.0);
-                    follower.followPath(GrabbingReversal2, true); // Path 7
+                    follower.followPath(GrabbingReversal2, true);
                     setPathState(PathState.SHOOT3);
                 }
                 break;
 
-            case SHOOT3: // Shot after Path 7, before Path 8
+            case SHOOT3:
                 if (!follower.isBusy()) {
                     stopAutonIntake();
                     if (!shootingStarted) {
@@ -209,26 +231,32 @@ public class FirstAutonBlue extends AutonTemplate {
                         shootingStarted = false;
                         allThreeSorted = false;
                         follower.setMaxPower(1.0);
-                        follower.followPath(shootToBallGrabbing3, true); // Path 8
+                        follower.followPath(shootToBallGrabbing3, true);
                         setPathState(PathState.GRAB3);
                     }
                 }
                 break;
 
-            case GRAB3: // End of Path 8
+            case GRAB3:
                 if (pathTimer.getElapsedTimeSeconds() > 0.67) {
                     follower.setMaxPower(0.58);
                 }
 
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.0) {
+                    balls.setCurrent(new int[]{1, 1, 0});
+                    sorted = balls.sortBalls();
+                    allThreeSorted = false;
+                    sortingIndex = 0;
+                    pos = Shooting.MOVE;
+
                     runAutonIntake();
                     follower.setMaxPower(1.0);
-                    follower.followPath(GrabbingReversal3, true); // Path 9
+                    follower.followPath(GrabbingReversal3, true);
                     setPathState(PathState.SHOOT4);
                 }
                 break;
 
-            case SHOOT4: // Shot after Path 9, before Path 10
+            case SHOOT4:
                 if (!follower.isBusy()) {
                     stopAutonIntake();
                     if (!shootingStarted) {
@@ -239,20 +267,20 @@ public class FirstAutonBlue extends AutonTemplate {
                         shootingStarted = false;
                         allThreeSorted = false;
                         follower.setMaxPower(0.6);
-                        follower.followPath(Park1, true); // Path 10
+                        follower.followPath(Park1, true);
                         setPathState(PathState.PARKING1);
                     }
                 }
                 break;
 
-            case PARKING1: // End of Path 10
+            case PARKING1:
                 if (!follower.isBusy()) {
-                    follower.followPath(Park2, true); // Path 11
+                    follower.followPath(Park2, true);
                     setPathState(PathState.FINAL_SHOOT);
                 }
                 break;
 
-            case FINAL_SHOOT: // Shot at the end of Path 11
+            case FINAL_SHOOT:
                 if (!follower.isBusy()) {
                     if (!shootingStarted) {
                         autonShoot3Blue();
@@ -297,10 +325,15 @@ public class FirstAutonBlue extends AutonTemplate {
         statePathUpdate();
 
         telemetry.addData("path state", pathState.toString());
+        telemetry.addData("Pos State", pos.toString());
+        telemetry.addData("allThreeSorted", allThreeSorted);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("Motif: ", Arrays.toString(balls.getFullMotif()));
+        telemetry.addData("Current Balls ", Arrays.toString(balls.getCurrentBalls()));
+        telemetry.addData("Sorted: ", Arrays.toString(sorted));
         telemetry.update();
     }
 }
