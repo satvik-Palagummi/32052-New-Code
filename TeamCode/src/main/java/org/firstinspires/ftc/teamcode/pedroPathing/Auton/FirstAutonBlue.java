@@ -25,30 +25,27 @@ public class FirstAutonBlue extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(33.8,135.67, Math.toRadians(0));
+    private final Pose startPose = new Pose(32.700, 135.670, Math.toRadians(0));
     private final Pose scanPose = new Pose(49, 97, Math.toRadians(-25));
     private final Pose scanControl = new Pose(83,63);
-    private final Pose ZeroGrabPose = new Pose(60,83, Math.toRadians(48));
-    private final Pose shootPose = new Pose(60,83, Math.toRadians(45));
-    private final Pose grabBalls1 = new Pose(16,83, Math.toRadians(0));
-    private final Pose grabBalls1Control = new Pose(68, 91.5);
-    private final Pose grabBalls2 = new Pose(9, 60, Math.toRadians(-5));
-    private final Pose grabBalls2Control = new Pose(74,61);
-    private final Pose hitLever = new Pose(17,72,Math.toRadians(-20));
-    private final Pose hitLeverFirstSpike = new Pose(15.5,72,Math.toRadians(85));
-    private final Pose hitLeverControl = new Pose (62,60);
-    private final Pose hitLeverFirstSpikeControl = new Pose(45,77);
-    private final Pose shootPos2Control = new Pose(64, 60);
-    private final Pose grabBalls3 = new Pose(10, 36, Math.toRadians(5));
-    private final Pose grabBalls3Control = new Pose(72, 38);
-    private final Pose shootPose3Orient = new Pose (49,70, Math.toRadians(180));
+    private final Pose shootPose = new Pose(60.000, 83.000, Math.toRadians(45));
+    private final Pose grabBalls1 = new Pose(16.000, 83.000, Math.toRadians(0));
+    private final Pose grabBalls1Control = new Pose(68.000, 91.500);
+    private final Pose grabBalls2 = new Pose(10.000, 60.000, Math.toRadians(0));
+    private final Pose grabBalls2Control = new Pose(73.000, 63.000);
+    private final Pose hitLever = new Pose(17.000, 72.000, Math.toRadians(-20));
+    private final Pose hitLeverFirstSpike = new Pose(16.000, 72.000, Math.toRadians(85));
+    private final Pose hitLeverControl = new Pose (62.000, 60.000);
+    private final Pose hitLeverFirstSpikeControl = new Pose(45.000, 77.000);
+    private final Pose shootPos2Control = new Pose(64.000, 60.000);
+    private final Pose grabBalls3 = new Pose(10.000, 36.000, Math.toRadians(5));
+    private final Pose grabBalls3Control = new Pose(72.000, 36.000);
+    private final Pose shootPose3Orient = new Pose (49.000, 70.000, Math.toRadians(178));
     private final Pose shootPos3Control = new Pose(63, 46);
     private boolean zeroGrab = false;
     private boolean firstGrab = false;
     private boolean secondGrab = false;
     private boolean thirdGrab = false;
-
-
 
     private PathChain StartToShoot,
             ShootPose,
@@ -58,68 +55,71 @@ public class FirstAutonBlue extends AutonTemplate {
             shootToBallGrabbing2, GrabbingReversal2, LeverPush,
             shootToBallGrabbing3, GrabbingReversal3, Reverse3;
 
-
     public void buildPaths(){
+        // ReachShootingPoint
         StartToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, ZeroGrabPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), ZeroGrabPose.getHeading())
+                .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
+
+        // ShootPose (kept original logic if needed, but updated to use shootPose)
         ShootPose = follower.pathBuilder()
                 .addPath(new BezierLine(scanPose, shootPose))
                 .setLinearHeadingInterpolation(scanPose.getHeading(), shootPose.getHeading())
                 .build();
-        /*ShootPos1To2 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPosePos1, shootPosePos2))
-                .setLinearHeadingInterpolation(shootPosePos1.getHeading(), shootPosePos2.getHeading())
-                .build();
-        ShootPos2To3 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPosePos2, shootPosePos3))
-                .setLinearHeadingInterpolation(shootPosePos2.getHeading(), shootPosePos3.getHeading())
-                .build();
 
-         */
-        //FIRST ROW PATHS
-
+        // Path3 -> shootToBallGrabbing1
         shootToBallGrabbing1 = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose,grabBalls1Control, grabBalls1))
-                .setConstantHeadingInterpolation(grabBalls1.getHeading())
+                .addPath(new BezierCurve(shootPose, grabBalls1Control, grabBalls1))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
 
+        // Path10 (first) -> LeverPush2
         LeverPush2 = follower.pathBuilder()
                 .addPath(new BezierCurve(grabBalls1, hitLeverFirstSpikeControl, hitLeverFirstSpike))
-                .setLinearHeadingInterpolation(grabBalls1.getHeading(), hitLeverFirstSpike.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(85))
                 .build();
+
+        // Path5 -> GrabbingReversal1
         GrabbingReversal1 = follower.pathBuilder()
                 .addPath(new BezierLine(hitLeverFirstSpike, shootPose))
-                .setLinearHeadingInterpolation(hitLeverFirstSpike.getHeading(), shootPose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(85), Math.toRadians(45))
                 .build();
-        //SECOND ROW PATHS
 
+        // Path7 -> shootToBallGrabbing2
         shootToBallGrabbing2 = follower.pathBuilder()
-                .addPath(new BezierCurve(ZeroGrabPose, grabBalls2Control, grabBalls2))
-                .setLinearHeadingInterpolation(ZeroGrabPose.getHeading(), grabBalls2.getHeading())
+                .addPath(new BezierCurve(shootPose, grabBalls2Control, grabBalls2))
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build();
+
+        // Path9 (first) -> LeverPush
         LeverPush = follower.pathBuilder()
                 .addPath(new BezierCurve(grabBalls2, hitLeverControl, hitLever))
-                .setLinearHeadingInterpolation(grabBalls2.getHeading(), hitLever.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-20))
                 .build();
+
+        // Path9 (second) -> GrabbingReversal2
         GrabbingReversal2 = follower.pathBuilder()
                 .addPath(new BezierCurve(hitLever, shootPos2Control, shootPose))
-                .setLinearHeadingInterpolation(hitLever.getHeading(), shootPose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(-20), Math.toRadians(45))
                 .build();
-        //THIRD ROW PATHS
 
+        // Path11 -> shootToBallGrabbing3
         shootToBallGrabbing3 = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, grabBalls3Control, grabBalls3))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), grabBalls3.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(5))
                 .build();
+
+        // Path13 -> GrabbingReversal3
         GrabbingReversal3 = follower.pathBuilder()
                 .addPath(new BezierLine(grabBalls3, shootPose))
-                .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(5), Math.toRadians(45))
                 .build();
+
+        // Path10 (second) -> Reverse3
         Reverse3 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, shootPose3Orient))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), shootPose3Orient.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(178))
                 .build();
     }
 
@@ -137,21 +137,6 @@ public class FirstAutonBlue extends AutonTemplate {
                 follower.followPath(StartToShoot, true);
                 setPathState(PathState.SHOOTING);//Resets timer & makes new state
                 break;
-            /*
-            case SCANPOSE:
-                if(!follower.isBusy()) {
-                    scan();
-                    if(limelight.getDetectedTagId() > 20) {
-                        scanned = true;
-                    }
-                    follower.followPath(ShootPose, true);
-                    setPathState(PathState.SHOOTING);
-                }
-
-
-                break;
-
-             */
             case SHOOTING:
                 if(!follower.isBusy())
                 {
@@ -189,23 +174,6 @@ public class FirstAutonBlue extends AutonTemplate {
                     }
                 }
                 break;
-                /*
-            case SHOOT1_SHOOT2:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
-                {
-                    autonShoot(1);
-                    follower.followPath(ShootPos2To3, true);
-                    setPathState(PathState.SHOOT2_SHOOT3);
-                }
-                break;
-            case SHOOT2_SHOOT3:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
-                    autonShoot(2);
-                    follower.followPath(ShootPos2To3,true);
-                    setPathState(PathState.SHOOT_PRELOAD);
-                }
-                break;
-                */
             case BALLROW_GRABBING1:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1.5){
                     balls.setCurrent(new int[]{0,1,1});
@@ -262,6 +230,7 @@ public class FirstAutonBlue extends AutonTemplate {
                     setPathState(PathState.SHOOTING);
                     telemetry.addLine("Done Grabbing");
                 }
+                break;
             case BALLROW_GRABBING3:
                 if(pathTimer.getElapsedTimeSeconds()>0.67) {
                     follower.setMaxPower(0.58);
@@ -286,6 +255,7 @@ public class FirstAutonBlue extends AutonTemplate {
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>5){
 
                 }
+                break;
             default:
                 telemetry.addLine("No State Commanded");
                 break;
@@ -295,8 +265,6 @@ public class FirstAutonBlue extends AutonTemplate {
         pathState = newState;
         pathTimer.resetTimer();
     }
-
-
 
     @Override
     public void init() {
@@ -332,6 +300,5 @@ public class FirstAutonBlue extends AutonTemplate {
         telemetry.addData("allThreeunsorted", allThreeUnsorted);
         telemetry.addData("Servo Voltage: ", turretLocalization.getServoFeedback());
         telemetry.update();
-
     }
 }
