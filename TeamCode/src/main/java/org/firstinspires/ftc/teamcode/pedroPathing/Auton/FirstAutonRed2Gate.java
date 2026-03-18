@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import java.util.Arrays;
 
 @Autonomous
-public class FirstAutonBlue extends AutonTemplate {
+public class FirstAutonRed2Gate extends AutonTemplate {
     public enum PathState {
         //START POSITION-END POSITION
         //DRIVE > MOVEMENT STATE
@@ -25,24 +25,24 @@ public class FirstAutonBlue extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(33.8,135.67, Math.toRadians(0));
-    private final Pose scanPose = new Pose(49, 97, Math.toRadians(-25));
-    private final Pose scanControl = new Pose(83,63);
-    private final Pose ZeroGrabPose = new Pose(60,83, Math.toRadians(48));
-    private final Pose shootPose = new Pose(60,83, Math.toRadians(45));
-    private final Pose grabBalls1 = new Pose(16,83, Math.toRadians(0));
-    private final Pose grabBalls1Control = new Pose(68, 91.5);
-    private final Pose grabBalls2 = new Pose(9, 60, Math.toRadians(-5));
-    private final Pose grabBalls2Control = new Pose(74,61);
-    private final Pose hitLever = new Pose(17,72,Math.toRadians(-20));
-    private final Pose hitLeverFirstSpike = new Pose(15.5,72,Math.toRadians(85));
-    private final Pose hitLeverControl = new Pose (62,60);
-    private final Pose hitLeverFirstSpikeControl = new Pose(45,77);
-    private final Pose shootPos2Control = new Pose(64, 60);
-    private final Pose grabBalls3 = new Pose(10, 36, Math.toRadians(5));
+    private final Pose startPose = new Pose(111.5,135.67, Math.toRadians(0));
+    private final Pose scanPose = new Pose(93, 94, Math.toRadians(25));
+    private final Pose scanningControl = new Pose(61,63);
+    private final Pose ZeroGrabPose = new Pose(84,83, Math.toRadians(-48));
+    private final Pose shootPose = new Pose(84,83, Math.toRadians(-45));
+    private final Pose grabBalls1 = new Pose(128,84.5, Math.toRadians(0));
+    private final Pose grabBalls1Control = new Pose(76, 91.5);
+    private final Pose grabBalls2 = new Pose(136, 60, Math.toRadians(5));
+    private final Pose grabBalls2Control = new Pose(70,61);
+    private final Pose hitLever = new Pose(129,72,Math.toRadians(20));
+    private final Pose hitLeverFirstSpike = new Pose(128.5,72,Math.toRadians(85));
+    private final Pose hitLeverFirstSpikeControl = new Pose(99,77);
+    private final Pose hitLeverControl = new Pose(82, 60);
+    private final Pose shootPos2Control = new Pose(80, 60);
+    private final Pose grabBalls3 = new Pose(134, 36, Math.toRadians(-5));
+    private final Pose shootPose3Orient = new Pose(94,70,Math.toRadians(0));
     private final Pose grabBalls3Control = new Pose(72, 38);
-    private final Pose shootPose3Orient = new Pose (49,70, Math.toRadians(180));
-    private final Pose shootPos3Control = new Pose(63, 46);
+    private final Pose shootPos3Control = new Pose(81, 46);
     private boolean zeroGrab = false;
     private boolean firstGrab = false;
     private boolean secondGrab = false;
@@ -90,8 +90,8 @@ public class FirstAutonBlue extends AutonTemplate {
                 .setLinearHeadingInterpolation(grabBalls1.getHeading(), hitLeverFirstSpike.getHeading())
                 .build();
         GrabbingReversal1 = follower.pathBuilder()
-                .addPath(new BezierLine(grabBalls1, shootPose))
-                .setLinearHeadingInterpolation(grabBalls1.getHeading(), shootPose.getHeading())
+                .addPath(new BezierLine(hitLeverFirstSpike, shootPose))
+                .setLinearHeadingInterpolation(hitLeverFirstSpike.getHeading(), shootPose.getHeading())
                 .build();
         //SECOND ROW PATHS
 
@@ -212,13 +212,9 @@ public class FirstAutonBlue extends AutonTemplate {
                     if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
                         sorted = balls.sortBalls();
                     }
-                    firstGrab = true;
-                    allThreeSorted = false;
-                    sortingIndex = 0;
-                    pos = Shooting.MOVE;
                     follower.setMaxPower(1.0);
-                    follower.followPath(GrabbingReversal1, true);
-                    setPathState(PathState.SHOOTING);
+                    follower.followPath(LeverPush2, true);
+                    setPathState(PathState.LEVER2);
                     telemetry.addLine("Done Grabbing");
                 }
                 break;
