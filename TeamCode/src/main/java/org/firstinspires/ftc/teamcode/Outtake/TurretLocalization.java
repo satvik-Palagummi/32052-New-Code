@@ -20,7 +20,7 @@ public class TurretLocalization {
      * TO EDIT THESE VALUES: Go to the main teleop, either Blue or Red and check what the telemetry prints for the Servo voltage at each of the three positions. If it is off for any of then fix it.
      */
     private final double posTwoV = 1.33;
-    private final double posTwoVRange = 0.030;
+    private final double posTwoVRange = 0.03;
     private final double posOneV = 1.71;
     private final double posOneVRange = 0.02;
     private final double posZeroV = 2.08;

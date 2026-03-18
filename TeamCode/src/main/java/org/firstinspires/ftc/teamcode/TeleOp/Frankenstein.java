@@ -226,7 +226,7 @@ public abstract class Frankenstein extends LinearOpMode {
             toTheLeft = -1.75;
             toTheRight = 1.75;
             distance = 0;
-            hoodMovement.setHood(0.720);
+            hoodMovement.setHood(0.72);
         }else if(distance >133 && distance < 148) {
             curTargetVelocity = 1320;
             farShot = false;

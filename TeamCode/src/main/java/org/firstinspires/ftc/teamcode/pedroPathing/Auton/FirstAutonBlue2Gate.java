@@ -182,7 +182,7 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
                     }else if(firstGrab && thirdGrab && allThreeSorted){
                         turret.stopOuttake();
                         turretLocalization.setPos(1);
-                        follower.setMaxPower(0.60);
+                        follower.setMaxPower(0.6);
                         follower.followPath(Reverse3);
                         setPathState(PathState.GRABBING_REVERSAL3);
                         telemetry.addLine("DONE");
