@@ -34,7 +34,7 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
     private final Pose grabBalls1Control = new Pose(68, 91.5);
     private final Pose grabBalls2 = new Pose(9, 60, Math.toRadians(-5));
     private final Pose grabBalls2Control = new Pose(74,61);
-    private final Pose hitLever = new Pose(17,72,Math.toRadians(-20));
+    private final Pose hitLever = new Pose( 17,72,Math.toRadians(-20));
     private final Pose hitLeverFirstSpike = new Pose(15.5,72,Math.toRadians(85));
     private final Pose hitLeverControl = new Pose (62,60);
     private final Pose hitLeverFirstSpikeControl = new Pose(45,77);
