@@ -161,7 +161,7 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
                     if(!secondGrab && allThreeSorted) {
                         turret.stopOuttake();
                         turretLocalization.setPos(1);
-                        follower.setMaxPower(0.7);
+                        follower.setMaxPower(0.7 );
                         runAutonIntake();
                         follower.followPath(shootToBallGrabbing2, true);
                         setPathState(PathState.BALLROW_GRABBING2);
