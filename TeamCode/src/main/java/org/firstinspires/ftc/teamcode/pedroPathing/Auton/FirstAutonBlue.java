@@ -11,302 +11,310 @@ import java.util.Arrays;
 @Autonomous
 public class FirstAutonBlue extends AutonTemplate {
     public enum PathState {
-        //START POSITION-END POSITION
-        //DRIVE > MOVEMENT STATE
-        //SHOOT > ATTEMPT TO SCORE THE ARTIFACT
         STARTPOS,
-        SCANPOSE,
-        SHOOTING,
-        SHOOT1_SHOOT2,
-        SHOOT2_SHOOT3,
-        SHOOT_PRELOAD1, BALLROW_GRABBING1, GRABBING_REVERSAL3,
-        SHOOT_PRELOAD2, BALLROW_GRABBING2, LEVER, LEVER2,
-        SHOOT_PRELOAD3, BALLROW_GRABBING3
+        SHOOT1,
+        GRAB1,
+        SHOOT2,
+        REVERSAL1,
+        GRAB2,
+        PUSH2,
+        SHOOT3,
+        GRAB3,
+        SHOOT4,
+        PARKING1,
+        PARKING2,
+        FINAL_SHOOT,
+        DONE
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(33.8,135.67, Math.toRadians(0));
-    private final Pose scanPose = new Pose(49, 97, Math.toRadians(-25));
-    private final Pose scanControl = new Pose(83,63);
-    private final Pose ZeroGrabPose = new Pose(60,83, Math.toRadians(48));
-    private final Pose shootPose = new Pose(60,83, Math.toRadians(45));
-    private final Pose grabBalls1 = new Pose(16,83, Math.toRadians(0));
-    private final Pose grabBalls1Control = new Pose(68, 91.5);
-    private final Pose grabBalls2 = new Pose(9, 60, Math.toRadians(-5));
-    private final Pose grabBalls2Control = new Pose(74,61);
-    private final Pose hitLever = new Pose(17,72,Math.toRadians(-20));
-    private final Pose hitLeverFirstSpike = new Pose(15.5,72,Math.toRadians(85));
-    private final Pose hitLeverControl = new Pose (62,60);
-    private final Pose hitLeverFirstSpikeControl = new Pose(45,77);
-    private final Pose shootPos2Control = new Pose(64, 60);
-    private final Pose grabBalls3 = new Pose(10, 36, Math.toRadians(5));
-    private final Pose grabBalls3Control = new Pose(72, 38);
-    private final Pose shootPose3Orient = new Pose (49,70, Math.toRadians(180));
-    private final Pose shootPos3Control = new Pose(63, 46);
-    private boolean zeroGrab = false;
-    private boolean firstGrab = false;
-    private boolean secondGrab = false;
-    private boolean thirdGrab = false;
+    private final Pose startPose = new Pose(32.700, 135.670, Math.toRadians(0));
+    private final Pose shootPose = new Pose(60.000, 83.000, Math.toRadians(45));
+    private final Pose grabBalls1 = new Pose(16.000, 83.000, Math.toRadians(0));
+    private final Pose hitLeverFirstSpike = new Pose(13.984, 71.664, Math.toRadians(85));
+    private final Pose hitLeverFirstSpikeControl = new Pose(31.222, 77.000);
+    private final Pose grabBalls2 = new Pose(10.000, 60.000, Math.toRadians(0));
+    private final Pose grabBalls2Control = new Pose(58.214, 56.951);
+    private final Pose hitLever = new Pose(13.975, 71.328, Math.toRadians(-20));
+    private final Pose hitLeverControl = new Pose(38.308, 62.016);
+    private final Pose shootPos2Control = new Pose(54.254, 69.746);
+    private final Pose grabBalls3 = new Pose(11.008, 35.832, Math.toRadians(0));
+    private final Pose grabBalls3Control = new Pose(75.613, 31.925);
+    
+    // Updated Poses for Parking/End Sequence
+    private final Pose parkTransitionPose = new Pose(60.000, 11.252, Math.toRadians(45));
+    private final Pose parkPose2 = new Pose(9.914, 8.737, Math.toRadians(0));
+    private final Pose parkPose3 = new Pose(59.930, 11.265, Math.toRadians(20));
 
+    private boolean shootingStarted = false;
 
+    private PathChain StartToShoot, shootToBallGrabbing1, LeverPush2, GrabbingReversal1,
+            shootToBallGrabbing2, LeverPush, GrabbingReversal2,
+            shootToBallGrabbing3, GrabbingReversal3,
+            Park1, Park2;
 
-    private PathChain StartToShoot,
-            ShootPose,
-            ShootPos1To2,
-            ShootPos2To3,
-            shootToBallGrabbing1, LeverPush2, GrabbingReversal1,
-            shootToBallGrabbing2, GrabbingReversal2, LeverPush,
-            shootToBallGrabbing3, GrabbingReversal3, Reverse3;
-
-
-    public void buildPaths(){
+    public void buildPaths() {
+        // Path 1
         StartToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, ZeroGrabPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), ZeroGrabPose.getHeading())
-                .build();
-        ShootPose = follower.pathBuilder()
-                .addPath(new BezierLine(scanPose, shootPose))
-                .setLinearHeadingInterpolation(scanPose.getHeading(), shootPose.getHeading())
-                .build();
-        /*ShootPos1To2 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPosePos1, shootPosePos2))
-                .setLinearHeadingInterpolation(shootPosePos1.getHeading(), shootPosePos2.getHeading())
-                .build();
-        ShootPos2To3 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPosePos2, shootPosePos3))
-                .setLinearHeadingInterpolation(shootPosePos2.getHeading(), shootPosePos3.getHeading())
+                .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
 
-         */
-        //FIRST ROW PATHS
-
+        // Path 2
         shootToBallGrabbing1 = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose,grabBalls1Control, grabBalls1))
-                .setConstantHeadingInterpolation(grabBalls1.getHeading())
+                .addPath(new BezierLine(shootPose, grabBalls1))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
+        // Path 3
         LeverPush2 = follower.pathBuilder()
                 .addPath(new BezierCurve(grabBalls1, hitLeverFirstSpikeControl, hitLeverFirstSpike))
-                .setLinearHeadingInterpolation(grabBalls1.getHeading(), hitLeverFirstSpike.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(85))
                 .build();
+
+        // Path 4
         GrabbingReversal1 = follower.pathBuilder()
                 .addPath(new BezierLine(hitLeverFirstSpike, shootPose))
-                .setLinearHeadingInterpolation(hitLeverFirstSpike.getHeading(), shootPose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(85), Math.toRadians(45))
                 .build();
-        //SECOND ROW PATHS
 
+        // Path 5
         shootToBallGrabbing2 = follower.pathBuilder()
-                .addPath(new BezierCurve(ZeroGrabPose, grabBalls2Control, grabBalls2))
-                .setLinearHeadingInterpolation(ZeroGrabPose.getHeading(), grabBalls2.getHeading())
+                .addPath(new BezierCurve(shootPose, grabBalls2Control, grabBalls2))
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build();
+
+        // Path 6
         LeverPush = follower.pathBuilder()
                 .addPath(new BezierCurve(grabBalls2, hitLeverControl, hitLever))
-                .setLinearHeadingInterpolation(grabBalls2.getHeading(), hitLever.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-20))
                 .build();
+
+        // Path 7
         GrabbingReversal2 = follower.pathBuilder()
                 .addPath(new BezierCurve(hitLever, shootPos2Control, shootPose))
-                .setLinearHeadingInterpolation(hitLever.getHeading(), shootPose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(-20), Math.toRadians(45))
                 .build();
-        //THIRD ROW PATHS
 
+        // Path 8
         shootToBallGrabbing3 = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, grabBalls3Control, grabBalls3))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), grabBalls3.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build();
+
+        // Path 9
         GrabbingReversal3 = follower.pathBuilder()
-                .addPath(new BezierLine(grabBalls3, shootPose))
-                .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose.getHeading())
+                .addPath(new BezierLine(grabBalls3, parkTransitionPose))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build();
-        Reverse3 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, shootPose3Orient))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), shootPose3Orient.getHeading())
+
+        // Path 10
+        Park1 = follower.pathBuilder()
+                .addPath(new BezierLine(parkTransitionPose, parkPose2))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
+        // Path 11
+        Park2 = follower.pathBuilder()
+                .addPath(new BezierLine(parkPose2, parkPose3))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(20))
                 .build();
     }
 
-    public void statePathUpdate(){
-        switch(pathState){
+    public void statePathUpdate() {
+        switch (pathState) {
             case STARTPOS:
+                // Functional initializations from older version
                 hoodMovement.setHood(0.43);
-                balls.setCurrent(new int[]{1,1,0});
+                balls.setCurrent(new int[]{1, 1, 0});
                 sorted = balls.sortBalls();
                 turretLocalization.setPos(1);
                 limelight.setPipeline(8);
                 turret.setPower(1530);
                 turret.startOuttake();
                 allThreeSorted = false;
-                follower.followPath(StartToShoot, true);
-                setPathState(PathState.SHOOTING);//Resets timer & makes new state
-                break;
-            /*
-            case SCANPOSE:
-                if(!follower.isBusy()) {
-                    scan();
-                    if(limelight.getDetectedTagId() > 20) {
-                        scanned = true;
-                    }
-                    follower.followPath(ShootPose, true);
-                    setPathState(PathState.SHOOTING);
+                
+                if (!follower.isBusy()) {
+                    follower.setMaxPower(1.0);
+                    follower.followPath(StartToShoot, true);
+                    setPathState(PathState.SHOOT1);
                 }
-
-
                 break;
 
-             */
-            case SHOOTING:
-                if(!follower.isBusy())
-                {
-                    stopAutonIntake();
-                    autonShoot3Blue();
-
-                    if(!secondGrab && allThreeSorted) {
-                        turret.stopOuttake();
-                        turretLocalization.setPos(1);
-                        follower.setMaxPower(0.7);
-                        runAutonIntake();
-                        follower.followPath(shootToBallGrabbing2, true);
-                        setPathState(PathState.BALLROW_GRABBING2);
-                    }else if(!firstGrab && allThreeSorted){
-                        turret.stopOuttake();
-                        turretLocalization.setPos(1);
+            case SHOOT1:
+                if (!follower.isBusy()) {
+                    if (!shootingStarted) {
+                        autonShoot3Blue();
+                        shootingStarted = true;
+                    }
+                    if (allThreeSorted) {
+                        shootingStarted = false;
+                        allThreeSorted = false;
                         follower.setMaxPower(0.8);
-                        runAutonIntake();
                         follower.followPath(shootToBallGrabbing1, true);
-                        setPathState(PathState.BALLROW_GRABBING1);
-                    } else if (!thirdGrab && allThreeSorted) {
-                        turret.stopOuttake();
-                        turretLocalization.setPos(1);
-                        follower.setMaxPower(1.0);
-                        runAutonIntake();
-                        follower.followPath(shootToBallGrabbing3, true);
-                        setPathState(PathState.BALLROW_GRABBING3);
-                    }else if(firstGrab && thirdGrab && allThreeSorted){
-                        turret.stopOuttake();
-                        turretLocalization.setPos(1);
-                        follower.setMaxPower(0.6);
-                        follower.followPath(Reverse3);
-                        setPathState(PathState.GRABBING_REVERSAL3);
-                        telemetry.addLine("DONE");
+                        setPathState(PathState.GRAB1);
                     }
                 }
                 break;
-                /*
-            case SHOOT1_SHOOT2:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
-                {
-                    autonShoot(1);
-                    follower.followPath(ShootPos2To3, true);
-                    setPathState(PathState.SHOOT2_SHOOT3);
-                }
-                break;
-            case SHOOT2_SHOOT3:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3){
-                    autonShoot(2);
-                    follower.followPath(ShootPos2To3,true);
-                    setPathState(PathState.SHOOT_PRELOAD);
-                }
-                break;
-                */
-            case BALLROW_GRABBING1:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1.5){
-                    balls.setCurrent(new int[]{0,1,1});
-                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
-                        sorted = balls.sortBalls();
-                    }
+
+            case GRAB1:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
+                    balls.setCurrent(new int[]{0, 1, 1});
+                    sorted = balls.sortBalls();
+                    allThreeSorted = false;
+                    sortingIndex = 0;
+                    pos = Shooting.MOVE;
+
+                    runAutonIntake();
                     follower.setMaxPower(0.7);
                     follower.followPath(LeverPush2, true);
-                    setPathState(PathState.LEVER2);
-                    telemetry.addLine("Done Grabbing");
+                    setPathState(PathState.SHOOT2);
                 }
                 break;
-            case BALLROW_GRABBING2:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2){
-                    balls.setCurrent(new int[]{1,0,1});
+
+            case SHOOT2:
+                if (!follower.isBusy()) {
+                    stopAutonIntake();
+                    if (!shootingStarted) {
+                        autonShoot3Blue();
+                        shootingStarted = true;
+                    }
+                    if (allThreeSorted) {
+                        shootingStarted = false;
+                        allThreeSorted = false;
+                        follower.setMaxPower(1.0);
+                        follower.followPath(GrabbingReversal1, true);
+                        setPathState(PathState.REVERSAL1);
+                    }
+                }
+                break;
+
+            case REVERSAL1:
+                if (!follower.isBusy()) {
+                    follower.setMaxPower(0.7);
+                    follower.followPath(shootToBallGrabbing2, true);
+                    setPathState(PathState.GRAB2);
+                }
+                break;
+
+            case GRAB2:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.0) {
+                    balls.setCurrent(new int[]{1, 0, 1});
+                    sorted = balls.sortBalls();
+                    allThreeSorted = false;
+                    sortingIndex = 0;
+                    pos = Shooting.MOVE;
+                    
+                    runAutonIntake();
                     follower.setMaxPower(0.7);
                     follower.followPath(LeverPush, true);
-                    setPathState(PathState.LEVER);
-                    telemetry.addLine("Done Grabbing");
-                    limelight.setPipeline(0);
-                    turretLocalization.setPos(2);
+                    setPathState(PathState.PUSH2);
                 }
                 break;
-            case LEVER:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2.5){
-                    scan();
-                    if(limelight.getDetectedTagId() > 20) {
-                        scanned = true;
-                    }
-                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
-                        sorted = balls.sortBalls();
-                    }
+
+            case PUSH2:
+                if (!follower.isBusy()) {
                     follower.setMaxPower(1.0);
-                    turret.startOuttake();
                     follower.followPath(GrabbingReversal2, true);
-                    setPathState(PathState.SHOOTING);
-                    secondGrab = true;
-                    allThreeSorted = false;
-                    sortingIndex = 0;
-                    pos = Shooting.MOVE;
-                    stopAutonIntake();
-                    telemetry.addLine("Done Grabbing");
+                    setPathState(PathState.SHOOT3);
                 }
                 break;
-            case LEVER2:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2.5){
-                    follower.setMaxPower(1.0);
-                    turret.startOuttake();
-                    firstGrab = true;
-                    allThreeSorted = false;
-                    sortingIndex = 0;
-                    pos = Shooting.MOVE;
-                    follower.followPath(GrabbingReversal1, true);
-                    setPathState(PathState.SHOOTING);
-                    telemetry.addLine("Done Grabbing");
+
+            case SHOOT3:
+                if (!follower.isBusy()) {
+                    stopAutonIntake();
+                    if (!shootingStarted) {
+                        autonShoot3Blue();
+                        shootingStarted = true;
+                    }
+                    if (allThreeSorted) {
+                        shootingStarted = false;
+                        allThreeSorted = false;
+                        follower.setMaxPower(1.0);
+                        follower.followPath(shootToBallGrabbing3, true);
+                        setPathState(PathState.GRAB3);
+                    }
                 }
-            case BALLROW_GRABBING3:
-                if(pathTimer.getElapsedTimeSeconds()>0.67) {
+                break;
+
+            case GRAB3:
+                if (pathTimer.getElapsedTimeSeconds() > 0.67) {
                     follower.setMaxPower(0.58);
                 }
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1.0){
-                    balls.setCurrent(new int[]{1,1,0});
-                    if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
-                        sorted = balls.sortBalls();
-                    }
-                    follower.setMaxPower(1.0);
-                    turret.startOuttake();
-                    follower.followPath(GrabbingReversal3, true);
-                    thirdGrab = true;
+
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.0) {
+                    balls.setCurrent(new int[]{1, 1, 0});
+                    sorted = balls.sortBalls();
                     allThreeSorted = false;
                     sortingIndex = 0;
                     pos = Shooting.MOVE;
-                    setPathState(PathState.SHOOTING);
-                    telemetry.addLine("Done Grabbing");
+
+                    runAutonIntake();
+                    follower.setMaxPower(1.0);
+                    follower.followPath(GrabbingReversal3, true);
+                    setPathState(PathState.SHOOT4);
                 }
                 break;
-            case GRABBING_REVERSAL3:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>5){
 
+            case SHOOT4:
+                if (!follower.isBusy()) {
+                    stopAutonIntake();
+                    if (!shootingStarted) {
+                        autonShoot3Blue();
+                        shootingStarted = true;
+                    }
+                    if (allThreeSorted) {
+                        shootingStarted = false;
+                        allThreeSorted = false;
+                        follower.setMaxPower(0.6);
+                        follower.followPath(Park1, true);
+                        setPathState(PathState.PARKING1);
+                    }
                 }
-            default:
-                telemetry.addLine("No State Commanded");
+                break;
+
+            case PARKING1:
+                if (!follower.isBusy()) {
+                    follower.followPath(Park2, true);
+                    setPathState(PathState.FINAL_SHOOT);
+                }
+                break;
+
+            case FINAL_SHOOT:
+                if (!follower.isBusy()) {
+                    if (!shootingStarted) {
+                        autonShoot3Blue();
+                        shootingStarted = true;
+                    }
+                    if (allThreeSorted) {
+                        shootingStarted = false;
+                        allThreeSorted = false;
+                        setPathState(PathState.DONE);
+                    }
+                }
+                break;
+
+            case DONE:
+                telemetry.addLine("Autonomous Complete");
                 break;
         }
     }
+
     public void setPathState(PathState newState) {
         pathState = newState;
         pathTimer.resetTimer();
     }
 
-
-
     @Override
     public void init() {
         super.init();
         pathState = PathState.STARTPOS;
-        //Add other init mechanisms
         follower.setPose(startPose);
+        buildPaths();
     }
+
     @Override
-    public void start(){
+    public void start() {
         super.start();
         setPathState(PathState.STARTPOS);
     }
@@ -321,17 +329,11 @@ public class FirstAutonBlue extends AutonTemplate {
         telemetry.addData("allThreeSorted", allThreeSorted);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("Motif: ", Arrays.toString(balls.getFullMotif()));
         telemetry.addData("Current Balls ", Arrays.toString(balls.getCurrentBalls()));
         telemetry.addData("Sorted: ", Arrays.toString(sorted));
-        telemetry.addData("Green in right spot", greenCheck);
-        telemetry.addData("Pushed", pushed);
-        telemetry.addData("Zero Grab", zeroGrab);
-        telemetry.addData("allThreeunsorted", allThreeUnsorted);
-        telemetry.addData("Servo Voltage: ", turretLocalization.getServoFeedback());
         telemetry.update();
-
     }
 }
