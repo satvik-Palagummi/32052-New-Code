@@ -25,7 +25,7 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(33.8,135.67, Math.toRadians(0));
+    private final Pose startPose = new Pose(33.80,135.67, Math.toRadians(0));
     private final Pose scanPose = new Pose(49, 97, Math.toRadians(-25));
     private final Pose scanControl = new Pose(83,63);
     private final Pose ZeroGrabPose = new Pose(60,83, Math.toRadians(48));
