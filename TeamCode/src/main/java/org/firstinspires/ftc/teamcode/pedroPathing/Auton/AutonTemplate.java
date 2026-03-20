@@ -392,7 +392,7 @@ public abstract class AutonTemplate extends OpMode {
                     }
                     break;
                 case PROPEL:
-                    double waitTime = 0.4;
+                    double waitTime = (sorted[sortingIndex] == 1) ? 0.45 : 0.4;
                     if (actionTimer.getElapsedTimeSeconds() >= waitTime) {
                         pushServo.retract(sorted[sortingIndex]);
                         actionTimer.resetTimer();
@@ -425,7 +425,7 @@ public abstract class AutonTemplate extends OpMode {
 
                     break;
                 case PROPEL:
-                    double waitTime = 0.4;
+                    double waitTime = (sorted[sortingIndex] == 1) ? 0.45 : 0.4;
                     if (actionTimer.getElapsedTimeSeconds() >= waitTime) {
                         pushServo.retract(sorted[sortingIndex]);
                         actionTimer.resetTimer();

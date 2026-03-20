@@ -12,11 +12,11 @@ public class FrankensteinRed extends Frankenstein {
 
     @Override
     public double toTheLeftFar() {
-        return -4;
+        return -2;
     }
 
     @Override
     public double toTheRightFar() {
-        return 0;
+        return 2;
     }
 }
