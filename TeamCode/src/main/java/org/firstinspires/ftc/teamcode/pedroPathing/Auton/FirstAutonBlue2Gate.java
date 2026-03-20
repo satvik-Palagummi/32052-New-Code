@@ -29,7 +29,9 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
     private final Pose scanPose = new Pose(49, 97, Math.toRadians(-25));
     private final Pose scanControl = new Pose(83,63);
     private final Pose ZeroGrabPose = new Pose(60,83, Math.toRadians(48));
+
     private final Pose shootPose = new Pose(60,83, Math.toRadians(45));
+    private final Pose thirdShootPose = new Pose(59.5,102, Math.toRadians(45));
     private final Pose grabBalls1 = new Pose(16,83, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(68, 91.5);
     private final Pose grabBalls2 = new Pose(9, 60, Math.toRadians(-5));
@@ -114,8 +116,8 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
                 .setLinearHeadingInterpolation(shootPose.getHeading(), grabBalls3.getHeading())
                 .build();
         GrabbingReversal3 = follower.pathBuilder()
-                .addPath(new BezierLine(grabBalls3, shootPose))
-                .setLinearHeadingInterpolation(grabBalls3.getHeading(), shootPose.getHeading())
+                .addPath(new BezierLine(grabBalls3, thirdShootPose))
+                .setLinearHeadingInterpolation(grabBalls3.getHeading(), thirdShootPose.getHeading())
                 .build();
         Reverse3 = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, shootPose3Orient))
@@ -161,7 +163,7 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
                     if(!secondGrab && allThreeSorted) {
                         turret.stopOuttake();
                         turretLocalization.setPos(1);
-                        follower.setMaxPower(0.7 );
+                        follower.setMaxPower(0.6);
                         runAutonIntake();
                         follower.followPath(shootToBallGrabbing2, true);
                         setPathState(PathState.BALLROW_GRABBING2);
@@ -183,7 +185,6 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
                         turret.stopOuttake();
                         turretLocalization.setPos(1);
                         follower.setMaxPower(0.6);
-                        follower.followPath(Reverse3);
                         setPathState(PathState.GRABBING_REVERSAL3);
                         telemetry.addLine("DONE");
                     }
@@ -283,9 +284,7 @@ public class FirstAutonBlue2Gate extends AutonTemplate {
                 }
                 break;
             case GRABBING_REVERSAL3:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>5){
-
-                }
+                break;
             default:
                 telemetry.addLine("No State Commanded");
                 break;

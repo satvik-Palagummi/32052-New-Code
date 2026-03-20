@@ -17,6 +17,7 @@ public class Nightcall {
     private DcMotor backRightMotor;
     private Follower follower;
     private IMU imu;
+    private double autonPower = 0.3;
 
     public Nightcall(){
 
@@ -62,16 +63,16 @@ public class Nightcall {
         backRightMotor.setPower(0.22);
     }
     public void rightOrientFar(){
-        frontLeftMotor.setPower(0.27);
-        frontRightMotor.setPower(-0.27);
-        backLeftMotor.setPower(0.27);
-        backRightMotor.setPower(-0.27);
+        frontLeftMotor.setPower(0.35);
+        frontRightMotor.setPower(-0.35);
+        backLeftMotor.setPower(0.35);
+        backRightMotor.setPower(-0.35);
     }
     public void leftOrientFar(){
-        frontLeftMotor.setPower(-0.27);
-        frontRightMotor.setPower(0.27);
-        backLeftMotor.setPower(-0.27);
-        backRightMotor.setPower(0.27);
+        frontLeftMotor.setPower(-0.35);
+        frontRightMotor.setPower(0.35);
+        backLeftMotor.setPower(-0.35);
+        backRightMotor.setPower(0.35);
     }
     public void rightOrient(){
         frontLeftMotor.setPower(0.22);
@@ -80,16 +81,16 @@ public class Nightcall {
         backRightMotor.setPower(-0.22);
     }
     public void leftOrientAuton(){
-        frontLeftMotor.setPower(-0.25);
-        frontRightMotor.setPower(0.25);
-        backLeftMotor.setPower(-0.25);
-        backRightMotor.setPower(0.25);
+        frontLeftMotor.setPower(-autonPower);
+        frontRightMotor.setPower(autonPower);
+        backLeftMotor.setPower(-autonPower);
+        backRightMotor.setPower(autonPower);
     }
     public void rightOrientAuton(){
-        frontLeftMotor.setPower(0.25);
-        frontRightMotor.setPower(-0.25);
-        backLeftMotor.setPower(0.25);
-        backRightMotor.setPower(-0.25);
+        frontLeftMotor.setPower(autonPower);
+        frontRightMotor.setPower(-autonPower);
+        backLeftMotor.setPower(autonPower);
+        backRightMotor.setPower(-autonPower);
     }
     public void drive (double x, double y, double rx, boolean slow){
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
