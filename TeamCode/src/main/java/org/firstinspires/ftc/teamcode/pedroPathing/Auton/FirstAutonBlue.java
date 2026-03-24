@@ -167,7 +167,7 @@ public class FirstAutonBlue extends AutonTemplate {
                         setPathState(PathState.BALLROW_GRABBING2);
                     }else if(!firstGrab && allThreeSorted){
                         turretLocalization.setPos(1);
-                        follower.setMaxPower(0.8);
+                        follower.setMaxPower(0.80);
                         runAutonIntake();
                         follower.followPath(shootToBallGrabbing1, true);
                         setPathState(PathState.BALLROW_GRABBING1);

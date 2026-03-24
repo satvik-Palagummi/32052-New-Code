@@ -164,7 +164,7 @@ public class FirstAutonRed extends AutonTemplate {
                     }else if(!firstGrab&&allThreeSorted){
                         turretLocalization.setPos(1);
                         turret.stopOuttake();
-                        follower.setMaxPower(0.7);
+                        follower.setMaxPower(0.70);
                         runAutonIntake();
                         follower.followPath(shootToBallGrabbing1, true);
                         setPathState(PathState.BALLROW_GRABBING1);

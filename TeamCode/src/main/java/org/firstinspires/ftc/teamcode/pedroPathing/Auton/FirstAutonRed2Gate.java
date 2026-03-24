@@ -212,7 +212,7 @@ public class FirstAutonRed2Gate extends AutonTemplate {
                     if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
                         sorted = balls.sortBalls();
                     }
-                    follower.setMaxPower(1.0);
+                    follower.setMaxPower(1.00);
                     follower.followPath(LeverPush2, true);
                     setPathState(PathState.LEVER2);
                     telemetry.addLine("Done Grabbing");

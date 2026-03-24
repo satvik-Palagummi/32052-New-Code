@@ -528,7 +528,7 @@ public abstract class Frankenstein extends LinearOpMode {
             switch(sortedFarPos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(sorted[0]);
-                    if (turretLocalization.getTurretArrived(sorted[0])&& time.seconds()<0.65) {
+                    if (turretLocalization.getTurretArrived(sorted[0])&& time.seconds()<0.650) {
                         pushServo.propel(sorted[0]);
                     }else if(time.seconds()>0.7){
                         pushServo.retract(sorted[0]);
