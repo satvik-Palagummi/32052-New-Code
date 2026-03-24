@@ -63,16 +63,16 @@ public class Nightcall {
         backRightMotor.setPower(0.22);
     }
     public void rightOrientFar(){
-        frontLeftMotor.setPower(0.35);
-        frontRightMotor.setPower(-0.35);
-        backLeftMotor.setPower(0.35);
-        backRightMotor.setPower(-0.35);
+        frontLeftMotor.setPower(0.3);
+        frontRightMotor.setPower(-0.3);
+        backLeftMotor.setPower(0.3);
+        backRightMotor.setPower(-0.3);
     }
     public void leftOrientFar(){
-        frontLeftMotor.setPower(-0.35);
-        frontRightMotor.setPower(0.35);
-        backLeftMotor.setPower(-0.35);
-        backRightMotor.setPower(0.35);
+        frontLeftMotor.setPower(-0.3);
+        frontRightMotor.setPower(0.3);
+        backLeftMotor.setPower(-0.3);
+        backRightMotor.setPower(0.3);
     }
     public void rightOrient(){
         frontLeftMotor.setPower(0.22);

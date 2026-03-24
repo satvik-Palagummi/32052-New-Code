@@ -25,18 +25,18 @@ public class FirstAutonRed2Gate extends AutonTemplate {
     }
     PathState pathState;
 
-    private final Pose startPose = new Pose(111.5,135.67, Math.toRadians(0));
+    private final Pose startPose = new Pose(110.2,135.67, Math.toRadians(0));
     private final Pose scanPose = new Pose(93, 94, Math.toRadians(25));
     private final Pose scanningControl = new Pose(61,63);
     private final Pose ZeroGrabPose = new Pose(84,83, Math.toRadians(-48));
     private final Pose shootPose = new Pose(84,83, Math.toRadians(-45));
-    private final Pose thirdShootPose = new Pose(83.5,102, Math.toRadians(-45));
+    private final Pose thirdShootPose = new Pose(84.5,102, Math.toRadians(-45));
     private final Pose grabBalls1 = new Pose(128,84.5, Math.toRadians(0));
     private final Pose grabBalls1Control = new Pose(76, 91.5);
-    private final Pose grabBalls2 = new Pose(136, 60, Math.toRadians(5));
+    private final Pose grabBalls2 = new Pose(135, 60, Math.toRadians(5));
     private final Pose grabBalls2Control = new Pose(70,61);
-    private final Pose hitLever = new Pose(129,72,Math.toRadians(20));
-    private final Pose hitLeverFirstSpike = new Pose(128.5,72,Math.toRadians(85));
+    private final Pose hitLever = new Pose(127.5,72,Math.toRadians(20));
+    private final Pose hitLeverFirstSpike = new Pose(129,72,Math.toRadians(-85));
     private final Pose hitLeverFirstSpikeControl = new Pose(99,77);
     private final Pose hitLeverControl = new Pose(82, 60);
     private final Pose shootPos2Control = new Pose(80, 60);
@@ -131,7 +131,7 @@ public class FirstAutonRed2Gate extends AutonTemplate {
                 balls.setCurrent(new int[]{1,1,0});
                 sorted = balls.sortBalls();
                 turretLocalization.setPos(1);
-                limelight.setPipeline(8);
+                limelight.setPipeline(9);
                 turret.setPower(1530);
                 turret.startOuttake();
                 allThreeSorted = false;
@@ -157,7 +157,7 @@ public class FirstAutonRed2Gate extends AutonTemplate {
                 if(!follower.isBusy())
                 {
                     stopAutonIntake();
-                    autonShoot3Blue();
+                    autonShoot3Red();
 
                     if(!secondGrab && allThreeSorted) {
                         turret.stopOuttake();
@@ -208,7 +208,7 @@ public class FirstAutonRed2Gate extends AutonTemplate {
                 */
             case BALLROW_GRABBING1:
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1.5){
-                    balls.setCurrent(new int[]{0,1,1});
+                    balls.setCurrent(new int[]{1,1,0});
                     if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
                         sorted = balls.sortBalls();
                     }
@@ -267,7 +267,7 @@ public class FirstAutonRed2Gate extends AutonTemplate {
                     follower.setMaxPower(0.7);
                 }
                 if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1.0){
-                    balls.setCurrent(new int[]{1,1,0});
+                    balls.setCurrent(new int[]{0,1,1});
                     if(balls.getFullMotif() != null && balls.getCurrentBalls() != null){
                         sorted = balls.sortBalls();
                     }

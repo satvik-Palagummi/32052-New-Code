@@ -63,13 +63,13 @@ public class AutonFarRedGetOut extends AutonTemplate {
                 turretLocalization.setPos(0);
                 follower.followPath(StartToScan, true);
                 setPathState(PathState.STARTPOS_SCANPOS);//Resets timer & makes new state
-                hoodMovement.setHood(0.3);
+                hoodMovement.setHood(0.5);
                 turret.startOuttake();
                 turret.setPower(1930);
                 balls.setCurrent(new int[]{1,1,0});
                 break;
             case STARTPOS_SCANPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3&& !scanned){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1&& !scanned){
                     scan();
                     if(limelight.getDetectedTagId() > 20) {
                         scanned = true;
@@ -80,11 +80,13 @@ public class AutonFarRedGetOut extends AutonTemplate {
                     follower.followPath(ScantoShoot, true);
                     setPathState(PathState.SCANPOS_SHOOTPOS);
                     sorted = balls.sortBalls();
+                    allThreeSorted = false;
                 }
                 break;
             case SCANPOS_SHOOTPOS:
-                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>3)
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>1)
                 {
+                    autonShoot3Red();
                     if(allThreeSorted){
                         follower.followPath(shootToBallAiming3, true);
                         setPathState(PathState.SHOOT_PRELOAD3);

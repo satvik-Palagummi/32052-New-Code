@@ -67,8 +67,9 @@ public abstract class Frankenstein extends LinearOpMode {
     protected boolean reached;
     protected double timing = 0;
     protected double lastDistance;
-    protected double F = 12.1623;
-    protected double P = 75;
+    protected double F = 11.7274;
+    //11.7274 13 V F value, 12.1263 12 V F Value, 10.7274 14 V F Value
+    protected double P = 50;
     protected double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
     protected int stepIndex  = 1;
     protected double highVelocity = 1640;
@@ -270,33 +271,33 @@ public abstract class Frankenstein extends LinearOpMode {
             distance = 0;
             hoodMovement.setHood(0.45);
         } else if(distance>313 && distance < 333){
+            curTargetVelocity = 1850;
+            farShot = true;
+            toTheLeft = toTheLeftFar();
+            toTheRight = toTheRightFar();
+            distance = 0;
+            hoodMovement.setHood(0.25);
+        } else if(distance>333 && distance < 348){
             curTargetVelocity = 1860;
             farShot = true;
             toTheLeft = toTheLeftFar();
             toTheRight = toTheRightFar();
             distance = 0;
-            hoodMovement.setHood(0.27);
-        } else if(distance>333 && distance < 348){
-            curTargetVelocity = 1880;
+            hoodMovement.setHood(0.25);
+        }else if(distance>348 && distance < 358){
+            curTargetVelocity = 1890;
             farShot = true;
             toTheLeft = toTheLeftFar();
             toTheRight = toTheRightFar();
             distance = 0;
-            hoodMovement.setHood(0.27);
-        }else if(distance>348 && distance < 358){
+            hoodMovement.setHood(0.25);
+        }else if(distance>358 && distance < 378){
             curTargetVelocity = 1920;
             farShot = true;
             toTheLeft = toTheLeftFar();
             toTheRight = toTheRightFar();
             distance = 0;
-            hoodMovement.setHood(0.27);
-        }else if(distance>358 && distance < 378){
-            curTargetVelocity = 1930;
-            farShot = true;
-            toTheLeft = toTheLeftFar();
-            toTheRight = toTheRightFar();
-            distance = 0;
-            hoodMovement.setHood(0.27);
+            hoodMovement.setHood(0.25);
         }
         if(gamepad1.rightBumperWasPressed()){
             turret.startOuttake();
@@ -310,7 +311,7 @@ public abstract class Frankenstein extends LinearOpMode {
                 fromFar = true;
             }
             intook =  true;
-            F += 0.005;
+            F += 0.01;
         }
         /**Enables sorting in Tele-op after motif has been set.
 
@@ -336,7 +337,6 @@ public abstract class Frankenstein extends LinearOpMode {
             addition-=10;
         }
         turret.setPower(addition + curTargetVelocity);
-        /*
         if(gamepad2.bWasPressed()){
             stepIndex = (stepIndex + 1) % stepSizes.length;
         }
@@ -353,7 +353,6 @@ public abstract class Frankenstein extends LinearOpMode {
             P -= stepSizes[stepIndex];
         }
 
-         */
 
         double curLVelocity = turret.getTurretLVelocity();
         double curRVelocity = turret.getTurretRVelocity();
@@ -394,7 +393,7 @@ public abstract class Frankenstein extends LinearOpMode {
                 case FIRSTPOS:
                     if(balls.getCurrentSpecPos(0)!=-1){
                         turretLocalization.setPos(0);
-                        if (turretLocalization.getTurretArrived(0) &&time.seconds()<0.7) {
+                        if (turretLocalization.getTurretArrived(0) &&time.seconds()<0.65) {
                             pushServo.propel(0);
                         }else if(time.seconds()>0.7){
                             pushServo.retract(0);
@@ -444,7 +443,7 @@ public abstract class Frankenstein extends LinearOpMode {
                 case FIRSTPOS:
                     if(balls.getCurrentSpecPos(0)!=-1){
                         turretLocalization.setPos(0);
-                        if (turretLocalization.getTurretArrived(0)&& time.seconds()<0.7) {
+                        if (turretLocalization.getTurretArrived(0)&& time.seconds()<0.65) {
                             pushServo.propel(0);
                         }else if(time.seconds()>0.7){
                             pushServo.retract(0);
@@ -492,7 +491,7 @@ public abstract class Frankenstein extends LinearOpMode {
             switch(sortedPos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(sorted[0]);
-                    if (turretLocalization.getTurretArrived(sorted[0])&& time.seconds()<0.7) {
+                    if (turretLocalization.getTurretArrived(sorted[0])&& time.seconds()<0.65) {
                         pushServo.propel(sorted[0]);
                     }else if(time.seconds()>0.7){
                         pushServo.retract(sorted[0]);
@@ -529,7 +528,7 @@ public abstract class Frankenstein extends LinearOpMode {
             switch(sortedFarPos) {
                 case FIRSTPOS:
                     turretLocalization.setPos(sorted[0]);
-                    if (turretLocalization.getTurretArrived(sorted[0])&& time.seconds()<0.7) {
+                    if (turretLocalization.getTurretArrived(sorted[0])&& time.seconds()<0.65) {
                         pushServo.propel(sorted[0]);
                     }else if(time.seconds()>0.7){
                         pushServo.retract(sorted[0]);
@@ -595,9 +594,9 @@ public abstract class Frankenstein extends LinearOpMode {
         //activate Intake
         spinner.Intake(gamepad1.square);
         // Activate Reverse intake
-        if(gamepad1.b){
+        if(gamepad1.b||gamepad2.left_trigger>0.2){
             spinner.reverse();
-        }else if(!gamepad1.square && !gamepad1.b){
+        }else if(!gamepad1.square && !gamepad1.b && gamepad2.left_trigger<0.2){
             spinner.stopIntake();
         }
         if(gamepad1.squareWasReleased()){
@@ -614,10 +613,12 @@ public abstract class Frankenstein extends LinearOpMode {
         addTelemetry("Addition", addition);
         addTelemetry("Hood Position: ", hoodMovement.hoodPos());
         addTelemetry("Limelight Distance", lastDistance);
+        addTelemetry("Limelight X", limelight.getTx());
         addTelemetry("Servo Voltage: ", turretLocalization.getServoFeedback());
         addTelemetry("Motif Set", motifSet);
         addTelemetry("P:", P);
         addTelemetry("F: ",F);
+        addTelemetry("Step Size", stepSizes[stepIndex]);
         /*
         addTelemetry("ErrorL", errorL);
         addTelemetry("ErrorR", errorR);
